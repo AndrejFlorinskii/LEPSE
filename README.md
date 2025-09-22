@@ -1,4 +1,5 @@
 GENERAL INFORMATION
+
 Library of electric power system elements 
 LEPSE is a libary for power enerygy system, developed and maintained by the staff of the Higher School of Electrical Power Systems (https://ie.spbstu.ru/department/vysshaya_shkola_elektroenergeticheskih_sistem/) of the Peter the Great St. Petersburg Polytechnic University (https://www.spbstu.ru/), led by Belyaev Andrey Nikolaevich (https://belyaev.spb.ru/). 
 Ths library allows to create dynamic calculation model of power energy system and to investigate electromechanical transient processes. 
@@ -13,6 +14,7 @@ This Modelica package is free software and the use is completely at your own ris
 <img width="1304" height="597" alt="KKT_1" src="https://github.com/user-attachments/assets/3c4c5e1d-bad6-4e01-b7e6-1448b72920b4" />
 
 HPOW TO WORK WITH LEPSE
+
 I To start working with LEPSE, firstly you need to determine the values of model element's parameters. All variables are presented in basic per-units (p.u.b.) of measurement - so you need to choose 2 basic values: basic power  and basic voltage , for example: 1000 MVA and 340 kV. 
 The next stage is to calculate values of parameters in p.u.b. with the use of well known formulas. An examples for parameter's conversion from per-units or named units (Om, MVA, MW etc) to basic per-units calculations are presented in Excel-file "Conversion". 
 
