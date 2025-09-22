@@ -1,5 +1,5 @@
 Library of electric power system elements 
-LEPSE is a libary for power enerygy system, developed and maintained by the staff of the Higher School of Electrical Power Systems of the Peter the Great St. Petersburg Polytechnic University, led by Belyaev Andrey Nikolaevich (https://belyaev.spb.ru/). 
+LEPSE is a libary for power enerygy system, developed and maintained by the staff of the Higher School of Electrical Power Systems (https://ie.spbstu.ru/department/vysshaya_shkola_elektroenergeticheskih_sistem/) of the Peter the Great St. Petersburg Polytechnic University (https://www.spbstu.ru/), led by Belyaev Andrey Nikolaevich (https://belyaev.spb.ru/). 
 Ths library allows to create dynamic calculation model of power energy system and to investigate electromechanical transient processes. 
 All equations are written for the 0qd coordinate system. All parameters and variables, except for time variables, are given in relative units
 Basic componentsm which are used to create new model, are located in package Basic . 
