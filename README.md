@@ -10,7 +10,7 @@ The authors can be contacted by email: andrej.florinskiy@gmail.com.
 
 Licensed by <A. A. Florinskii> under the Modelica License 2
 Copyright © <2002>-<2026>, <A. N. Belyaev>.
-This Modelica package is free software and the use is completely at your own risk; it can be redistributed and/or modified under the terms of the Modelica License 2. For license conditions (including the disclaimer of warranty) see Modelica.UsersGuide.ModelicaLicense2 or visit http://www.modelica.org/licenses/ModelicaLicense2.
+This Modelica package is free software and the use is completely at your own risk; it can be redistributed and/or modified under the terms of the BSD 3-Clause License. For license conditions read LICENSE.txt.
 <img width="1304" height="597" alt="KKT_1" src="https://github.com/user-attachments/assets/3c4c5e1d-bad6-4e01-b7e6-1448b72920b4" />
 
 HOW TO WORK WITH LEPSE
