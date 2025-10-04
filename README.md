@@ -14,7 +14,7 @@ This Modelica package is free software and the use is completely at your own ris
 HOW TO WORK WITH LEPSE
 
 I To start working with LEPSE, firstly you need to determine the values of model element's parameters. All variables are presented in basic per-units (p.u.b.) of measurement - so you need to choose 2 basic values: basic power  and basic voltage , for example: 1000 MVA and 340 kV. 
-The next stage is to calculate values of parameters in p.u.b. with the use of well known formulas. An examples for parameter's conversion from per-units or named units (Om, MVA, MW etc) to basic per-units calculations are presented in Excel-file "Conversion". 
+The next stage is to calculate values of parameters in p.u.b. with the use of well known formulas. An examples for parameter's conversion from per-units or named units (Om, MVA, MW etc) to basic per-units calculations are presented in .xlsx file "Conversion". 
 
 It should be noted that in most cases there is a necessity to equivalent power system grid to simplify dynamic model. In these case several power transmission lines, transformers, generators and loads can be equivalented into one. It is taken into account in "Conversion" file. 
 
