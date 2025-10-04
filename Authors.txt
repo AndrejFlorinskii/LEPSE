@@ -1,0 +1,6 @@
+Library of electric power system elements developers:
+
+* Andrey Nikolaevich Belyaev (St. Petersburg Polytechnic university)
+* Alexey Yurievich Koshlakov (St. Petersburg Polytechnic university)
+* Andrey Alexandrovich Florinskiy (St. Petersburg Polytechnic university)
+* Evgeny Vladimirovich Sorokin (St. Petersburg Polytechnic university)
