@@ -9,7 +9,8 @@ Several examples of different power energy systems are located in package Exampl
 The authors can be contacted by email: andrej.florinskiy@gmail.com.
 
 This Modelica package is free software and the use is completely at your own risk; it can be redistributed and/or modified under the terms of the BSD 3-Clause License. For license conditions read LICENSE.txt.
-<img width="1304" height="597" alt="KKT_1" src="https://github.com/user-attachments/assets/3c4c5e1d-bad6-4e01-b7e6-1448b72920b4" />
+<img width="1435" height="692" alt="KKT_1" src="https://github.com/user-attachments/assets/e4349ab8-0584-4793-a72e-f94521f3de39" />
+
 
 # **HOW TO WORK WITH LEPSE**
 
