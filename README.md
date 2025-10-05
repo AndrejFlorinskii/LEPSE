@@ -3,8 +3,8 @@
 Library of electric power system elements 
 LEPSE is a libary for power enerygy system, developed and maintained by the staff of the Higher School of Electrical Power Systems (https://ie.spbstu.ru/department/vysshaya_shkola_elektroenergeticheskih_sistem/) of the Peter the Great St. Petersburg Polytechnic University (https://www.spbstu.ru/), led by Belyaev Andrey Nikolaevich (https://belyaev.spb.ru/). 
 Ths library allows to create dynamic calculation model of power energy system and to investigate electromechanical transient processes. 
-All equations are written for the 0qd coordinate system. All parameters and variables, except for time variables, are given in relative units
-Basic componentsm which are used to create new model, are located in package Basic . 
+All equations are written for the 0qd coordinate system. All parameters and variables, except for time variables, are given in relative units.
+Basic components which are used to create new model, are located in package Basic. 
 Several examples of different power energy systems are located in package Examples. 
 The authors can be contacted by email: andrej.florinskiy@gmail.com.
 
@@ -32,3 +32,7 @@ To investigate transient processes, certain emergency events are needed. Simple 
 
 # **IV**
 LEPSE allows to investigate different means of increasing dynamic stability. The first of them is the changement of Automatic Voltage Regulator (AVR) control coefficients in Excitation_Regulator model as well as setpoints of field forcing, which is realised by logical_switch implementation in AVR model. The second one is series or parallel electrical breaking, Electrical_Braking and Electrical_Braking_Parallel accordingly, which efficiency depends on their active resistanse value. The third mean is fast turbine valving control or turbine fast valving (defined by T_regOff, T_regOn, Aimp, Timp, dTimp values) as well as automatic speed controller (ASC) parameters changement (Sigma and TauCup). The fourth mean is automatic reclosing, which was mentioned before. Finally, the fifth way to increase dynamic stability is generation or load reduction or disabling. 
+
+# **SUGGESTIONS AND COMMENTS ABOUT LEPSE**
+We are open to any comments and suggestions regarding the improvement of our library. Since it is intended to be used more intensively for the first time for the training of undergraduate students studying in the field of "Electric power engineering and electrical engineering", we strive to make it as simple and clear as possible to use. In case of any questions regarding the library or any errors, we will also be happy to help you! 
+Email for communication: andrej.florinskiy@gmail.com
