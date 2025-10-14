@@ -1,8 +1,6 @@
 within ;
 model three_maschine_scheme
-  Real delta_G1_G2(start=-0.663044810295105),
-                    delta_G1_G3(start=0.36994481086730957),
-                                 delta_G2_G3(start=1.0329896211624146);
+  Real delta_G1_G2(start=-0.663044810295105), delta_G1_G3(start=0.36994481086730957), delta_G2_G3(start=1.0329896211624146) "Mutual angles";
 
   LEPSE.Basic.Transformer T_G1(Rline=0.002886, Xline=0.11)
     annotation (Placement(transformation(extent={{60,60},{80,80}})));
@@ -37,7 +35,7 @@ model three_maschine_scheme
       Placement(transformation(
         extent={{-10,-10},{10,10}},
         rotation=90,
-        origin={14,2})));
+        origin={12,2})));
   LEPSE.Basic.Constant_Conductivity_Load N1(Gn=0.5, Bn=-0.05434)
     annotation (Placement(transformation(extent={{66,-34},{86,-14}})));
   LEPSE.Basic.HVline L6(
@@ -99,26 +97,26 @@ model three_maschine_scheme
     TkzOn=50,
     dTkzOn=0.2)
     annotation (Placement(transformation(extent={{-16,44},{4,64}})));
-  LEPSE.Basic.Electrical_Braking ElBr02(
+  LEPSE.Basic.Electrical_Braking_Series ElBr02(
     Rline=0.2,
     TLineOff=1000,
     dTLineOff=10)
     annotation (Placement(transformation(extent={{96,-64},{116,-44}})));
-  LEPSE.Basic.Electrical_Braking_Parallel ElBrShun02(
+  LEPSE.Basic.Electrical_Braking_Shunt ElBrShun02(
     Rline=0.2,
     TLineOff=1000,
     dTLineOff=10) annotation (Placement(transformation(
         extent={{-10,-10},{10,10}},
         rotation=0,
         origin={50,-76})));
-  LEPSE.Basic.Electrical_Braking ElBr01(
+  LEPSE.Basic.Electrical_Braking_Series ElBr01(
     Rline=0.2,
     TLineOff=1000,
     dTLineOff=10) annotation (Placement(transformation(
         extent={{-10,-10},{10,10}},
         rotation=0,
         origin={104,70})));
-  LEPSE.Basic.Electrical_Braking_Parallel ElBrShunt01(
+  LEPSE.Basic.Electrical_Braking_Shunt ElBrShunt01(
     Rline=0.2,
     TLineOff=1000,
     dTLineOff=10)
@@ -208,52 +206,55 @@ model three_maschine_scheme
                                                           extent={{-17,-17},
             {17,17}},
         origin={153,73})));
-  LEPSE.Basic.Node node_14 annotation (Placement(transformation(extent={{-184,
+  LEPSE.Interfaces.Node node_14 annotation (Placement(transformation(extent={{-184,
             68},{-178,74}}), iconTransformation(extent={{-294,-8},{-274,12}})));
-  LEPSE.Basic.Node node_13 annotation (Placement(transformation(extent={{-138,
+  LEPSE.Interfaces.Node node_13 annotation (Placement(transformation(extent={{-138,
             68},{-132,74}}), iconTransformation(extent={{-294,-14},{-274,6}})));
-  LEPSE.Basic.Node node_15 annotation (Placement(transformation(extent={{-140,
+  LEPSE.Interfaces.Node node_15 annotation (Placement(transformation(extent={{-140,
             16},{-134,22}}), iconTransformation(extent={{-294,-26},{-274,-6}})));
-  LEPSE.Basic.Node node_12 annotation (Placement(transformation(extent={{-86,68},
-            {-80,74}}), iconTransformation(extent={{-294,-20},{-274,0}})));
-  LEPSE.Basic.Node node_10 annotation (Placement(transformation(extent={{-58,34},
-            {-52,40}}), iconTransformation(extent={{-294,-66},{-274,-46}})));
-  LEPSE.Basic.Node node_11 annotation (Placement(transformation(extent={{-58,-16},
-            {-52,-10}}), iconTransformation(extent={{-294,-78},{-274,-58}})));
-  LEPSE.Basic.Node node_7 annotation (Placement(transformation(extent={{8,68},{
-            14,74}}), iconTransformation(extent={{-276,-54},{-256,-34}})));
-  LEPSE.Basic.Node node_16 annotation (Placement(transformation(extent={{8,114},
-            {14,120}}), iconTransformation(extent={{-284,-12},{-264,8}})));
-  LEPSE.Basic.Node node_8 annotation (Placement(transformation(extent={{50,68},
-            {56,74}}), iconTransformation(extent={{-290,-18},{-270,2}})));
-  LEPSE.Basic.Node node_21 annotation (Placement(transformation(extent={{120,68},
-            {126,74}}), iconTransformation(extent={{-278,-14},{-258,6}})));
-  LEPSE.Basic.Node node_9 annotation (Placement(transformation(extent={{82,68},
-            {88,74}}), iconTransformation(extent={{-294,-34},{-274,-14}})));
-  LEPSE.Basic.Node node_5 annotation (Placement(transformation(extent={{10,16},
-            {16,22}}), iconTransformation(extent={{-294,-66},{-274,-46}})));
-  LEPSE.Basic.Node node_4 annotation (Placement(transformation(extent={{10,-16},
-            {16,-10}}), iconTransformation(extent={{-292,-76},{-272,-56}})));
-  LEPSE.Basic.Node node_6 annotation (Placement(transformation(extent={{56,-16},
-            {62,-10}}), iconTransformation(extent={{-292,-78},{-272,-58}})));
-  LEPSE.Basic.Node node_3 annotation (Placement(transformation(extent={{10,-48},
-            {16,-42}}), iconTransformation(extent={{-294,-118},{-274,-98}})));
-  LEPSE.Basic.Node node_2 annotation (Placement(transformation(extent={{46,-56},
-            {52,-50}}), iconTransformation(extent={{-294,-116},{-274,-96}})));
-  LEPSE.Basic.Node node_1 annotation (Placement(transformation(extent={{82,-56},
-            {88,-50}}), iconTransformation(extent={{-292,-118},{-272,-98}})));
-  LEPSE.Basic.Node node_22 annotation (Placement(transformation(extent={{120,-56},
-            {126,-50}}), iconTransformation(extent={{-294,-116},{-274,-96}})));
+  LEPSE.Interfaces.Node node_12 annotation (Placement(transformation(extent={{-86,
+            68},{-80,74}}), iconTransformation(extent={{-294,-20},{-274,0}})));
+  LEPSE.Interfaces.Node node_10 annotation (Placement(transformation(extent={{-58,
+            34},{-52,40}}), iconTransformation(extent={{-294,-66},{-274,-46}})));
+  LEPSE.Interfaces.Node node_11 annotation (Placement(transformation(extent={{-58,
+            -16},{-52,-10}}), iconTransformation(extent={{-294,-78},{-274,-58}})));
+  LEPSE.Interfaces.Node node_7 annotation (Placement(transformation(extent={{8,
+            68},{14,74}}), iconTransformation(extent={{-276,-54},{-256,-34}})));
+  LEPSE.Interfaces.Node node_16 annotation (Placement(transformation(extent={{8,
+            114},{14,120}}), iconTransformation(extent={{-284,-12},{-264,8}})));
+  LEPSE.Interfaces.Node node_8 annotation (Placement(transformation(extent={{50,
+            68},{56,74}}), iconTransformation(extent={{-290,-18},{-270,2}})));
+  LEPSE.Interfaces.Node node_21 annotation (Placement(transformation(extent={{
+            120,68},{126,74}}), iconTransformation(extent={{-278,-14},{-258,6}})));
+  LEPSE.Interfaces.Node node_9 annotation (Placement(transformation(extent={{82,
+            68},{88,74}}), iconTransformation(extent={{-294,-34},{-274,-14}})));
+  LEPSE.Interfaces.Node node_5 annotation (Placement(transformation(extent={{10,
+            16},{16,22}}), iconTransformation(extent={{-294,-66},{-274,-46}})));
+  LEPSE.Interfaces.Node node_4 annotation (Placement(transformation(extent={{10,
+            -16},{16,-10}}), iconTransformation(extent={{-292,-76},{-272,-56}})));
+  LEPSE.Interfaces.Node node_6 annotation (Placement(transformation(extent={{56,
+            -16},{62,-10}}), iconTransformation(extent={{-292,-78},{-272,-58}})));
+  LEPSE.Interfaces.Node node_3 annotation (Placement(transformation(extent={{10,
+            -48},{16,-42}}), iconTransformation(extent={{-294,-118},{-274,-98}})));
+  LEPSE.Interfaces.Node node_2 annotation (Placement(transformation(extent={{46,
+            -56},{52,-50}}), iconTransformation(extent={{-294,-116},{-274,-96}})));
+  LEPSE.Interfaces.Node node_1 annotation (Placement(transformation(extent={{82,
+            -56},{88,-50}}), iconTransformation(extent={{-292,-118},{-272,-98}})));
+  LEPSE.Interfaces.Node node_22 annotation (Placement(transformation(extent={{
+            120,-56},{126,-50}}), iconTransformation(extent={{-294,-116},{-274,
+            -96}})));
 equation
-
+  // the formulas of the derivatives of the angles
   der(delta_G1_G2) = G1.G1.Wc*(G1.G1.s - G2.G2.s);
   der(delta_G1_G3) = G1.G1.Wc*(G1.G1.s - G3.G3.s);
   der(delta_G2_G3) = G1.G1.Wc*(G2.G2.s - G3.G3.s);
 
+  // the equations of the relation of power and mutual angles
   G1.G1.DeltaIJ = 0;
   G2.G2.DeltaIJ = delta_G1_G2;
   G3.G3.DeltaIJ = delta_G1_G3;
 
+  // equating of basis slip to G1 generatot's slip
   G1.G1.Ssys = G1.G1.s;
   G2.G2.Ssys = G1.G1.s;
   G3.G3.Ssys = G1.G1.s;
@@ -284,17 +285,17 @@ protected
           extent={{-10,-10},{10,10}},
           rotation=0,
           origin={-64,20})));
-    LEPSE.Basic.Pin_v2 Stator_pin annotation (Placement(transformation(rotation
-            =0, extent={{-16,14},{-2,28}}), iconTransformation(extent={{2,9},{
-              22,29}})));
+    LEPSE.Interfaces.Pin_v2 Stator_pin annotation (Placement(transformation(
+            rotation=0, extent={{-16,14},{-2,28}}), iconTransformation(extent={
+              {2,9},{22,29}})));
   equation
     connect(G2.dUtr_pin,excitation_Regulator1. dV_pin) annotation (Line(
-        points={{-47.6,29.6},{-47.6,36},{-78,36},{-78,26},{-73.4167,26}},
+        points={{-47.6,29.6},{-47.6,36},{-78,36},{-78,27},{-73.25,27}},
         color={255,255,0},
         thickness=0.5));
     connect(excitation_Regulator1.dV_pin,excitation_Regulator1. dV1_pin)
       annotation (Line(
-        points={{-73.4167,26},{-73.4167,24},{-73.25,24}},
+        points={{-73.25,27},{-73.25,24},{-73.25,24}},
         color={255,255,0},
         thickness=0.5));
     connect(G2.dWu_pin,excitation_Regulator1. dfsys_pin) annotation (Line(
@@ -325,7 +326,7 @@ protected
           coordinateSystem(extent={{-120,-40},{0,80}}), graphics={
           Ellipse(
           extent={{-124,80},{4,-38}},
-          lineColor={28,108,200}),
+          lineColor={0,0,255}),
           Text(extent={{-102,58},{-18,32}},
                                           textString=
                                               "SM"),
@@ -361,16 +362,16 @@ protected
           extent={{-10,-10},{10,10}},
           rotation=0,
           origin={-8,-4})));
-    LEPSE.Basic.Pin_v2 Stator_pin annotation (Placement(transformation(rotation
-            =0, extent={{51,3},{57,9}}), iconTransformation(extent={{47,-7},{58,
-              4}})));
+    LEPSE.Interfaces.Pin_v2 Stator_pin annotation (Placement(transformation(
+            rotation=0, extent={{51,3},{57,9}}), iconTransformation(extent={{47,
+              -7},{58,4}})));
   equation
     connect(G3.dUtr_pin,G3_Regulator. dV_pin) annotation (Line(
-        points={{6.4,3.6},{6.4,12},{-16,12},{-16,2},{-17.4167,2}},
+        points={{6.4,3.6},{6.4,12},{-16,12},{-16,3},{-17.25,3}},
         color={255,255,0},
         thickness=0.5));
     connect(G3_Regulator.dV_pin,G3_Regulator. dV1_pin) annotation (Line(
-        points={{-17.4167,2},{-17.25,2},{-17.25,0}},
+        points={{-17.25,3},{-17.25,3},{-17.25,0}},
         color={255,255,0},
         thickness=0.5));
     connect(G3.dWu_pin,G3_Regulator. dfsys_pin) annotation (Line(
@@ -391,8 +392,8 @@ protected
         color={255,255,0},
         thickness=0.5));
     connect(G3.Ut_pin,G3_Regulator. Ut_pin) annotation (Line(
-        points={{16.2,3.6},{16.2,22},{-26,22},{-26,-20},{-17.1667,-20},{-17.1667,
-            -10.4}},
+        points={{16.2,3.6},{16.2,22},{-26,22},{-26,-20},{-17.1667,-20},{
+            -17.1667,-10.4}},
         color={255,255,0},
         thickness=0.5));
     connect(Stator_pin, G3.Stator_pin) annotation (Line(points={{54,6},{54,-3.8},
@@ -401,7 +402,7 @@ protected
           coordinateSystem(extent={{-30,-30},{30,30}}), graphics={
           Ellipse(
           extent={{-42,38},{48,-42}},
-          lineColor={28,108,200}),
+          lineColor={0,0,255}),
           Text(extent={{-34,28},{36,10}}, textString=
                                               "SM"),
           Text(extent={{-36,8},{40,-8}},  textString=
@@ -438,16 +439,17 @@ protected
           extent={{-10,-10},{10,10}},
           rotation=0,
           origin={38,36})));
-    LEPSE.Basic.Pin_v2 pin_v2_2 annotation (Placement(transformation(extent={{
-              80,36},{84,40}}), iconTransformation(extent={{100,44},{114,58}})));
+    LEPSE.Interfaces.Pin_v2 pin_v2_2 annotation (Placement(transformation(
+            extent={{80,36},{84,40}}), iconTransformation(extent={{100,44},{114,
+              58}})));
   equation
     connect(G1.dUtr_pin,excitation_Regulator. dV_pin) annotation (Line(
-        points={{54.4,45.6},{54.4,52},{24,52},{24,42},{28.5833,42}},
+        points={{54.4,45.6},{54.4,52},{24,52},{24,43},{28.75,43}},
         color={255,255,0},
         thickness=0.5));
     connect(excitation_Regulator.dV_pin,excitation_Regulator. dV1_pin)
       annotation (Line(
-        points={{28.5833,42},{28.75,42},{28.75,40}},
+        points={{28.75,43},{28.75,43},{28.75,40}},
         color={255,255,0},
         thickness=0.5));
     connect(G1.dWu_pin,excitation_Regulator. dfsys_pin) annotation (Line(
@@ -479,7 +481,7 @@ protected
           coordinateSystem(extent={{-40,-40},{120,120}}), graphics={
           Ellipse(
           extent={{-26,110},{102,-8}},
-          lineColor={28,108,200}),
+          lineColor={0,0,255}),
           Text(extent={{-4,88},{80,62}},  textString=
                                               "SM"),
           Text(extent={{-4,54},{80,36}},  textString=
@@ -493,130 +495,145 @@ equation
   connect(G3.Stator_pin, node_14) annotation (Line(points={{-196.5,71.5},{
           -196.5,71},{-181,71}}, color={28,108,200}));
   connect(shortCircuitShunt18.inp, node_14) annotation (Line(points={{-180,
-          50.8},{-181,50.8},{-181,71}}, color={28,108,200}));
+          55.8},{-181,55.8},{-181,71}}, color={28,108,200}));
   connect(node_14, T2_HV.inp)
-    annotation (Line(points={{-181,71},{-169.8,71}}, color={28,108,200}));
+    annotation (Line(points={{-181,71},{-171.8,71}}, color={28,108,200}));
   connect(T2_HV.out, node_13)
-    annotation (Line(points={{-154,71},{-135,71}}, color={28,108,200}));
-  connect(T2_LV.inp, node_13) annotation (Line(points={{-137,51.8},{-136,
-          51.8},{-136,71},{-135,71}}, color={28,108,200}));
+    annotation (Line(points={{-152.2,71},{-135,71}},
+                                                   color={28,108,200}));
+  connect(T2_LV.inp, node_13) annotation (Line(points={{-137,53.8},{-136,
+          53.8},{-136,71},{-135,71}}, color={28,108,200}));
   connect(node_13, T2_MV.inp)
-    annotation (Line(points={{-135,71},{-119.8,71}}, color={28,108,200}));
+    annotation (Line(points={{-135,71},{-121.8,71}}, color={28,108,200}));
   connect(T2_LV.out, node_15)
-    annotation (Line(points={{-137,36},{-137,19}}, color={28,108,200}));
-  connect(N3.inp, node_15) annotation (Line(points={{-136,8.46},{-136,12},{
+    annotation (Line(points={{-137,34.2},{-137,19}},
+                                                   color={28,108,200}));
+  connect(N3.inp, node_15) annotation (Line(points={{-136,9.78},{-136,12},{
           -137,12},{-137,19}}, color={28,108,200}));
   connect(shortCircuitShunt16.inp, node_15) annotation (Line(points={{-152,
-          4.8},{-152,19},{-137,19}}, color={28,108,200}));
+          9.8},{-152,19},{-137,19}}, color={28,108,200}));
   connect(node_12, L3.inp)
-    annotation (Line(points={{-83,71},{-53.6,71}}, color={28,108,200}));
+    annotation (Line(points={{-83,71},{-70,71},{-70,70},{-55.8,70}},
+                                                   color={28,108,200}));
   connect(shortCircuitShunt12.inp, node_12) annotation (Line(points={{-90,
-          83.2},{-90,71},{-83,71}}, color={28,108,200}));
+          78.2},{-90,71},{-83,71}}, color={28,108,200}));
   connect(T2_MV.out, node_12)
-    annotation (Line(points={{-104,71},{-83,71}}, color={28,108,200}));
+    annotation (Line(points={{-102.2,71},{-83,71}},
+                                                  color={28,108,200}));
   connect(node_12, L5.inp) annotation (Line(points={{-83,71},{-90,71},{-90,
-          37},{-81.6,37}}, color={28,108,200}));
-  connect(L5.out, node_10) annotation (Line(points={{-66.2,37.2},{-66.2,37},
-          {-55,37}}, color={28,108,200}));
+          36},{-83.8,36}}, color={28,108,200}));
+  connect(L5.out, node_10) annotation (Line(points={{-64,36},{-64,37},{-55,
+          37}},      color={28,108,200}));
   connect(node_10, L4.inp)
-    annotation (Line(points={{-55,37},{-39.6,37}}, color={28,108,200}));
-  connect(node_10, shortCircuitShunt13.inp) annotation (Line(points={{-55,
-          37},{-54,37},{-54,42},{-64,42},{-64,51.2}}, color={28,108,200}));
+    annotation (Line(points={{-55,37},{-48,37},{-48,36},{-41.8,36}},
+                                                   color={28,108,200}));
+  connect(node_10, shortCircuitShunt13.inp) annotation (Line(points={{-55,37},
+          {-54,37},{-54,42},{-64,42},{-64,46.2}},     color={28,108,200}));
   connect(node_10, T1.out) annotation (Line(points={{-55,37},{-56,37},{-56,
-          24},{-55,24},{-55,18}}, color={28,108,200}));
-  connect(L3.out, node_7) annotation (Line(points={{-38.2,71.2},{-36,71},{
-          11,71}}, color={28,108,200}));
-  connect(shortCircuitShunt.inp, node_7) annotation (Line(points={{-6,58.8},
+          24},{-55,24},{-55,19.8}},
+                                  color={28,108,200}));
+  connect(L3.out, node_7) annotation (Line(points={{-36,70},{-36,71},{11,71}},
+                   color={28,108,200}));
+  connect(shortCircuitShunt.inp, node_7) annotation (Line(points={{-6,63.8},
           {-6,71},{11,71}}, color={28,108,200}));
-  connect(L4.out, node_7) annotation (Line(points={{-24.2,37.2},{-18,37.2},
-          {-18,71},{11,71}}, color={28,108,200}));
+  connect(L4.out, node_7) annotation (Line(points={{-22,36},{-18,36},{-18,
+          71},{11,71}},      color={28,108,200}));
   connect(L1.inp, node_7)
-    annotation (Line(points={{16.4,71},{11,71}}, color={28,108,200}));
-  connect(L6.inp, node_7) annotation (Line(points={{13,49.6},{13,58},{11,58},
+    annotation (Line(points={{14.2,70},{12,70},{12,71},{11,71}},
+                                                 color={28,108,200}));
+  connect(L6.inp, node_7) annotation (Line(points={{12,51.8},{12,58},{11,58},
           {11,71}}, color={28,108,200}));
   connect(T3.inp, node_7)
-    annotation (Line(points={{11,92.2},{11,71}}, color={28,108,200}));
+    annotation (Line(points={{11,90.2},{11,71}}, color={28,108,200}));
   connect(N4.inp, node_16)
-    annotation (Line(points={{-12.54,117},{11,117}}, color={28,108,200}));
+    annotation (Line(points={{-11.22,117},{11,117}}, color={28,108,200}));
   connect(shortCircuitShunt11.inp, node_16) annotation (Line(points={{-6,
-          104.8},{-6,117},{11,117}}, color={28,108,200}));
+          109.8},{-6,117},{11,117}}, color={28,108,200}));
   connect(T3.out, node_16)
-    annotation (Line(points={{11,108},{11,117}}, color={28,108,200}));
+    annotation (Line(points={{11,109.8},{11,117}},
+                                                 color={28,108,200}));
   connect(node_8, T_G1.inp)
-    annotation (Line(points={{53,71},{62.2,71}}, color={28,108,200}));
-  connect(L1.out, node_8) annotation (Line(points={{31.8,71.2},{31.8,71},{
-          53,71}}, color={28,108,200}));
-  connect(shortCircuitShunt10.inp, node_8) annotation (Line(points={{36,
-          54.8},{36,71},{53,71}}, color={28,108,200}));
-  connect(ElBrShunt01.inp, node_8) annotation (Line(points={{52,56.8},{52,
+    annotation (Line(points={{53,71},{60.2,71}}, color={28,108,200}));
+  connect(L1.out, node_8) annotation (Line(points={{34,70},{34,71},{53,71}},
+                   color={28,108,200}));
+  connect(shortCircuitShunt10.inp, node_8) annotation (Line(points={{36,59.8},
+          {36,71},{53,71}},       color={28,108,200}));
+  connect(ElBrShunt01.inp, node_8) annotation (Line(points={{52,57.8},{52,
           71},{53,71}}, color={28,108,200}));
   connect(G1.pin_v2_2, node_21) annotation (Line(points={{138.762,70.6625},{138,
           71},{123,71}},      color={28,108,200}));
   connect(ElBr01.out, node_21)
-    annotation (Line(points={{112.8,71},{123,71}}, color={28,108,200}));
+    annotation (Line(points={{114,68.4},{118,68.4},{118,71},{123,71}},
+                                                   color={28,108,200}));
   connect(shortCircuitShunt8.inp, node_21) annotation (Line(points={{124,
-          56.8},{123,56},{123,71}}, color={28,108,200}));
+          61.8},{123,56},{123,71}}, color={28,108,200}));
   connect(ElBr01.inp,node_9)
-    annotation (Line(points={{95.2,71},{85,71}}, color={28,108,200}));
-  connect(T_G1.out,node_9)  annotation (Line(points={{78,71},{85,71}},
+    annotation (Line(points={{94,68.4},{90,68.4},{90,71},{85,71}},
+                                                 color={28,108,200}));
+  connect(T_G1.out,node_9)  annotation (Line(points={{79.8,71},{85,71}},
                     color={28,108,200}));
   connect(node_9, shortCircuitShunt9.inp) annotation (Line(points={{85,71},
-          {85,61.5},{86,61.5},{86,54.8}}, color={28,108,200}));
+          {85,61.5},{86,61.5},{86,59.8}}, color={28,108,200}));
   connect(shortCircuitShunt7.inp,node_5)  annotation (Line(points={{-10,
-          14.8},{-10,19},{13,19}}, color={28,108,200}));
-  connect(L6.out,node_5)  annotation (Line(points={{13.2,34.2},{13,34.2},{
-          13,19}}, color={28,108,200}));
+          19.8},{-10,19},{13,19}}, color={28,108,200}));
+  connect(L6.out,node_5)  annotation (Line(points={{12,32},{13,32},{13,19}},
+                   color={28,108,200}));
   connect(AT_MV.out,node_5)
-    annotation (Line(points={{13,10},{13,19}}, color={28,108,200}));
+    annotation (Line(points={{11,11.8},{11,14},{13,14},{13,19}},
+                                               color={28,108,200}));
   connect(shortCircuitShunt5.inp,node_4)  annotation (Line(points={{-12,
-          -13.2},{-12,-13},{13,-13}}, color={28,108,200}));
+          -8.2},{-12,-13},{13,-13}},  color={28,108,200}));
   connect(AT_MV.inp,node_4)
-    annotation (Line(points={{13,-5.8},{13,-13}}, color={28,108,200}));
+    annotation (Line(points={{11,-7.8},{11,-10},{13,-10},{13,-13}},
+                                                  color={28,108,200}));
   connect(AT_HV.out,node_4)
-    annotation (Line(points={{13,-20},{13,-13}}, color={28,108,200}));
-  connect(AT_LV.out,node_4)  annotation (Line(points={{30,-13},{13,-13}},
+    annotation (Line(points={{13,-18.2},{13,-13}},
+                                                 color={28,108,200}));
+  connect(AT_LV.out,node_4)  annotation (Line(points={{28.2,-13},{13,-13}},
                  color={28,108,200}));
   connect(AT_LV.inp,node_6)
-    annotation (Line(points={{45.8,-13},{59,-13}}, color={28,108,200}));
+    annotation (Line(points={{47.8,-13},{59,-13}}, color={28,108,200}));
   connect(shortCircuitShunt6.inp,node_6)  annotation (Line(points={{60,
-          -21.2},{59,-21.2},{59,-13}},
+          -16.2},{59,-16.2},{59,-13}},
                                      color={28,108,200}));
-  connect(N1.inp,node_6)  annotation (Line(points={{76,-15.4},{76,-13},{59,
+  connect(N1.inp,node_6)  annotation (Line(points={{76,-14.2},{76,-13},{59,
           -13}}, color={28,108,200}));
-  connect(AT_HV.inp,node_3)  annotation (Line(points={{13,-35.8},{14,-35.8},
+  connect(AT_HV.inp,node_3)  annotation (Line(points={{13,-37.8},{14,-37.8},
           {14,-45},{13,-45}}, color={28,108,200}));
-  connect(L2.inp,node_3)  annotation (Line(points={{20.4,-53},{13,-53},{13,
+  connect(L2.inp,node_3)  annotation (Line(points={{18.2,-54},{13,-54},{13,
           -45}}, color={28,108,200}));
   connect(shortCircuitShunt4.inp,node_3)  annotation (Line(points={{-10,
-          -45.2},{-10,-45},{13,-45}}, color={28,108,200}));
-  connect(T_G2.out,node_1)  annotation (Line(points={{76,-53},{85,-53}},
+          -40.2},{-10,-45},{13,-45}}, color={28,108,200}));
+  connect(T_G2.out,node_1)  annotation (Line(points={{77.8,-53},{85,-53}},
                                    color={28,108,200}));
   connect(shortCircuitShunt2.inp,node_1)  annotation (Line(points={{86,
-          -63.2},{85,-64},{85,-53}},          color={28,108,200}));
+          -58.2},{85,-64},{85,-53}},          color={28,108,200}));
   connect(ElBr02.inp,node_1)
-    annotation (Line(points={{97.2,-53},{85,-53}}, color={28,108,200}));
+    annotation (Line(points={{96,-55.6},{90,-55.6},{90,-53},{85,-53}},
+                                                   color={28,108,200}));
   connect(ElBr02.out, node_22)
-    annotation (Line(points={{114.8,-53},{123,-53}}, color={28,108,200}));
+    annotation (Line(points={{116,-55.6},{120,-55.6},{120,-53},{123,-53}},
+                                                     color={28,108,200}));
   connect(G2.Stator_pin, node_22) annotation (Line(points={{143.4,-52.7833},{
           143.4,-53},{123,-53}},              color={28,108,200}));
   connect(shortCircuitShunt1.inp, node_22) annotation (Line(points={{122,
-          -63.2},{123,-63.2},{123,-53}}, color={28,108,200}));
+          -58.2},{123,-58.2},{123,-53}}, color={28,108,200}));
   connect(node_2, T_G2.inp)
-    annotation (Line(points={{49,-53},{60.2,-53}}, color={28,108,200}));
+    annotation (Line(points={{49,-53},{58.2,-53}}, color={28,108,200}));
   connect(node_2, ElBrShun02.inp) annotation (Line(points={{49,-53},{46,-53},
-          {46,-54},{50,-54},{50,-67.2}}, color={28,108,200}));
-  connect(node_13, shortCircuitShunt17.inp) annotation (Line(points={{-135,
-          71},{-135,60.5},{-154,60.5},{-154,50.8}}, color={28,108,200}));
-  connect(N2.inp, node_11) annotation (Line(points={{-54,-25.54},{-55,
-          -25.54},{-55,-13}}, color={28,108,200}));
+          {46,-54},{50,-54},{50,-66.2}}, color={28,108,200}));
+  connect(node_13, shortCircuitShunt17.inp) annotation (Line(points={{-135,71},
+          {-135,60.5},{-154,60.5},{-154,55.8}},     color={28,108,200}));
+  connect(N2.inp, node_11) annotation (Line(points={{-54,-24.22},{-55,
+          -24.22},{-55,-13}}, color={28,108,200}));
   connect(node_11, T1.inp)
-    annotation (Line(points={{-55,-13},{-55,2.2}}, color={28,108,200}));
-  connect(node_11, shortCircuitShunt15.inp) annotation (Line(points={{-55,
-          -13},{-72,-13},{-72,-29.2}}, color={28,108,200}));
-  connect(node_2, L2.out) annotation (Line(points={{49,-53},{50,-52.8},{
-          35.8,-52.8}}, color={28,108,200}));
+    annotation (Line(points={{-55,-13},{-55,0.2}}, color={28,108,200}));
+  connect(node_11, shortCircuitShunt15.inp) annotation (Line(points={{-55,-13},
+          {-72,-13},{-72,-24.2}},      color={28,108,200}));
+  connect(node_2, L2.out) annotation (Line(points={{49,-53},{50,-54},{38,
+          -54}},        color={28,108,200}));
   connect(node_2, shortCircuitShunt3.inp) annotation (Line(points={{49,-53},
-          {49,-61.5},{36,-61.5},{36,-71.2}}, color={28,108,200}));
+          {49,-61.5},{36,-61.5},{36,-66.2}}, color={28,108,200}));
   annotation (experiment(
       StopTime=80,
       __Dymola_NumberOfIntervals=5000,
@@ -624,76 +641,76 @@ equation
       __Dymola_Algorithm="Dassl"),
     Diagram(coordinateSystem(extent={{-240,-100},{180,140}}), graphics={
         Text(
-          extent={{-190,84},{-172,74}},
-          textColor={28,108,200},
+          extent={{-192,84},{-174,74}},
+          textColor={0,0,255},
           textString="14"),
         Text(
-          extent={{-144,84},{-126,74}},
-          textColor={28,108,200},
+          extent={{-146,84},{-128,74}},
+          textColor={0,0,255},
           textString="13"),
         Text(
-          extent={{-134,24},{-116,14}},
-          textColor={28,108,200},
+          extent={{-136,24},{-118,14}},
+          textColor={0,0,255},
           textString="15"),
         Text(
-          extent={{-90,84},{-72,74}},
-          textColor={28,108,200},
+          extent={{-92,84},{-74,74}},
+          textColor={0,0,255},
           textString="12"),
         Text(
-          extent={{-58,32},{-40,22}},
-          textColor={28,108,200},
+          extent={{-60,32},{-42,22}},
+          textColor={0,0,255},
           textString="10"),
         Text(
-          extent={{-54,-6},{-36,-16}},
-          textColor={28,108,200},
+          extent={{-56,-6},{-38,-16}},
+          textColor={0,0,255},
           textString="11"),
         Text(
-          extent={{14,24},{32,14}},
-          textColor={28,108,200},
+          extent={{12,24},{30,14}},
+          textColor={0,0,255},
           textString="5"),
         Text(
-          extent={{50,4},{68,-6}},
-          textColor={28,108,200},
+          extent={{48,4},{66,-6}},
+          textColor={0,0,255},
           textString="6"),
         Text(
           extent={{-4,-4},{14,-14}},
-          textColor={28,108,200},
+          textColor={0,0,255},
           textString="4"),
         Text(
-          extent={{14,-38},{32,-48}},
-          textColor={28,108,200},
+          extent={{12,-38},{30,-48}},
+          textColor={0,0,255},
           textString="3"),
         Text(
-          extent={{38,-38},{56,-48}},
-          textColor={28,108,200},
+          extent={{36,-38},{54,-48}},
+          textColor={0,0,255},
           textString="2"),
         Text(
-          extent={{78,-38},{96,-48}},
-          textColor={28,108,200},
+          extent={{76,-38},{94,-48}},
+          textColor={0,0,255},
           textString="1"),
         Text(
-          extent={{114,-36},{132,-46}},
-          textColor={28,108,200},
+          extent={{112,-36},{130,-46}},
+          textColor={0,0,255},
           textString="22"),
         Text(
-          extent={{8,84},{26,74}},
-          textColor={28,108,200},
+          extent={{6,84},{24,74}},
+          textColor={0,0,255},
           textString="7"),
         Text(
-          extent={{12,122},{30,112}},
-          textColor={28,108,200},
+          extent={{10,122},{28,112}},
+          textColor={0,0,255},
           textString="16"),
         Text(
-          extent={{38,86},{56,76}},
-          textColor={28,108,200},
+          extent={{36,86},{54,76}},
+          textColor={0,0,255},
           textString="8"),
         Text(
-          extent={{116,86},{134,76}},
-          textColor={28,108,200},
+          extent={{114,86},{132,76}},
+          textColor={0,0,255},
           textString="21"),
         Text(
-          extent={{78,86},{96,76}},
-          textColor={28,108,200},
+          extent={{76,86},{94,76}},
+          textColor={0,0,255},
           textString="9")}),
     Icon(coordinateSystem(extent={{-240,-100},{180,140}}), graphics={
         Ellipse(lineColor = {75,138,73},
@@ -711,11 +728,11 @@ equation
 <p>The main purpose of this scheme is to show and teach the students the main ways to increase the degree of dynamic stability, which can be expressed in limit short circuit time. </p>
 <p>Specifically in this scheme the scenario is as follows:</p>
 <p><b>0 s</b>: start;</p>
-<p><b>50 s</b>: 3-phase short circuit in node_7;</p>
-<p><b>50.2 s</b>: end of short circuit, disconnection of L1;</p>
+<p><b>50 s</b>: three-phase short-circuit in node_7;</p>
+<p><b>50.2 s</b>: end of short-circuit, disconnection of L1;</p>
 <p><b>50.4 s</b>: reduction of the G1 power plant active power generation;</p>
 <p><b>50.5 s</b>: automatic reclosing of L1;</p>
-<p><b>65 s</b>: 3-phase short circuit in node_2;</p>
+<p><b>65 s</b>: three-phase short-circuit in node_2;</p>
 <p><b>65.1 s: </b>start of fast G2&nbsp;turbine&nbsp;valving&nbsp;control;</p>
 <p><b>65.15 s: </b>end of short circuit;</p>
 <p><b>65.3 s</b>: end of G2 fast turbine valving control</p>

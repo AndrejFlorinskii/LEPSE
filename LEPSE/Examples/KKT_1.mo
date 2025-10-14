@@ -269,7 +269,7 @@ model KKT_1
     delta_G53_G01(start=0.21178215742111206),
     delta_G54_G01(start=0.48529040813446045));
 equation
-  connect(T0937.out, node_9) annotation (Line(points={{300,-7},{280,-7},{
+  connect(T0937.out, node_9) annotation (Line(points={{298.2,-7},{280,-7},{
           280,2},{277,2},{277,21}}, color={28,108,200}));
   annotation (experiment(
       StopTime=65,
@@ -2844,10 +2844,10 @@ equation
 <p>All power staions are presented as dynamic equivalents of the totality of their generators. </p>
 <p>Infinite power buses are represented by the G1 generator, which equates the connection with the Leningrad power system. </p>
 <p><b>0 s</b>: start;</p>
-<p><b>40 s: </b>start of 2-phase short circuit in node_7, partial N10 load-off;</p>
-<p><b>40.14 s: </b>end of short circuit, L0709_2 disconnection;</p>
-<p><b>44 s</b>: automatic reclosing of L0709_2; start of the second short circuit in node_7;</p>
-<p><b>44.14 s</b>: end of the second short circuit, L0709_2 second disconnection;</p>
+<p><b>40 s: </b>start of two-phase short-circuit in node_7, partial N10 load-off;</p>
+<p><b>40.14 s: </b>end of short-circuit, L0709_2 disconnection;</p>
+<p><b>44 s</b>: automatic reclosing of L0709_2; start of the second short-circuit in node_7;</p>
+<p><b>44.14 s</b>: end of the second short-circuit, L0709_2 second disconnection;</p>
 <p><b>65 s</b>: end. </p>
 </html>"));
 end KKT_1;

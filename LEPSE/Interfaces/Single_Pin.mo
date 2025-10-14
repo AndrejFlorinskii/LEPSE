@@ -1,6 +1,7 @@
-within ;
+within Interfaces;
 connector Single_Pin
   Real Signal "Connector's signal";
+
   annotation (
     Coordsys(
       extent=[-100, -100; 100, 100],

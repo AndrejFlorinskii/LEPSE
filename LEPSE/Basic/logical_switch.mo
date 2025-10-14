@@ -1,46 +1,55 @@
-within ;
+within Basic;
 model logical_switch
-  parameter Real a1;
-  parameter Real a2;
-  parameter Real a3;
-  parameter Real a4;
-  Real T_force_off;
+  parameter Real a1 "Uforc, Voltage of field forcing input";
+  parameter Real a2 "Udeforc, Voltage of field forcing removing";
+  parameter Real a3 "K0U, Voltage deviation control coefficient";
+  parameter Real a4 "Tforcedelay, Delay of field forcing removing";
+  Real T_force_on "moment of time, when forcing starts";
 
-  LEPSE.Basic.Single_Pin inp1 annotation (
+  LEPSE.Interfaces.Single_Pin inp1 annotation (
     extent=[-94,14; -74,66],
     layer="icon",
-    Placement(transformation(extent={{-96,14},{-76,66}}, rotation=0),
-        iconTransformation(extent={{-96,14},{-76,66}})));
-  LEPSE.Basic.Single_Pin inp2 annotation (
+    Placement(transformation(extent={{-110,8},{-90,60}}, rotation=0),
+        iconTransformation(extent={{-110,8},{-90,60}})));
+  LEPSE.Interfaces.Single_Pin inp2 annotation (
     extent=[-94,-66; -74,-14],
     layer="icon",
-    Placement(transformation(extent={{-96,-54},{-76,-2}}, rotation=0),
-        iconTransformation(extent={{-96,-54},{-76,-2}})));
-  LEPSE.Basic.Single_Pin inp2inf annotation (
+    Placement(transformation(extent={{-110,-62},{-90,-10}},
+                                                          rotation=0),
+        iconTransformation(extent={{-110,-62},{-90,-10}})));
+  LEPSE.Interfaces.Single_Pin inp2inf annotation (
     extent=[-94,-66; -74,-14],
     layer="icon",
     Placement(transformation(
         extent={{-10,-26},{10,26}},
         rotation=90,
-        origin={0,-106}), iconTransformation(
+        origin={2,-118}), iconTransformation(
         extent={{-10,-26},{10,26}},
         rotation=90,
-        origin={0,-106})));
-  LEPSE.Basic.Single_Pin out annotation (
+        origin={2,-118})));
+  LEPSE.Interfaces.Single_Pin out annotation (
     extent=[74,-26; 94,26],
     layer="icon",
-    Placement(transformation(extent={{74,-26},{94,26}}, rotation=0)));
-  LEPSE.Basic.Single_Pin inp1inf annotation (Placement(transformation(extent={{
-            -26,88},{24,108}}), iconTransformation(extent={{-26,88},{24,108}})));
+    Placement(transformation(extent={{90,-34},{110,18}},rotation=0),
+        iconTransformation(extent={{90,-34},{110,18}})));
+  LEPSE.Interfaces.Single_Pin inp1inf annotation (Placement(transformation(
+          extent={{-24,110},{26,130}}), iconTransformation(extent={{-24,110},{
+            26,130}})));
+
 initial equation
-  pre(T_force_off) = 0;
+  pre(T_force_on) = 0;
+
+  // the condition of forcing's start
 equation
   when abs(inp1inf.Signal) < (inp2inf.Signal - a2) then
-    T_force_off = time;
+    T_force_on = time;
   end when;
-  out.Signal =if (abs(inp1inf.Signal) > (inp2inf.Signal - a1)) then (inp1.Signal)
+
+  // the value of output signal
+  out.Signal = if (abs(inp1inf.Signal) > (inp2inf.Signal - a1)) then (inp1.Signal)
      else (if (abs(inp1inf.Signal) > (inp2inf.Signal - a2)) then (inp1.Signal)
-     else (if (time < T_force_off + a4) then (inp1.Signal) else (inp2.Signal)));
+     else (if (time < T_force_on + a4) then (inp1.Signal) else (inp2.Signal)));
+
   annotation (
     Coordsys(
       extent=[-100, -100; 100, 100],
@@ -55,53 +64,53 @@ equation
         initialScale=0),
       graphics={
         Rectangle(
-          extent={{-60,80},{60,-80}},
+          extent={{-58,74},{62,-86}},
           lineColor={0,0,255},
-          lineThickness=0.5,
-          fillPattern=FillPattern.Solid,
+          lineThickness=1,
+          fillPattern=FillPattern.Forward,
           fillColor={244,125,35}),
         Line(
-          points={{-52,40},{-80,40}},
-          color={28,108,200},
-          thickness=0.5),
+          points={{-46,34},{-94,34}},
+          color={0,0,255},
+          thickness=1),
         Line(
-          points={{-50,-28},{-78,-28}},
-          color={28,108,200},
-          thickness=0.5),
+          points={{-48,-34},{-94,-34}},
+          color={0,0,255},
+          thickness=1),
         Line(
-          points={{76,0},{42,0}},
-          color={28,108,200},
-          thickness=0.5),
+          points={{98,-6},{44,-6}},
+          color={0,0,255},
+          thickness=1),
         Line(
           points={{-162,80}},
           color={162,29,33},
           thickness=1,
           smooth=Smooth.Bezier),
         Line(
-          points={{-8,0},{-48,40}},
+          points={{-6,-6},{-46,34}},
           color={0,0,255},
-          thickness=0.5),
+          thickness=1),
         Line(
-          points={{14,0},{-8,0}},
+          points={{16,-6},{-6,-6}},
           color={28,108,200},
-          thickness=0.5),
+          thickness=1),
         Line(
-          points={{48,0},{14,0}},
-          color={28,108,200},
-          thickness=0.5),
-        Text(extent={{-158,-112},{162,-152}},
-                                          textString=
-                                              "%name"),
+          points={{50,-6},{16,-6}},
+          color={0,0,255},
+          thickness=1),
+        Text(extent={{-158,176},{162,136}},
+          textColor={0,0,0},
+          textString="%name"),
         Line(
-          points={{10,6},{-8,6}},
-          color={28,108,200},
-          thickness=0.5,
-          origin={6,-90},
+          points={{10,6},{-16,6}},
+          color={0,0,255},
+          thickness=1,
+          origin={8,-96},
           rotation=90),
         Line(
-          points={{0,90},{0,80}},
-          color={28,108,200},
-          thickness=0.5)},
+          points={{0,118},{0,74}},
+          color={0,0,255},
+          thickness=1)},
       Rectangle(extent=[-60, 80; 60, -80], style(
           color=73,
           thickness=2,

@@ -1,4 +1,4 @@
-within ;
+within UsersGuide;
 partial class Contact "Icon for contact information"
 
   annotation (Icon(coordinateSystem(preserveAspectRatio=false, extent={{-100,
@@ -27,7 +27,7 @@ partial class Contact "Icon for contact information"
 <p><br><b>Alexey Yurievich Koshlakov</b></p>
 <p>Graduate student</p>
 <p>email: koshlakov.aleksei@gmail.com</p>
-<p><br><b><a href=\"https://web.telegram.org/k/#@Florida_la_Vella\">Andrey Alexandrovich Florinsky</a></b></p>
+<p><br><b><a href=\"https://web.telegram.org/k/#@Florida_la_Vella\">Andrey Alexandrovich Florinskiy</a></b></p>
 <p>Graduate student</p>
 <p>email: andrej.florinskiy@gmail.com</p>
 <p><br><b>Evgeny Vladimirovich Sorokin</b></p>

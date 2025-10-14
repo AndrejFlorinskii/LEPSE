@@ -1,18 +1,22 @@
-within ;
+within Basic;
 model Summator
-  LEPSE.Basic.Single_Pin inp1 annotation (
+  LEPSE.Interfaces.Single_Pin inp1 annotation (
     extent=[-94,14; -74,66],
     layer="icon",
-    Placement(transformation(extent={{-94,14},{-74,66}}, rotation=0)));
-  LEPSE.Basic.Single_Pin inp2 annotation (
+    Placement(transformation(extent={{-110,16},{-90,68}},rotation=0),
+        iconTransformation(extent={{-110,16},{-90,68}})));
+  LEPSE.Interfaces.Single_Pin inp2 annotation (
     extent=[-94,-66; -74,-14],
     layer="icon",
-    Placement(transformation(extent={{-94,-66},{-74,-14}}, rotation=0)));
-  LEPSE.Basic.Single_Pin out annotation (
+    Placement(transformation(extent={{-110,-66},{-90,-14}},rotation=0),
+        iconTransformation(extent={{-110,-66},{-90,-14}})));
+  LEPSE.Interfaces.Single_Pin out annotation (
     extent=[74,-26; 94,26],
     layer="icon",
-    Placement(transformation(extent={{74,-26},{94,26}}, rotation=0)));
+    Placement(transformation(extent={{90,-26},{110,26}},rotation=0),
+        iconTransformation(extent={{90,-26},{110,26}})));
 equation
+  // the sum of 2 input signals
   out.Signal = inp1.Signal + inp2.Signal;
   annotation (
     Coordsys(
@@ -30,41 +34,45 @@ equation
         Rectangle(
           extent={{-60,80},{60,-80}},
           lineColor={0,0,255},
-          lineThickness=0.5,
+          lineThickness=1,
           fillColor={255,255,255},
           fillPattern=FillPattern.Forward),
         Line(
-          points={{-60,40},{-76,40}},
-          color={28,108,200},
-          thickness=0.5),
+          points={{-60,40},{-94,40}},
+          color={0,0,255},
+          thickness=1),
         Line(
-          points={{-60,-40},{-76,-40}},
-          color={28,108,200},
-          thickness=0.5),
+          points={{-60,-40},{-96,-40}},
+          color={0,0,255},
+          thickness=1),
         Line(
-          points={{76,0},{60,0}},
-          color={28,108,200},
-          thickness=0.5),
+          points={{96,0},{60,0}},
+          color={0,0,255},
+          thickness=1),
         Rectangle(
           extent={{-50,42},{-14,38}},
           lineColor={28,108,200},
           fillColor={0,0,0},
-          fillPattern=FillPattern.Solid),
+          fillPattern=FillPattern.Solid,
+          lineThickness=1),
         Rectangle(
           extent={{-34,60},{-30,20}},
           lineColor={28,108,200},
           fillColor={0,0,0},
-          fillPattern=FillPattern.Solid),
+          fillPattern=FillPattern.Solid,
+          lineThickness=1),
         Rectangle(
           extent={{-34,-20},{-30,-60}},
           lineColor={28,108,200},
           fillColor={0,0,0},
-          fillPattern=FillPattern.Solid),
+          fillPattern=FillPattern.Solid,
+          lineThickness=1),
         Rectangle(
           extent={{-50,-38},{-14,-42}},
           lineColor={28,108,200},
           fillColor={0,0,0},
-          fillPattern=FillPattern.Solid)},
+          fillPattern=FillPattern.Solid,
+          lineThickness=1)},
       Rectangle(extent=[-60, 80; 60, -80], style(
           color=73,
           thickness=2,

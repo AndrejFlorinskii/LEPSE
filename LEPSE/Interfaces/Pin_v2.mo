@@ -1,12 +1,13 @@
-within ;
-connector Node
+within Interfaces;
+connector Pin_v2
   Real Vd "Potential Vd";
   Real Vq "Potential Vq";
   flow Real Id "Current Id";
   flow Real Iq "Current Iq";
+
   annotation (
     Coordsys(
-      extent=[-30, -30; 30, 30],
+      extent=[-100, -100; 100, 100],
       grid=[2, 2],
       component=[20, 20]),
     Window(
@@ -21,13 +22,13 @@ connector Node
         extent={{-100,-100},{100,100}},
         grid={2,2},
         initialScale=0),
-      graphics={Ellipse(
-          extent={{-20,20},{20,-20}},
+      graphics={Rectangle(
+          extent={{-80,80},{80,-80}},
           lineColor={28,108,200},
           fillColor={0,0,0},
           fillPattern=FillPattern.Solid)},
-         Rectangle(extent=[-30, 30; 30, -30], style(fillColor=0))),
+         Rectangle(extent=[-80, 80; 80, -80], style(fillColor=0))),
     Documentation(info="<html>
-<p>Node Model</p>
+<p>The model of the basic connector for power signals</p>
 </html>"));
-end Node;
+end Pin_v2;

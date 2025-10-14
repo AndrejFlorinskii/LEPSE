@@ -1,9 +1,2023 @@
 ﻿package LEPSE
 
+  package UsersGuide
+    partial class Implementation_Notes "Icon for general information packages"
+
+      annotation (Icon(coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},{100,100}}), graphics={
+            Ellipse(
+              lineColor={75,138,73},
+              fillColor={75,138,73},
+              pattern=LinePattern.None,
+              fillPattern=FillPattern.Solid,
+              extent={{-100.0,-100.0},{100.0,100.0}}),
+            Polygon(origin={-4.167,-15.0},
+              fillColor={255,255,255},
+              pattern=LinePattern.None,
+              fillPattern=FillPattern.Solid,
+              points={{-15.833,20.0},{-15.833,30.0},{14.167,40.0},{24.167,20.0},{4.167,-30.0},{14.167,-30.0},{24.167,-30.0},{24.167,-40.0},{-5.833,-50.0},{-15.833,-30.0},{4.167,20.0},{-5.833,20.0}},
+              smooth=Smooth.Bezier),
+            Ellipse(origin={7.5,56.5},
+              fillColor={255,255,255},
+              pattern=LinePattern.None,
+              fillPattern=FillPattern.Solid,
+              extent={{-12.5,-12.5},{12.5,12.5}})}),
+                                Documentation(info="<html>
+<p><b><span style=\"font-size: 14pt;\">I</span></b> To start working with LEPSE, firstly you need to determine the values of model element&apos;s parameters. All variables are presented in <u>basic per-units (p.u.b.)</u> of measurement - so you need to choose 2 basic values: <u>basic power</u> <img src=\"modelica://LEPSE/Resources/Images/equations/equation-FeYcnqqd.png\" alt=\"S_b\"/> and <u>basic voltage</u> <img src=\"modelica://LEPSE/Resources/Images/equations/equation-D8td36AH.png\" alt=\"V_b\"/>, for example: 1000 MVA and 340 kV. </p>
+<p>The next stage is to calculate values of parameters in p.u.b. with the use of well known formulas. Here are examples of some parameter&apos;s conversion from per-units or named units (Om, MVA, MW etc) to basic per-units. An example for all parameter&apos;s calculations is presented in Excel-file <u>&quot;Conversion&quot;</u>. </p>
+<p><img src=\"modelica://LEPSE/Resources/Images/equations/equation-dr3voxwu.png\" alt=\"x_gi*(p.u.b) = x_gi*(p.u)*(S_b/S_gnom)\"/> - reactivity of <a href=\"LEPSE.Basic.Synch_Machine\">synchronous generator</a> (xd, xq, x&apos;d, etc);</p>
+<p><img src=\"modelica://LEPSE/Resources/Images/equations/equation-kOibRTuo.png\" alt=\"x_t*(p.u.b) = U_k/100*(S_b/S_tnom)\"/> - reactivity of <a href=\"LEPSE.Basic.Transformer\">transformer</a>;</p>
+<p><img src=\"modelica://LEPSE/Resources/Images/equations/equation-tFJiCHqd.png\" alt=\"x_l*(p.u.b) = x_l*(Om/km)*(S_b/U_l^(2))\"/> - reactivity of<a href=\"LEPSE.Basic.HVline\"> power transmission line</a>;</p>
+<p><img src=\"modelica://LEPSE/Resources/Images/equations/equation-oUzfYkLk.png\" alt=\"x_s*(p.u.b) = S_b/S_sc\"/> - reactivity of external power system;</p>
+<p><img src=\"modelica://LEPSE/Resources/Images/equations/equation-wATMxsVf.png\" alt=\"x_r*(p.u.b) = U_l/(sqrt(3)*I_n)\"/> - reactivity of shunt reactor;</p>
+<p><img src=\"modelica://LEPSE/Resources/Images/equations/equation-4dqk9xKf.png\" alt=\"b_l*(p.u.b) = S_nom*cosfi_nom/U_nom^(2)\"/> - reactive conductivity of <a href=\"LEPSE.Basic.Constant_Conductivity_Load\">load</a>. </p>
+<p>All the active resistances in basic per-units can be calculated in th same way, except resistances of field and damper windings, which can be calculeted dy the formulas below. </p>
+<p><img src=\"modelica://LEPSE/Resources/Images/equations/equation-NaoPjEUw.png\" alt=\"r_f*(p.u.b) = x_f/(w*T_f)\"/></p>
+<p>It should be noted that in most cases there is a necessity to equivalent power system grid to simplify dynamic model. In these case several power transmission lines, transformers, generators and loads can be equivalented into one. It is taken into account in &quot;Conversion&quot; file. </p>
+<p><br><b><span style=\"font-size: 14pt;\">II </span></b>Every scheme needs<u> infinite bus</u> - &quot;big&quot; equivalent generator. It&apos;s parameters can be easily calculated using the same method as for a conventional generator. The defining initial parameter for this calculation is the <u>total short-circuit power </u><img src=\"modelica://LEPSE/Resources/Images/equations/equation-oARCSbtz.png\" alt=\"S_sc\"/>, which defines the total power of external system and is determined by the following formula:</p>
+<p><img src=\"modelica://LEPSE/Resources/Images/equations/equation-evhM4fRH.png\" alt=\"S_sc = sqrt(3)*I_sc * U_line\"/>, </p>
+<p>where I<span style=\"font-size: 6pt;\">sc </span>- nominal short-circuit cut-off current; U<span style=\"font-size: 6pt;\">line</span> - nominal phase-to-phase voltage of the line. If there are several lines of communication with the external power system, the short-circuit power is determined by summing the calculated S<span style=\"font-size: 6pt;\">sc</span> value for each line. </p>
+<p>Then the infinite bus is equivalent to the number of generators required to provide the total short-circuit power. It is normal, for example, if infinite bus is equivalent to 50 generators of 500 MVA nominal power. </p>
+<p>To get quasi-steady-state condition, you need to manually set a dummy load at the infinite power bus connection point so that the power system maintains a <u>balance between generation and consumption</u>. This balance can be easily monitored by the <u>slip value s</u> of the equivalent generator of the external power system - ideally, it must be near zero. </p>
+<p><br><b><span style=\"font-size: 14pt;\">III </span></b>To investigate transient processes, certain emergency events are needed. Simple switching off (on) is specified by three parameters - <u>time of the element&apos;s shutdown</u> (<span style=\"font-family: Courier New;\">TLineOff, TtOff etc</span>), <u>duration of shutdown</u> (dTLineOff, dTtOff etc) and the <u>degree of its shutdown</u> (<span style=\"font-family: Courier New;\">Koff</span>) . The latter means either the shutdown of a part of the generation/load, or the shutdown of one circuit or one transformer of the equivalent power line and equivalent transformer, respectively. In real power energy systems the main reason of emergency shutdown is <u>short circui</u>t, which is simulated by <a href=\"LEPSE.Basic.ShortCircuitShunt\">ShortCircuitShunt</a> switching on. There are 4 main parameters of ShortCircuitShunt: reactive, active conductivity of short sircuit, time of its start and duration. The fifth parameter, total conductvity of short circuit, is useful, when you need to save the same degree of voltage drop duiring short circuit, varying the ratio between its active and reactive components. To simulate repeated short circuit, you need another ShortCircuitShunt model. The second power transmission line shutdown after its automatic reclosing can be simulated with the help of <span style=\"font-family: Courier New;\">TLineOff_1, dTLineOff_1 </span>and<span style=\"font-family: Courier New;\"> Koff_1 </span>parameters. </p>
+<p><br><b><span style=\"font-size: 14pt;\">IV </span></b>LEPSE allows to investigate different means of increasing dynamic stability. The first of them is the changement of <u>Automatic Voltage Regulator</u> (AVR) control coefficients in <a href=\"LEPSE.Basic.Excitation_Regulator\">Excitation_Regulator</a> model as well as setpoints of field forcing, which is realised by<a href=\"LEPSE.Basic.logical_switch\"> logical_switch</a> implementation in AVR model. The second one is series or parallel <u>electrical breaking</u>, <a href=\"LEPSE.Basic.Electrical_Braking\">Electrical_Braking</a> and <a href=\"LEPSE.Basic.Electrical_Braking_Parallel\">Electrical_Braking_Parallel</a> accordingly, which efficiency depends on their active resistanse value. The third mean is fast&nbsp;turbine&nbsp;valving&nbsp;control or <u>turbine fast valving</u> (defined by <span style=\"font-family: Courier New;\">T_regOff</span>, <span style=\"font-family: Courier New;\">T_regOn</span>, <span style=\"font-family: Courier New;\">Aimp</span>, <span style=\"font-family: Courier New;\">Timp</span>, <span style=\"font-family: Courier New;\">dTimp</span> values) as well as <u>automatic speed controller</u> (ASC) parameters changement (<span style=\"font-family: Courier New;\">Sigma and TauCup</span>). The fourth mean is <u>automatic reclosing</u>, which was mentioned before. Finally, the fifth way to increase dynamic stability is generation or load <u>reduction</u> or <u>disabling. </u></p>
+</html>"));
+    end Implementation_Notes;
+
+    partial class Contact "Icon for contact information"
+
+      annotation (Icon(coordinateSystem(preserveAspectRatio=false, extent={{-100,
+                -100},{100,100}}), graphics={
+            Rectangle(
+              extent={{-100,70},{100,-72}},
+              fillColor={235,235,235},
+              fillPattern=FillPattern.Solid),
+            Polygon(
+              points={{-100,-72},{100,-72},{0,20},{-100,-72}},
+              fillColor={215,215,215},
+              fillPattern=FillPattern.Solid),
+            Polygon(
+              points={{22,0},{100,70},{100,-72},{22,0}},
+              fillColor={235,235,235},
+              fillPattern=FillPattern.Solid),
+            Polygon(
+              points={{-100,70},{100,70},{0,-20},{-100,70}},
+              fillColor={241,241,241},
+              fillPattern=FillPattern.Solid)}),
+                                Documentation(info="<html>
+<p>LEPSE is developed by many people, who works or studies in St. Petersburg Polytechnic university. This page shows the active members. </p>
+<p><br><b><a href=\"http://belyaev.spb.ru/\">Andrey Nikolaevich Belyaev</a></b></p>
+<p>Professor</p>
+<p>email: andreybelyaev@yandex.ru</p>
+<p><br><b>Alexey Yurievich Koshlakov</b></p>
+<p>Graduate student</p>
+<p>email: koshlakov.aleksei@gmail.com</p>
+<p><br><b><a href=\"https://web.telegram.org/k/#@Florida_la_Vella\">Andrey Alexandrovich Florinskiy</a></b></p>
+<p>Graduate student</p>
+<p>email: andrej.florinskiy@gmail.com</p>
+<p><br><b>Evgeny Vladimirovich Sorokin</b></p>
+<p>Docent</p>
+<p>email: sorokin_ev@spbstu.ru</p>
+</html>"));
+    end Contact;
+
+    model License
+      annotation (
+        Icon(coordinateSystem(preserveAspectRatio=false)),
+        Diagram(coordinateSystem(preserveAspectRatio=false)),
+        Documentation(info="<html>
+<p>BSD 3-Clause License</p>
+<p><br>Copyright (c) 2002-2025, A.N. Belyaev</p>
+<p>All rights reserved.</p>
+<p><br>Redistribution and use in source and binary forms, with or without</p>
+<p>modification, are permitted provided that the following conditions are met:</p>
+<p><br>* Redistributions of source code must retain the above copyright notice, this</p>
+<p>  list of conditions and the following disclaimer.</p>
+<p><br>* Redistributions in binary form must reproduce the above copyright notice,</p>
+<p>  this list of conditions and the following disclaimer in the documentation</p>
+<p>  and/or other materials provided with the distribution.</p>
+<p><br>* Neither the name of the copyright holder nor the names of its</p>
+<p>  contributors may be used to endorse or promote products derived from</p>
+<p>  this software without specific prior written permission.</p>
+<p><br>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot;</p>
+<p>AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE</p>
+<p>IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</p>
+<p>DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE</p>
+<p>FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL</p>
+<p>DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR</p>
+<p>SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER</p>
+<p>CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,</p>
+<p>OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE</p>
+<p>OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
+</html>"));
+    end License;
+    annotation (Icon(graphics={Bitmap(extent={{-94,-98},{94,100}}, fileName=
+                "modelica://LEPSE/Images/Info_Simple_bw.svg.png")}));
+  end UsersGuide;
+
+  package Interfaces
+    connector Pin_v2
+      Real Vd "Potential Vd";
+      Real Vq "Potential Vq";
+      flow Real Id "Current Id";
+      flow Real Iq "Current Iq";
+
+      annotation (
+        Coordsys(
+          extent=[-100, -100; 100, 100],
+          grid=[2, 2],
+          component=[20, 20]),
+        Window(
+          x=0.26,
+          y=0.25,
+          width=0.6,
+          height=0.6),
+        Icon(
+          coordinateSystem(
+            preserveAspectRatio=false,
+            preserveOrientation=false,
+            extent={{-100,-100},{100,100}},
+            grid={2,2},
+            initialScale=0),
+          graphics={Rectangle(
+              extent={{-80,80},{80,-80}},
+              lineColor={28,108,200},
+              fillColor={0,0,0},
+              fillPattern=FillPattern.Solid)},
+             Rectangle(extent=[-80, 80; 80, -80], style(fillColor=0))),
+        Documentation(info="<html>
+<p>The model of the basic connector for power signals</p>
+</html>"));
+    end Pin_v2;
+
+    connector Single_Pin
+      Real Signal "Connector's signal";
+
+      annotation (
+        Coordsys(
+          extent=[-100, -100; 100, 100],
+          grid=[2, 2],
+          component=[20, 20]),
+        Icon(
+          coordinateSystem(
+            preserveAspectRatio=false,
+            preserveOrientation=false,
+            extent={{-100,-100},{100,100}},
+            grid={2,2},
+            initialScale=0),
+          graphics={Rectangle(
+              extent={{-80,80},{80,-80}},
+              lineColor={255,255,0},
+              lineThickness=0.5,
+              fillColor={255,127,0},
+              fillPattern=FillPattern.CrossDiag)},
+             Rectangle(extent=[-80, 80; 80, -80], style(
+              color=49,
+              thickness=2,
+              fillColor=45,
+              fillPattern=10))),
+        Window(
+          x=0.3,
+          y=0.2,
+          width=0.6,
+          height=0.6),
+        Documentation(info="<html>
+<p>The model of the basic connector for measuring signals</p>
+</html>"));
+    end Single_Pin;
+
+    connector Node
+      Real Vd "Potential Vd";
+      Real Vq "Potential Vq";
+      flow Real Id "Current Id";
+      flow Real Iq "Current Iq";
+
+      annotation (
+        Coordsys(
+          extent=[-30, -30; 30, 30],
+          grid=[2, 2],
+          component=[20, 20]),
+        Window(
+          x=0.26,
+          y=0.25,
+          width=0.6,
+          height=0.6),
+        Icon(
+          coordinateSystem(
+            preserveAspectRatio=false,
+            preserveOrientation=false,
+            extent={{-100,-100},{100,100}},
+            grid={2,2},
+            initialScale=0),
+          graphics={Ellipse(
+              extent={{-20,20},{20,-20}},
+              lineColor={28,108,200},
+              fillColor={0,0,0},
+              fillPattern=FillPattern.Solid), Text(
+              extent={{-86,-10},{80,-74}},
+              textColor={0,0,0},
+              textString=String(Vd^(2) + Vq^(2)))},
+             Rectangle(extent=[-30, 30; 30, -30], style(fillColor=0))),
+        Documentation(info="<html>
+<p>Node Model, which is equivalent to station or substation buses</p>
+</html>"));
+    end Node;
+    annotation (Icon(graphics={Bitmap(extent={{-120,-104},{122,102}}, fileName=
+                "modelica://LEPSE/Images/Connector.png")}));
+  end Interfaces;
+
+  package Basic
+    model HVline
+      parameter Real Rline=0.01 "Active resistance of Pi-model";
+      parameter Real Xline=0.1 "Reactance of Pi-model";
+      parameter Real Bline1=0 "Reactive conductivity of Pi-model beginning";
+      parameter Real Bline2=0 "Reactive conductivity of Pi-model end";
+      //---------------------------------------------
+      parameter Real TLineOff=1000 "Time of line disconnection";
+      parameter Real dTLineOff=10 "Duration of line disconnection";
+      parameter Real Koff=2 "Degree of line disconnection";
+      parameter Real TLineOff_1=2000 "Time of line second disconnection";
+      parameter Real dTLineOff_1=20 "Duration of line second disconnection";
+      parameter Real Koff_1=4 "Degree of line second disconnection";
+      //---------------------------------------------
+
+      Real U1d "D-axis voltage at the beginning of HVline";
+      Real U1q "Q-axis voltage at the beginning of HVline";
+      Real U2d "D-axis voltage at the end of HVline";
+      Real U2q "Q-axis voltage at the end of HVline";
+      Real I12d "D-axis current in the middle of HVline";
+      Real I12q "Q-axis current in the middle of HVline";
+      Real I12m "Full current in the middle of HVline";
+      Real U1m "Full voltage at the beginning of HVline";
+      Real U2m "Full voltage at the end of HVline";
+
+      flow Real I1d "D-axis current at the beginning of HVline";
+      flow Real I1q "Q-axis current at the beginning of HVline";
+      flow Real I2d "D-axis current at the end of HVline";
+      flow Real I2q "Q-axis current at the end of HVline";
+
+      Real Idc1 "D-axis capacitive current at the beginning of HVline";
+      Real Iqc1 "Q-axis capacitive current at the beginning of HVline";
+      Real Idc2 "D-axis capacitive current at the end of HVline";
+      Real Iqc2 "Q-axis capacitive current at the end of HVline";
+      Real DU1 "angle at the beginning of HVline";
+      Real DU2 "angle at the end of HVline";
+      Real P1 "active power at the beginning of HVline";
+      Real Q1 "reactive power at the beginning of HVline";
+      Real P2 "active power at the end of HVline";
+      Real Q2 "reactive power at the end of HVline";
+      Real RL "actual active resistance of HVline";
+      Real XL "actual reactive resistance of HVline";
+      Real BL1 "capacitive conductivity at the beginning of HVline";
+      Real BL2 "capacitive conductivity at the end of HVline";
+
+      LEPSE.Interfaces.Pin_v2 inp annotation (extent=[-86,40; -66,60],
+          Placement(transformation(extent={{-108,30},{-88,50}},rotation=0),
+            iconTransformation(extent={{-108,30},{-88,50}})));
+      LEPSE.Interfaces.Pin_v2 out annotation (extent=[68,42; 88,62], Placement(
+            transformation(extent={{90,30},{110,50}},rotation=0),
+            iconTransformation(extent={{90,30},{110,50}})));
+    equation
+      // the algorithm of triping transmission line
+      RL = if (time >= TLineOff and time < TLineOff + dTLineOff) then (Koff*Rline)
+        else (if (time >= TLineOff_1 and time < TLineOff_1 + dTLineOff_1) then (Koff_1*Rline) else (Rline));
+      XL = if (time >= TLineOff and time < TLineOff + dTLineOff) then (Koff*Xline)
+        else (if (time >= TLineOff_1 and time < TLineOff_1 + dTLineOff_1) then (Koff_1*Xline) else (Xline));
+      BL1 = if (time >= TLineOff and time < TLineOff + dTLineOff) then (Bline1/Koff)
+        else (if (time >= TLineOff_1 and time < TLineOff_1 + dTLineOff_1) then (Bline1/Koff_1) else (Bline1));
+      BL2 = if (time >= TLineOff and time < TLineOff + dTLineOff) then (Bline2/Koff)
+        else (if (time >= TLineOff_1 and time < TLineOff_1 + dTLineOff_1) then (Bline2/Koff_1) else (Bline2));
+
+      // series impedance between nodes
+      U1q = U2q + RL*I12q - XL*I12d;
+      U1d = U2d + RL*I12d + XL*I12q;
+
+      // line capacitances
+      Idc1 = U1q*BL1;
+      Iqc1 = -U1d*BL1;
+      Idc2 = U2q*BL2;
+      Iqc2 = -U2d*BL2;
+
+      // balance of current
+      I1d = Idc1 + I12d;
+      I1q = Iqc1 + I12q;
+      I12d = Idc2 + I2d;
+      I12q = Iqc2 + I2q;
+
+      // measurements
+      I12m = sqrt(I12d^2 + I12q^2);
+      U1m = sqrt(U1d^2 + U1q^2);
+      U2m = sqrt(U2d^2 + U2q^2);
+      DU1 = atan2(U1d, U1q);
+      DU2 = atan2(U2d, U2q);
+
+      // powers
+      P1 = U1q*I1q + U1d*I1d;
+      Q1 = -U1q*I1d + U1d*I1q;
+      P2 = U2q*I2q + U2d*I2d;
+      Q2 = -U2q*I2d + U2d*I2q;
+
+      //---connector1---
+      inp.Vd = U1d;
+      inp.Vq = U1q;
+      inp.Id = -I1d;
+      inp.Iq = -I1q;
+
+      ////---connector2---
+      out.Vd = U2d;
+      out.Vq = U2q;
+      out.Id = I2d;
+      out.Iq = I2q;
+
+      annotation (
+        Coordsys(
+          extent=[-100, -100; 100, 100],
+          grid=[2, 2],
+          component=[20, 20]),
+        Window(
+          x=0.13,
+          y=0.17,
+          width=0.6,
+          height=0.6),
+        Diagram(coordinateSystem(
+            preserveAspectRatio=false,
+            preserveOrientation=false,
+            extent={{-100,-100},{100,100}},
+            grid={2,2},
+            initialScale=0), graphics),
+        Icon(
+          coordinateSystem(
+            preserveAspectRatio=false,
+            preserveOrientation=false,
+            extent={{-100,-100},{100,100}},
+            grid={2,2},
+            initialScale=0),
+          graphics={
+            Rectangle(
+              extent={{-36,54},{36,26}},
+              lineColor={0,0,255},
+              lineThickness=1.0),
+            Rectangle(
+              extent={{-74,6},{-46,-46}},
+              lineColor={0,0,255},
+              lineThickness=1.0),
+            Rectangle(
+              extent={{46,6},{74,-46}},
+              lineColor={0,0,255},
+              lineThickness=1.0),
+            Line(
+              points={{-60,-46},{-60,-66}},
+              color={0,0,255},
+              thickness=1.0),
+            Line(
+              points={{-74,-66},{-46,-66}},
+              color={0,0,255},
+              thickness=1.0),
+            Line(
+              points={{60,-46},{60,-66}},
+              color={0,0,255},
+              thickness=1.0),
+            Line(
+              points={{46,-66},{74,-66}},
+              color={0,0,255},
+              thickness=1.0),
+            Line(
+              points={{-60,6},{-60,40}},
+              color={0,0,255},
+              thickness=1.0),
+            Line(
+              points={{-36,40},{-90,40}},
+              color={0,0,255},
+              thickness=1.0),
+            Line(
+              points={{60,6},{60,40}},
+              color={0,0,255},
+              thickness=1.0),
+            Line(
+              points={{94,40},{36,40}},
+              color={0,0,255},
+              thickness=1.0),
+            Text(extent={{-64,96},{64,64}},
+              textColor={0,0,0},
+              textString="%name"),
+            Text(
+              textString=String(P1),
+              extent={{-96,-78},{102,-116}},
+              textColor={0,0,0})},
+          Rectangle(extent=[-30, 60; 30, 40], style(thickness=2)),
+          Rectangle(extent=[-60, 20; -40, -20], style(thickness=2)),
+          Rectangle(extent=[40, 20; 60, -20], style(thickness=2)),
+          Line(points=[-50, -20; -50, -40], style(thickness=2)),
+          Line(points=[-60, -40; -40, -40], style(thickness=2)),
+          Line(points=[50, -20; 50, -40], style(thickness=2)),
+          Line(points=[40, -40; 60, -40], style(thickness=2)),
+          Line(points=[-50, 20; -50, 50], style(thickness=2)),
+          Line(points=[-30, 50; -70, 50], style(thickness=2)),
+          Line(points=[50, 20; 50, 52], style(thickness=2)),
+          Line(points=[70, 52; 30, 52], style(thickness=2)),
+          Text(extent=[-64, -48; 64, -80], string="%name")),
+        Documentation(info="<html>
+<p><span style=\"background-color: #ffffff;\">The simplest model of a high voltage power transmission line</span></p>
+</html>"));
+    end HVline;
+
+    model Transformer
+      parameter Real Rline=0.001 "Active resistance of T-model";
+      parameter Real Xline=0.01 "Reactance of T-model";
+      //---------------------------------------------
+      parameter Real TtOff=1000 "Time of transformer disconnection";
+      parameter Real dTtOff=10 "Duration of transformer disconnection";
+      parameter Real Koff=100000 "Degree of transformer disconnection";
+      //---------------------------------------------
+
+      Real U1d "D-axis voltage at the beginning of HVline";
+      Real U1q "Q-axis voltage at the beginning of HVline";
+      Real U2d "D-axis voltage at the end of HVline";
+      Real U2q "Q-axis voltage at the end of HVline";
+      Real I12d "D-axis current in the middle of HVline";
+      Real I12q "Q-axis current in the middle of HVline";
+      Real I12m "Full current in the middle of HVline";
+      Real U1m "Full voltage at the beginning of HVline";
+      Real U2m "Full voltage at the end of HVline";
+      Real P1 "active power at the beginning of HVline";
+      Real Q1 "reactive power at the beginning of HVline";
+      Real P2 "active power at the end of HVline";
+      Real Q2 "reactive power at the end of HVline";
+      Real RL "actual active resistance of HVline";
+      Real XL "actual reactive resistance of HVline";
+
+      LEPSE.Interfaces.Pin_v2 inp annotation (
+        extent=[-88,0; -68,20],
+        layer="icon",
+        Placement(transformation(extent={{-108,0},{-88,20}},rotation=0),
+            iconTransformation(extent={{-108,0},{-88,20}})));
+      LEPSE.Interfaces.Pin_v2 out annotation (
+        extent=[70,0; 90,20],
+        layer="icon",
+        Placement(transformation(extent={{88,0},{108,20}},rotation=0),
+            iconTransformation(extent={{88,0},{108,20}})));
+    equation
+      // the algorithm of triping transmission line
+      RL = if time >= TtOff and time < TtOff + dTtOff then Koff*Rline else Rline;
+      XL = if time >= TtOff and time < TtOff + dTtOff then Koff*Xline else Xline;
+
+      // series impedance between nodes
+      U1q = U2q + RL*I12q - XL*I12d;
+      U1d = U2d + RL*I12d + XL*I12q;
+
+      // measurements
+      I12m = sqrt(I12d^2 + I12q^2);
+      U1m = sqrt(U1d^2 + U1q^2);
+      U2m = sqrt(U2d^2 + U2q^2);
+
+      // powers
+      P1 = U1q*I12q + U1d*I12d;
+      Q1 = -U1q*I12d + U1d*I12q;
+      P2 = U2q*I12q + U2d*I12d;
+      Q2 = -U2q*I12d + U2d*I12q;
+
+      //------connectors-----
+      inp.Vd = U1d;
+      inp.Vq = U1q;
+
+      out.Vd = U2d;
+      out.Vq = U2q;
+
+      inp.Id = -I12d;
+      inp.Iq = -I12q;
+
+      out.Id = I12d;
+      out.Iq = I12q;
+
+      annotation (
+        Coordsys(
+          extent=[-100, -100; 100, 100],
+          grid=[2, 2],
+          component=[20, 20]),
+        Window(
+          x=0.31,
+          y=0.28,
+          width=0.5,
+          height=0.6),
+        Icon(
+          coordinateSystem(
+            preserveAspectRatio=false,
+            preserveOrientation=false,
+            extent={{-100,-100},{100,100}},
+            grid={2,2},
+            initialScale=0),
+          graphics={
+            Line(
+              points={{0,60},{0,-40}},
+              color={0,0,0},
+              thickness=1.5),
+            Rectangle(
+              extent={{-60,74},{60,-54}},
+              lineColor={0,0,255},
+              lineThickness=1.0),
+            Line(
+              points={{-20,10},{-90,10}},
+              color={0,0,0},
+              thickness=1.5),
+            Line(
+              points={{92,10},{22,10}},
+              color={0,0,0},
+              thickness=1.0),
+            Text(extent={{-64,104},{66,76}},
+              textColor={0,0,0},
+              textString="%name"),
+            Line(
+              points={{-20,34},{-8,38},{-4,46},{-8,54},{-20,58}},
+              color={0,0,0},
+              thickness=1.0),
+            Line(
+              points={{22,10},{10,14},{6,22},{10,30},{20,32}},
+              color={0,0,0},
+              thickness=1.0),
+            Line(
+              points={{22,32},{10,36},{6,44},{10,52},{22,56}},
+              color={0,0,0},
+              thickness=1.0),
+            Line(
+              points={{-20,10},{-8,14},{-4,22},{-8,30},{-20,34}},
+              color={0,0,0},
+              thickness=1.0),
+            Line(
+              points={{-20,-14},{-8,-10},{-4,-2},{-8,6},{-20,10}},
+              color={0,0,0},
+              thickness=1.0),
+            Line(
+              points={{-20,-38},{-8,-34},{-4,-26},{-8,-18},{-20,-14}},
+              color={0,0,0},
+              thickness=1.0),
+            Line(
+              points={{22,-12},{10,-8},{6,0},{10,8},{20,10}},
+              color={0,0,0},
+              thickness=1.0),
+            Line(
+              points={{22,-34},{10,-30},{6,-22},{10,-14},{20,-12}},
+              color={0,0,0},
+              thickness=1.0),
+            Text(
+              textString=String(P1),
+              extent={{-98,-60},{100,-98}},
+              textColor={0,0,0})},
+          Line(points=[0, 60; 0, -40], style(color=0, thickness=4)),
+          Rectangle(extent=[-50, 70; 50, -50], style(color=73, thickness=2)),
+          Line(points=[-20, 10; -70, 10], style(color=0, thickness=2)),
+          Line(points=[72, 10; 22, 10], style(color=0, thickness=2)),
+          Text(extent=[-64, -54; 66, -82], string="%name"),
+          Line(points=[-20, 34; -8, 38; -4, 46; -8, 54; -20, 58], style(color=0,
+                  thickness=2)),
+          Line(points=[22, 10; 10, 14; 6, 22; 10, 30; 20, 32], style(color=0,
+                thickness=2)),
+          Line(points=[22, 32; 10, 36; 6, 44; 10, 52; 22, 56], style(color=0,
+                thickness=2)),
+          Line(points=[-20, 10; -8, 14; -4, 22; -8, 30; -20, 34], style(color=0,
+                  thickness=2)),
+          Line(points=[-20, -14; -8, -10; -4, -2; -8, 6; -20, 10], style(color=0,
+                  thickness=2)),
+          Line(points=[-20, -38; -8, -34; -4, -26; -8, -18; -20, -14], style(
+                color=0, thickness=2)),
+          Line(points=[22, -12; 10, -8; 6, 0; 10, 8; 20, 10], style(color=0,
+                thickness=2)),
+          Line(points=[22, -34; 10, -30; 6, -22; 10, -14; 20, -12], style(color=
+                  0, thickness=2))),
+        Documentation(info="<html>
+<p>The model of a two-winding transformer</p>
+</html>"));
+    end Transformer;
+
+    model Constant_Conductivity_Load
+      parameter Real Gn=0.7 "Active load";
+      parameter Real Bn=-0.35 "Reactive load";
+      //-------------------------------------------------------------
+      parameter Real TloadOff=1000 "Time of load disconnection";
+      parameter Real dTloadOff=10 "Duration of load disconnection";
+      parameter Real Koff=0.7 "Degree of load disconnection";
+      //-------------------------------------------------------------
+      Real Udn "D-axis voltage of load";
+      Real Uqn "Q-axis voltage of load";
+      Real Iqn "D-axis current of load";
+      Real Idn "Q-axis current of load";
+      Real Pn "Active power of load";
+      Real Qn "Reactive power of load";
+      LEPSE.Interfaces.Pin_v2 inp annotation (
+        extent=[-10,76; 10,96],
+        layer="icon",
+        Placement(transformation(extent={{-10,88},{10,108}},rotation=0),
+            iconTransformation(extent={{-10,88},{10,108}})));
+    equation
+      // active and reactive load
+      Pn = Uqn*Iqn + Udn*Idn;
+      Qn = -Uqn*Idn + Udn*Iqn;
+
+      //the algorithm of triping load
+      Idn = if time >= TloadOff and time < TloadOff + dTloadOff then Koff*(Udn*
+        Gn + Uqn*Bn) else Udn*Gn + Uqn*Bn;
+      Iqn = if time >= TloadOff and time < TloadOff + dTloadOff then Koff*(Uqn*
+        Gn - Udn*Bn) else Uqn*Gn - Udn*Bn;
+
+      //-----connector-----
+      inp.Vd = Udn;
+      inp.Vq = Uqn;
+
+      inp.Id = -Idn;
+      inp.Iq = -Iqn;
+
+      annotation (
+        Coordsys(
+          extent=[-100, -100; 100, 100],
+          grid=[2, 2],
+          component=[20, 20]),
+        Window(
+          x=0.31,
+          y=0.4,
+          width=0.6,
+          height=0.6),
+        Icon(
+          coordinateSystem(
+            preserveAspectRatio=false,
+            preserveOrientation=false,
+            extent={{-100,-100},{100,100}},
+            grid={2,2},
+            initialScale=0),
+          graphics={
+            Rectangle(
+              extent={{-20,72},{20,-28}},
+              lineColor={0,0,255},
+              lineThickness=1.0),
+            Line(
+              points={{0,-28},{0,-48}},
+              color={0,0,255},
+              thickness=1.0),
+            Line(
+              points={{-20,-48},{20,-48}},
+              color={0,0,255},
+              thickness=1.0),
+            Line(
+              points={{0,92},{0,72}},
+              color={0,0,255},
+              thickness=1.0),
+            Text(extent={{-98,-60},{102,-96}},
+              textColor={0,0,0},
+              textString="%name")},
+          Rectangle(extent=[-20, 60; 20, -40], style(thickness=2)),
+          Line(points=[0, -40; 0, -60], style(thickness=2)),
+          Line(points=[-20, -60; 20, -60], style(thickness=2)),
+          Line(points=[0, 80; 0, 60], style(thickness=2)),
+          Text(extent=[-100, -64; 100, -100], string="%name")),
+        Documentation(info="<html>
+<p><span style=\"background-color: #ffffff;\">A load model defined as a constant conductivity</span></p>
+</html>"));
+    end Constant_Conductivity_Load;
+
+    model ShortCircuitShunt
+      parameter Real Bn=-100000 "Reactive conductivity of short sircuit";
+      parameter Real Gn=-100000 "Active conductivity of short sircuit";
+      parameter Real Yn = sqrt( Bn^(2) + Gn^(2)) "Total conductivity of short sircuit";
+      //-----------------------------------
+      parameter Real TkzOn=1000 "Time of short sircuit";
+      parameter Real dTkzOn=0.12 "Duration of short sircuit";
+      //-----------------------------------
+
+      Real id "D-axis current of short-circuit";
+      Real iq "Q-axis current of short-circuit";
+      Real Ud  "D-axis voltage of short-circuit";
+      Real Uq "Q-axis voltage of short-circuit";
+      LEPSE.Interfaces.Pin_v2 inp annotation (
+        extent=[-10,38; 10,58],
+        layer="icon",
+        Placement(transformation(extent={{-10,88},{10,108}},rotation=0),
+            iconTransformation(extent={{-10,88},{10,108}})));
+    equation
+      // short-circuit current
+      id = if time >= TkzOn and time < TkzOn + dTkzOn then Bn*Uq + Gn*Ud else 0;
+      iq = if time >= TkzOn and time < TkzOn + dTkzOn then -Bn*Ud + Gn*Uq else 0;
+
+      //-----connector-----
+      inp.Vd = Ud;
+      inp.Vq = Uq;
+
+      inp.Id = -id;
+      inp.Iq = -iq;
+
+      annotation (
+        Coordsys(
+          extent=[-100, -100; 100, 100],
+          grid=[2, 2],
+          component=[20, 20]),
+        Window(
+          x=0.29,
+          y=0.11,
+          width=0.6,
+          height=0.6),
+        Icon(
+          coordinateSystem(
+            preserveAspectRatio=false,
+            preserveOrientation=false,
+            extent={{-100,-100},{100,100}},
+            grid={2,2},
+            initialScale=0),
+          graphics={
+            Line(
+              points={{-20,-10},{20,-10}},
+              color={0,0,255},
+              thickness=1),
+            Line(
+              points={{0,-10},{0,90}},
+              color={0,0,255},
+              thickness=1),
+            Line(
+              points={{34,54},{6,24},{30,24},{0,-10}},
+              color={255,0,0},
+              thickness=1,
+              arrow={Arrow.None,Arrow.Filled}),
+            Text(extent={{-56,-28},{58,-56}},
+              textColor={0,0,0},
+              textString="%name")},
+          Line(points=[-20, -60; 20, -60], style(thickness=4)),
+          Line(points=[0, -60; 0, 40], style(thickness=4)),
+          Line(points=[34, 4; 6, -26; 30, -26; 0, -60], style(
+              color=41,
+              thickness=4,
+              arrow=1)),
+          Text(extent=[-54, -64; 60, -92], string="%name")),
+        Documentation(info="<html>
+<p><span style=\"background-color: #ffffff;\">Short-Circuit Shunt Model</span></p>
+</html>"));
+    end ShortCircuitShunt;
+
+    model Electrical_Braking_Shunt
+      parameter Real Rline=0.2 "Active resistance of electrical braking device";
+      //---------------------------------------------
+      parameter Real TLineOff=1000 "Time of electrical braking";
+      parameter Real dTLineOff=10 "Duration of electrical braking";
+      //---------------------------------------------
+
+      Real Ud "D-axis voltage of shunt electrical braking";
+      Real Uq "Q-axis voltage of shunt electrical braking";
+      Real I12d "D-axis current of shunt electrical braking";
+      Real I12q "Q-axis current of shunt electrical braking";
+      Real I12m "Full current of shunt electrical braking";
+      Real Um "Full voltage of shunt electrical braking";
+      LEPSE.Interfaces.Pin_v2 inp annotation (
+        extent=[-10,78; 10,98],
+        layer="icon",
+        Placement(transformation(extent={{-10,88},{10,108}},rotation=0),
+            iconTransformation(extent={{-10,88},{10,108}})));
+    equation
+      // the algorithm of shunt electrical braking start
+      I12d = if time >= TLineOff and time < TLineOff + dTLineOff then Ud/Rline
+         else 0;
+      I12q = if time >= TLineOff and time < TLineOff + dTLineOff then Uq/Rline
+         else 0;
+
+      //---------measurements-----------------------------------------------------
+      I12m = sqrt(I12d^2 + I12q^2);
+      Um = sqrt(Ud^2 + Uq^2);
+
+      //-----connector-----
+      inp.Vd = Ud;
+      inp.Vq = Uq;
+
+      inp.Id = -I12d;
+      inp.Iq = -I12q;
+
+      annotation (
+        Coordsys(
+          extent=[-100, -100; 100, 100],
+          grid=[2, 2],
+          component=[20, 20]),
+        Window(
+          x=0.25,
+          y=0.18,
+          width=0.6,
+          height=0.6),
+        Icon(
+          coordinateSystem(
+            preserveAspectRatio=false,
+            preserveOrientation=false,
+            extent={{-100,-100},{100,100}},
+            grid={2,2},
+            initialScale=0),
+          graphics={
+            Rectangle(
+              extent={{-20,50},{20,-30}},
+              lineColor={0,0,255},
+              lineThickness=1.0,
+              fillColor={192,192,192},
+              fillPattern=FillPattern.Solid),
+            Line(
+              points={{-20,-50},{20,-50}},
+              color={0,0,255},
+              thickness=1.0),
+            Line(
+              points={{0,-50},{0,-30}},
+              color={0,0,255},
+              thickness=1.0),
+            Rectangle(
+              extent={{-10,80},{10,60}},
+              lineColor={0,0,255},
+              lineThickness=1.0,
+              fillColor={192,192,192},
+              fillPattern=FillPattern.Solid),
+            Line(
+              points={{0,50},{0,60}},
+              color={0,0,255},
+              thickness=1.0),
+            Line(
+              points={{0,80},{0,90}},
+              color={0,0,255},
+              thickness=1.0),
+            Text(extent={{-98,-50},{102,-88}},
+              textColor={0,0,0},
+              textString="%name")},
+          Rectangle(extent=[-20, 40; 20, -40], style(thickness=2, fillColor=8)),
+          Line(points=[-20, -60; 20, -60], style(thickness=2)),
+          Line(points=[0, -60; 0, -40], style(thickness=2)),
+          Rectangle(extent=[-10, 70; 10, 50], style(thickness=2, fillColor=8)),
+          Line(points=[0, 40; 0, 50], style(thickness=2)),
+          Line(points=[0, 70; 0, 80], style(thickness=2)),
+          Text(extent=[-100, -62; 100, -100], string="%name")),
+        Documentation(info="<html>
+<p><span style=\"background-color: #ffffff;\">Model of parallel electric braking device</span></p>
+</html>"));
+    end Electrical_Braking_Shunt;
+
+    model Electrical_Braking_Series
+      parameter Real Rline=0.2 "Active resistance of electrical braking device";
+      //---------------------------------------------
+      parameter Real TLineOff=1000 "Time of electrical braking";
+      parameter Real dTLineOff=10 "Duration of electrical braking";
+      //---------------------------------------------
+
+      Real U1d "D-axis voltage at the beginning of series electrical braking";
+      Real U1q "Q-axis voltage at the beginning of series electrical braking";
+      Real U2d "D-axis voltage at the end of series electrical braking";
+      Real U2q "Q-axis voltage at the end of series electrical braking";
+      Real I12d "D-axis current of series electrical braking";
+      Real I12q "Q-axis current of series electrical braking";
+      Real I12m "Full current of series electrical braking";
+      Real U1m "Full voltage at the beginning of series electrical braking";
+      Real U2m "Full voltage at the end of series electrical braking";
+      Real RL "Actual resistanse of series electrical braking";
+      LEPSE.Interfaces.Pin_v2 inp annotation (extent=[-98,0; -78,20], Placement(
+            transformation(extent={{-110,-26},{-90,-6}},
+                                                      rotation=0),
+            iconTransformation(extent={{-110,-26},{-90,-6}})));
+      LEPSE.Interfaces.Pin_v2 out annotation (extent=[78,0; 98,20], Placement(
+            transformation(extent={{90,-26},{110,-6}},
+                                                    rotation=0),
+            iconTransformation(extent={{90,-26},{110,-6}})));
+    equation
+      // the algorithm of series electrical braking start
+      RL = if time >= TLineOff and time < TLineOff + dTLineOff then Rline else 0;
+
+      //---------series impedance between nodes--------------------
+      U1q = U2q + RL*I12q;
+      U1d = U2d + RL*I12d;
+
+      //---------measurements--------------------------------------
+      I12m = sqrt(I12d^2 + I12q^2);
+      U1m = sqrt(U1d^2 + U1q^2);
+      U2m = sqrt(U2d^2 + U2q^2);
+
+      //-----connectors------
+      inp.Vd = U1d;
+      inp.Vq = U1q;
+
+      out.Vd = U2d;
+      out.Vq = U2q;
+
+      inp.Id = -I12d;
+      inp.Iq = -I12q;
+
+      out.Id = I12d;
+      out.Iq = I12q;
+
+      annotation (
+        Coordsys(
+          extent=[-100, -100; 100, 100],
+          grid=[2, 2],
+          component=[20, 20]),
+        Window(
+          x=0.28,
+          y=0.09,
+          width=0.6,
+          height=0.6),
+        Diagram(coordinateSystem(
+            preserveAspectRatio=false,
+            preserveOrientation=false,
+            extent={{-100,-100},{100,100}},
+            grid={2,2},
+            initialScale=0), graphics),
+        Icon(
+          coordinateSystem(
+            preserveAspectRatio=false,
+            preserveOrientation=false,
+            extent={{-100,-100},{100,100}},
+            grid={2,2},
+            initialScale=0),
+          graphics={
+            Rectangle(
+              extent={{-38,0},{42,-32}},
+              lineColor={0,0,255},
+              lineThickness=1.0,
+              fillColor={192,192,192},
+              fillPattern=FillPattern.Solid),
+            Line(
+              points={{-38,-16},{-92,-16}},
+              color={0,0,255},
+              thickness=1.0),
+            Line(
+              points={{94,-16},{42,-16}},
+              color={0,0,255},
+              thickness=1.0),
+            Line(
+              points={{-58,-16},{-58,14},{-18,14}},
+              color={0,0,255},
+              thickness=1.0),
+            Line(
+              points={{22,14},{62,14},{62,-16}},
+              color={0,0,255},
+              thickness=1.0),
+            Rectangle(
+              extent={{-18,22},{22,20}},
+              lineColor={28,108,200},
+              fillColor={0,0,0},
+              fillPattern=FillPattern.Solid),
+            Ellipse(
+              extent={{24,12},{20,16}},
+              lineColor={28,108,200},
+              fillColor={0,0,0},
+              fillPattern=FillPattern.Solid),
+            Ellipse(
+              extent={{-16,12},{-20,16}},
+              lineColor={28,108,200},
+              fillColor={0,0,0},
+              fillPattern=FillPattern.Solid),
+            Text(extent={{-98,70},{102,30}},
+              textColor={0,0,0},
+              textString="%name")},
+          Rectangle(extent=[-40, 20; 40, 0], style(thickness=2, fillColor=8)),
+          Line(points=[-40, 10; -80, 10], style(thickness=2)),
+          Line(points=[80, 10; 40, 10], style(thickness=2)),
+          Line(points=[-60, 10; -60, 40; -20, 40], style(thickness=2)),
+          Line(points=[20, 40; 60, 40; 60, 10], style(thickness=2)),
+          Rectangle(extent=[-20, 48; 20, 46], style(fillColor=0)),
+          Ellipse(extent=[22, 38; 18, 42], style(fillColor=0)),
+          Ellipse(extent=[-18, 38; -22, 42], style(fillColor=0)),
+          Text(extent=[-100, -8; 100, -48], string="%name")),
+        Documentation(info="<html>
+<p><span style=\"background-color: #ffffff;\">Model of series electric braking device</span></p>
+</html>"));
+    end Electrical_Braking_Series;
+
+    model Transfer_Function
+      parameter Real b[:]={1}
+      "Numerator coefficients of transfer function.";
+      parameter Real a[:]={1,1}
+      "Denominator coefficients of transfer function.";
+      output Real x[size(a, 1) - 1]
+      "State of transfer function from controller canonical form";
+
+    protected
+      parameter Integer na=size(a, 1)
+        "Size of Denominator of transfer function.";
+      parameter Integer nb(max=na) = size(b, 1)
+        "Size of Numerator of transfer function.";
+      parameter Integer nx=size(a, 1) - 1;
+      Real x1dot
+      "Derivative of first state of TransferFcn";
+      Real xn
+      "Highest order state of TransferFcn";
+      Real u
+      "input variable";
+      Real y
+      "output variable";
+
+    public
+      LEPSE.Interfaces.Single_Pin inp annotation (
+        extent=[-92,-10; -72,10],
+        layer="icon",
+        Placement(transformation(extent={{-110,-10},{-90,10}},rotation=0),
+            iconTransformation(extent={{-110,-10},{-90,10}})));
+      LEPSE.Interfaces.Single_Pin out annotation (
+        extent=[70,-10; 90,10],
+        layer="icon",
+        Placement(transformation(extent={{90,-10},{110,10}},rotation=0),
+            iconTransformation(extent={{90,-10},{110,10}})));
+    equation
+      [der(x); xn] = [x1dot; x];
+      [u] = transpose([a])*[x1dot; x];
+      [y] = transpose([zeros(na - nb, 1); b])*[x1dot; x];
+
+      //-----connector-----
+      inp.Signal = u;
+      out.Signal = y;
+
+      annotation (
+        Coordsys(
+          extent=[-100, -100; 100, 100],
+          grid=[2, 2],
+          component=[20, 20]),
+        Icon(
+          coordinateSystem(
+            preserveAspectRatio=false,
+            preserveOrientation=false,
+            extent={{-100,-100},{100,100}},
+            grid={2,2},
+            initialScale=0),
+          graphics={
+            Rectangle(
+              extent={{-60,30},{58,-28}},
+              lineColor={0,0,255},
+              lineThickness=1),
+            Text(extent={{-40,28},{40,2}}, textString=
+                                               "Transfer"),
+            Text(extent={{-38,4},{42,-22}}, textString=
+                                                "function"),
+            Text(extent={{-100,58},{100,34}},
+              textColor={0,0,0},
+              textString="%name"),
+            Line(
+              points={{-60,0},{-94,0}},
+              color={0,0,255},
+              thickness=1),
+            Line(
+              points={{98,0},{58,0}},
+              color={0,0,255},
+              thickness=1)},
+          Rectangle(extent=[-60, 30; 58, -28], style(color=0, thickness=2)),
+          Text(extent=[-40, 28; 40, 2], string="Transfer"),
+          Text(extent=[-38, 4; 42, -22], string="function"),
+          Text(extent=[-60, -28; 58, -52], string="%name"),
+          Line(points=[-60, 0; -74, 0], style(color=0, thickness=2)),
+          Line(points=[74, 0; 58, 0], style(color=0, thickness=2))),
+        Window(
+          x=0.37,
+          y=0.14,
+          width=0.6,
+          height=0.6),
+        Documentation(info="<html>
+<p>The model of the transfer function</p>
+</html>"));
+    end Transfer_Function;
+
+    model Gen_with_ARV_control
+
+      LEPSE.Interfaces.Pin_v2 inp annotation (
+        extent=[78,-4; 98,16],
+        layer="icon",
+        Placement(transformation(extent={{90,-10},{110,10}},
+                                                           rotation=0),
+            iconTransformation(extent={{90,-10},{110,10}})));
+      LEPSE.Basic.Excitation_Regulator AVR annotation (extent=[-84,-90; -32,82],
+          Placement(transformation(extent={{-84,-90},{-32,82}}, rotation=0)));
+      LEPSE.Basic.Synch_Machine G annotation (extent=[-28,-72; 70,80],
+          Placement(transformation(extent={{-28,-72},{70,80}}, rotation=0)));
+    equation
+      connect(AVR.out_pin, G.Ef_pin) annotation (points=[-34.34, 6.32; -18.2,
+            5.52], Line(points={{-31.7833,-10.88},{-28,4}}));
+      connect(AVR.dV1_pin, AVR.dV_pin) annotation (points=[-81.66, 30.4; -
+            81.66, 56.2], Line(points={{-84.2167,13.2},{-84.2167,38},{-82,38},{
+              -82,44},{-84.2167,44},{-84.2167,39}}));
+      connect(G.dUtr_pin, AVR.dV_pin) annotation (points=[-3.5, 61.76; -4, 76;
+              -82, 76; -81.66, 56.2], Line(points={{-5.46,80},{-5.46,76},{
+              -84.2167,76},{-84.2167,39}}));
+      connect(G.dWu_pin, AVR.dfsys_pin) annotation (points=[13.16, 61.76; 14,
+            80; -86, 80; -86, 4; -81.66, 4.6], Line(points={{8.26,80},{8.26,80},
+              {-86,80},{-86,-12.6},{-84.2167,-12.6}}));
+      connect(G.dWf_pin, AVR.dfU_pin) annotation (points=[28.84, 61.76; 28, 84;
+              -88, 84; -88, -22; -81.66, -21.2], Line(points={{21,80},{21,84},{
+              -88,84},{-88,-38.4},{-84.2167,-38.4}}));
+      connect(G.dIf_pin, AVR.dif1_pin) annotation (points=[45.5, 61.76; 44, 90;
+              -94, 90; -94, -46; -81.66, -47], Line(points={{34.72,80},{34.72,
+              90},{-94,90},{-94,-59.04},{-84.2167,-59.04}}));
+      connect(G.Stator_pin, inp) annotation (points=[59.22, 5.52; 88, 6], Line(
+            points={{70,4},{100,0}}));
+
+      connect(G.Ut_pin, AVR.Ut_pin) annotation (Line(points={{48.44,80},{48.44,
+              92},{-96,92},{-96,-76.24},{-84,-76.24}},    color={0,0,0}));
+      annotation (
+        Coordsys(
+          extent=[-100, -100; 100, 100],
+          grid=[2, 2],
+          component=[20, 20]),
+        Icon(
+          coordinateSystem(
+            preserveAspectRatio=false,
+            preserveOrientation=false,
+            extent={{-100,-100},{100,100}},
+            grid={2,2},
+            initialScale=0),
+          graphics={
+            Ellipse(extent={{-74,68},{72,-68}}, lineColor={0,0,255},
+              lineThickness=1),
+            Text(extent={{-44,44},{46,10}}, textString=
+                                                "Gen."),
+            Text(extent={{-50,12},{50,-14}},textString=
+                                                "with ARV"),
+            Text(extent={{-78,96},{74,70}},
+              textColor={0,0,0},
+              textString="%name"),
+            Line(points={{94,0},{72,0}}, color={0,0,255},
+              thickness=1),
+            Text(extent={{-50,-14},{50,-40}},textString=
+                                                 "control")},
+          Ellipse(extent=[-74, 72; 72, -58]),
+          Text(extent=[-44, 54; 46, 20], string="Gen."),
+          Text(extent=[-50, 22; 50, -4], string="with ARV"),
+          Text(extent=[-78, -58; 74, -84], string="%name"),
+          Line(points=[80, 6; 72, 6]),
+          Text(extent=[-50, -4; 50, -30], string="control")),
+        Window(
+          x=0.28,
+          y=0.01,
+          width=0.6,
+          height=0.88),
+        Documentation(info="<html>
+<p>Generator model with automatic excitation control</p>
+</html>"));
+    end Gen_with_ARV_control;
+
+    model Excitation_Regulator
+      parameter Real K0u=-10 "Voltage deviation control coefficient";
+      parameter Real K1u=0 "Voltage derivative control coefficient";
+      parameter Real K0w=0 "Frequency deviation control coefficient";
+      parameter Real K1w=0 "Frequency derivative control coefficient";
+      parameter Real K1if=0 "Rotor current derivative control coefficient";
+      parameter Real Uforc=0.85 "Voltage of field forcing input";
+      parameter Real Udeforc=0.9 "Voltage of field forcing removing";
+      parameter Real Tforcedelay=0.1 "Delay of field forcing removing";
+      parameter Real DL0=0;
+
+      constant Real Tokp=0.05 "The main channel of regulation time constant";
+      constant Real T0u=0.02 "Voltage deviation time constant";
+      constant Real T1u=0.039 "Voltage derivative time constant";
+      constant Real Tfb=0.07 "Frequency block time constant";
+      constant Real T0w=1.0 "Frequency deviation time constant";
+      constant Real T1w=0.026 "Frequency derivative time constant";
+      constant Real T1if=0.03 "Field current derivative time constant";
+
+      Basic.Transfer_Function VoltageDeviation(b={K0u}, a={T0u,1}) annotation (
+          extent=[-74,57.3333; -27.3333,104], Placement(transformation(extent={
+                {-86,37.3333},{-39.3333,84}}, rotation=0)));
+      Basic.Transfer_Function VoltageDerivative(b={K1u,0}, a={T1u,1})
+        annotation (extent=[-73.3333,17.3333; -26.6667,64], Placement(
+            transformation(extent={{-85.3333,15.3333},{-38.6667,62}}, rotation=
+                0)));
+      Basic.Transfer_Function FrequencyBlockD(b={1}, a={Tfb,1}) annotation (
+          extent=[-82.6667,-22.6667; -48,24], Placement(transformation(extent={
+                {-86.6667,-12.6667},{-52,34}}, rotation=0)));
+      Basic.Transfer_Function FrequencyBlockU(b={1,0}, a={Tfb,1}) annotation (
+          extent=[-82,-63.3333; -48,-16], Placement(transformation(extent={{-86,
+                -43.3333},{-52,4}}, rotation=0)));
+      Basic.Transfer_Function FrequencyDeviation(b={K0w,0}, a={T0w,1})
+        annotation (extent=[-28,-46; 10,2], Placement(transformation(extent={{-32,
+                -44},{6,4}}, rotation=0)));
+      Basic.Transfer_Function FrequencyDerivative(b={K1w,0}, a={T1w,1})
+        annotation (extent=[-24.6667,-19.3333; 10,28], Placement(transformation(
+              extent={{-30.6667,-5.3333},{4,42}}, rotation=0)));
+      Basic.Transfer_Function ExcitationCurrent(b={K1if,0}, a={T1if,1})
+        annotation (extent=[-74,-102; -27.3333,-55.3333], Placement(
+            transformation(extent={{-86,-68},{-39.3333,-21.3333}}, rotation=0)));
+      Basic.Transfer_Function SimpleExciter(b={1}, a={Tokp,1}) annotation (
+          extent=[56,-24; 83.3333,22.6667], Placement(transformation(extent={{
+                90,6},{117.333,52.6667}}, rotation=0)));
+      LEPSE.Interfaces.Single_Pin dV_pin annotation (
+        extent=[-96,64; -86,76],
+        layer="icon",
+        Placement(transformation(extent={{-106,44},{-96,56}},rotation=0),
+            iconTransformation(extent={{-106,44},{-96,56}})));
+      LEPSE.Interfaces.Single_Pin dV1_pin annotation (
+        extent=[-96,34; -86,46],
+        layer="icon",
+        Placement(transformation(extent={{-106,14},{-96,26}},rotation=0),
+            iconTransformation(extent={{-106,14},{-96,26}})));
+      LEPSE.Interfaces.Single_Pin dfsys_pin annotation (
+        extent=[-96,4; -86,16],
+        layer="icon",
+        Placement(transformation(extent={{-106,-16},{-96,-4}},
+                                                            rotation=0),
+            iconTransformation(extent={{-106,-16},{-96,-4}})));
+      LEPSE.Interfaces.Single_Pin dfU_pin annotation (
+        extent=[-96,-26; -86,-14],
+        layer="icon",
+        Placement(transformation(extent={{-106,-46},{-96,-34}},rotation=0),
+            iconTransformation(extent={{-106,-46},{-96,-34}})));
+      LEPSE.Interfaces.Single_Pin dif1_pin annotation (
+        extent=[-96,-56; -86,-44],
+        layer="icon",
+        Placement(transformation(extent={{-106,-70},{-96,-58}},rotation=0),
+            iconTransformation(extent={{-106,-70},{-96,-58}})));
+      LEPSE.Interfaces.Single_Pin out_pin annotation (
+        extent=[86,2; 96,22],
+        layer="icon",
+        Placement(transformation(extent={{136,-18},{146,2}},rotation=0),
+            iconTransformation(extent={{136,-18},{146,2}})));
+      LEPSE.Basic.Summator Summator1 annotation (extent=[-44,-32; -30,-12],
+          Placement(transformation(extent={{-50,-4},{-36,16}}, rotation=0)));
+      LEPSE.Basic.Summator Summator2 annotation (extent=[12,-18; 26,2],
+          Placement(transformation(extent={{10,-26},{24,-6}}, rotation=0)));
+      LEPSE.Basic.Summator Summator3 annotation (extent=[8,48; 22,68],
+          Placement(transformation(extent={{-12,32},{2,52}}, rotation=0)));
+      LEPSE.Basic.Summator Summator5 annotation (extent=[26,18; 40,38],
+          Placement(transformation(extent={{12,18},{26,38}}, rotation=0)));
+      LEPSE.Basic.Summator Summator6 annotation (extent=[40,-10; 54,10],
+          Placement(transformation(extent={{30,14},{44,34}}, rotation=0)));
+      LEPSE.Interfaces.Single_Pin Ut_pin annotation (Placement(transformation(
+              extent={{-106,-90},{-94,-78}}),iconTransformation(extent={{-106,
+                -90},{-94,-78}})));
+      LEPSE.Basic.logical_switch logical_switch1(
+        a1=Uforc,
+        a2=Udeforc,
+        a3=K0u,
+        a4=Tforcedelay)
+        annotation (Placement(transformation(extent={{60,18},{80,38}})));
+    equation
+      connect(dfsys_pin, FrequencyBlockD.inp) annotation (points=[-91, 10; -
+            79.5467, 0.666667], Line(points={{-101,-10},{-86.6667,10.6666}}));
+      connect(dfU_pin, FrequencyBlockU.inp) annotation (points=[-91, -20; -
+            78.94, -39.6667], Line(points={{-101,-40},{-101,-19.6667},{-86,
+              -19.6667}}));
+      connect(FrequencyBlockD.out, Summator1.inp1) annotation (points=[-
+            51.4667, 0.666667; -42.88, -18], Line(points={{-52,10.6666},{-52,
+              10.2},{-50,10.2}}));
+      connect(FrequencyBlockU.out, Summator1.inp2) annotation (points=[-51.4,
+            -39.6667; -42.88, -26], Line(points={{-52,-19.6667},{-50,-19.6667},
+              {-50,2}}));
+      connect(dif1_pin, ExcitationCurrent.inp) annotation (points=[-91, -50; -
+            69.8, -78.6667], Line(points={{-101,-64},{-101,-44.6667},{-86,
+              -44.6667}}));
+      connect(Summator1.out, FrequencyDeviation.inp) annotation (points=[-
+            31.12, -22; -24.58, -22], Line(points={{-36,6},{-32,6},{-32,-20},{
+              -32,-20}}));
+      connect(FrequencyDerivative.inp, FrequencyDeviation.inp) annotation (
+          points=[-21.5467, 4.33333; -24.58, -22], Line(points={{-30.6667,
+              18.3333},{-30.6667,18},{-32,18},{-32,-20},{-32,-20}}));
+      connect(Summator2.inp2, FrequencyDeviation.out) annotation (points=[
+            13.12, -12; 6.2, -22], Line(points={{10,-20},{6,-20}}));
+      connect(FrequencyDerivative.out, Summator2.inp1) annotation (points=[
+            6.53333, 4.33333; 13.12, -4], Line(points={{4,18.3333},{6,18.3333},
+              {6,-11.8},{10,-11.8}}));
+      connect(VoltageDerivative.inp, dV1_pin) annotation (points=[-69.1333,
+            40.6667; -91, 40], Line(points={{-85.3333,38.6666},{-85.3333,20},{
+              -101,20}}));
+      connect(VoltageDeviation.inp, dV_pin) annotation (points=[-69.8, 80.6667;
+              -91, 70], Line(points={{-86,60.6667},{-86,50},{-101,50}}));
+      connect(VoltageDeviation.out, Summator3.inp1) annotation (points=[-32,
+            80.6667; 9.12, 62], Line(points={{-39.3333,60.6667},{-18,60.6667},{
+              -18,46.2},{-12,46.2}}));
+      connect(VoltageDerivative.out, Summator3.inp2) annotation (points=[-
+            31.3333, 40.6667; 9.12, 54], Line(points={{-38.6667,38.6666},{
+              -38.6667,38},{-12,38}}));
+      connect(Summator5.inp1, Summator3.out) annotation (points=[27.12, 32;
+            20.88, 58], Line(points={{12,32.2},{6,32.2},{6,42},{2,42}}));
+      connect(Summator5.inp2, Summator2.out) annotation (points=[27.12, 24;
+            24.88, -8], Line(points={{12,24},{10,24},{10,-4},{26,-4},{26,-16},{
+              24,-16}}));
+      connect(Summator6.inp1, Summator5.out) annotation (points=[41.12, 4;
+            38.88, 28], Line(points={{30,28.2},{29.12,28.2},{29.12,28},{26,28}}));
+      connect(SimpleExciter.out, out_pin) annotation (points=[80.6, -0.666667;
+              91, 12], Line(points={{117.333,29.3333},{141,29.3333},{141,-8}}));
+      connect(Summator6.inp2, ExcitationCurrent.out) annotation (points=[41.12,
+              -4; -32, -78.6667], Line(points={{30,20},{30,-44.6667},{-39.3333,
+              -44.6667}}));
+      when initial() then
+        reinit(FrequencyBlockU.x[1], DL0);
+        //     reinit(FrequencyDeviation.x[1],DL0);
+        //     reinit(FrequencyDerivative.x[1],DL0);
+      end when;
+
+      connect(logical_switch1.out, SimpleExciter.inp) annotation (Line(points={{80,
+              27.3333},{86,27.3333},{86,29.3333},{90,29.3333}},         color={0,
+              0,0}));
+      connect(Ut_pin, logical_switch1.inp2inf) annotation (Line(points={{-100,
+              -84},{56,-84},{56,18.1667},{70.2,18.1667}},
+                                                   color={0,0,0}));
+      connect(Summator6.out, logical_switch1.inp2) annotation (Line(points={{44,24},
+              {52,24},{52,25},{60,25}},                       color={0,0,0}));
+      connect(VoltageDeviation.out, logical_switch1.inp1) annotation (Line(points={{
+              -39.3333,60.6667},{-6,60.6667},{-6,60},{54,60},{54,30.8333},{60,
+              30.8333}}, color={0,0,0}));
+      connect(VoltageDeviation.inp, logical_switch1.inp1inf) annotation (Line(
+            points={{-86,60.6667},{-86,74},{70,74},{70,56},{70.1,56},{70.1,38}},
+                                                                          color={
+              0,0,0}));
+      annotation (
+        Coordsys(
+          extent=[-100, -100; 100, 100],
+          grid=[2, 2],
+          component=[20, 20]),
+        Window(
+          x=0.32,
+          y=0.06,
+          width=0.6,
+          height=0.82),
+        Icon(
+          coordinateSystem(
+            preserveAspectRatio=false,
+            preserveOrientation=false,
+            extent={{-100,-100},{140,100}},
+            grid={2,2},
+            initialScale=0),
+          graphics={
+            Rectangle(
+              extent={{-68,72},{104,-94}},
+              lineColor={0,0,255},
+              lineThickness=1),
+            Text(extent={{-22,38},{60,-40}}, textString=
+                                                 "Excitation"),
+            Text(extent={{-14,14},{56,-52}}, textString=
+                                                 "regulator"),
+            Line(
+              points={{-68,-10},{-98,-10}},
+              color={0,0,255},
+              thickness=1),
+            Line(
+              points={{-68,-40},{-100,-40}},
+              color={0,0,255},
+              thickness=1),
+            Line(
+              points={{-68,-84},{-96,-84}},
+              color={0,0,255},
+              thickness=1),
+            Line(
+              points={{-68,20},{-98,20}},
+              color={0,0,255},
+              thickness=1),
+            Line(
+              points={{-68,50},{-98,50}},
+              color={0,0,255},
+              thickness=1),
+            Text(extent={{-64,106},{96,74}},
+              textColor={0,0,0},
+              textString="%name"),
+            Line(
+              points={{138,-8},{104,-8}},
+              color={0,0,255},
+              thickness=1),
+            Line(
+              points={{-68,-64},{-98,-64}},
+              color={0,0,255},
+              thickness=1)},
+          Rectangle(extent=[-68, 80; 66, -60], style(thickness=2)),
+          Text(extent=[-42, 60; 40, -18], string="Excitation"),
+          Text(extent=[-36, 34; 34, -32], string="regulator"),
+          Line(points=[-68, 10; -88, 10], style(thickness=2)),
+          Line(points=[-68, -20; -88, -20], style(thickness=2)),
+          Line(points=[-68, -50; -88, -50], style(thickness=2)),
+          Line(points=[-68, 40; -88, 40], style(thickness=2)),
+          Line(points=[-68, 70; -88, 70], style(thickness=2)),
+          Text(extent=[-84, -62; 76, -94], string="%name"),
+          Line(points=[86, 12; 66, 12], style(thickness=2))),
+        Diagram(coordinateSystem(extent={{-100,-100},{140,100}}), graphics={
+            Text(
+              extent={{-36,70},{-26,60}},
+              textColor={0,0,0},
+              textString="ΔU"),
+            Text(
+              extent={{-38,50},{-26,38}},
+              textColor={0,0,0},
+              textString="ΔU'"),
+            Text(
+              extent={{6,-26},{18,-36}},
+              textColor={0,0,0},
+              textString="ΔF"),
+            Text(
+              extent={{-12,8},{0,-2}},
+              textColor={0,0,0},
+              textString="ΔF'"),
+            Text(
+              extent={{-42,-32},{-30,-42}},
+              textColor={0,0,0},
+              textString="ΔIf'")}),
+        Documentation(info="<html>
+<p>The classical model of the Automatic Voltage Regulator (AVR)</p>
+</html>"));
+    end Excitation_Regulator;
+
+    model Synch_Machine
+      parameter Real TgenOff=1000 "Time of generator's disconnection";
+      parameter Real dTgenOff=10 "Duration of generator's disconnection";
+
+      //------------------------------------------------------------------------------------
+      parameter Real Pg=0.85 "Active power";
+      parameter Real Qg=0.527 "Reactive power";
+      parameter Real Ut=1 "ARV voltage reference value";
+
+      //------------------------------------------------------------------------------------
+      parameter Real Xd_p=1.869 "D-axis synchronous reactance";
+      parameter Real Xq_p=1.869 "Q-axis synchronous reactance";
+      parameter Real Xs_p=0.194 "Leakage reactance of stator winding";
+      parameter Real X1d_p=0.3016 "D-axis transient reactance";
+      parameter Real X2d_p=0.2337 "D-axis subtransient reactance";
+      parameter Real X2q_p=0.2337 "Q-axis subtransient reactance";
+      parameter Real Rf_p=904e-6 "Active resistance of field winding";
+      parameter Real R1d_p=3.688e-3 "Active resistance of d-axis damper winding";
+      parameter Real R1q_p=2.77e-3 "Active resistance of q-axis damper winding";
+      parameter Real Tj_p=7 "Inertia coefficient";
+
+      parameter Real Sigma=0.0475 "Turbine statism coefficient";
+      parameter Real TauC_up=0.8 "Time constant of servo motor while valving control";
+      parameter Real TregOff=50 "Turbine speed regulator off-time";
+
+      parameter Real TregOn=1000 "Turbine speed regulator on-time";
+      parameter Real Mtmax=1.1 "Turbine overloading coefficient";
+      parameter Real Mtmin=0 "Turbine minimum-loading coefficient";
+
+      parameter Real Aimp=1 "Fast turbine valving control amplitude";
+      parameter Real Timp=1000 "Fast turbine valving control on-time";
+      parameter Real dTimp=0.2 "Fast turbine valving control duration";
+      parameter Real TauC_down=5 "Time constant of servo motor after valving control end";
+
+      parameter Real TkzOn=1000 "HPP generators dropping on-time";
+      parameter Real Pg_new=0.85 "New power of HPP";
+      parameter Real Kemax=2.0 "Multiplicity of forcing on";
+      parameter Real Kemin=-0.6 "Multiplicity of forcing off";
+
+      //------------------------------------------------------------------------------------
+      Real dUtr "voltage deviation";
+      Real dWu "frequency deviation";
+      Real dIf "current deviation";
+      Real dEr "Electromotive force (EMF) deviation";
+      Real dWf "frequency deviation";
+      constant Real PI=4*atan(1) "PI-constant";
+      constant Real Wc=100*PI "frequency of electric current fluctuations";
+      constant Real Xt=0 "resistance of step-up transformer";
+
+      // Parameters of power system elements
+      constant Real Ra=0 "active resistance of generator stator winding";
+      constant Real Rt=0 "active resistance of transformer";
+      Real EQ "Auxiliaire EMF of salient-pole generator";
+      Real Dg "Generator power angle";
+      Real Uq "D-axis ARV voltage reference value";
+      Real Ud "Q-axis ARV voltage reference value";
+      Real Id "D-axis stator current value";
+      Real Iq "Q-axis stator current value";
+      Real Mt "Turbine rotation moment";
+      Real Eiq;
+      Real Ir "field winding current";
+      Real Uf "field winding voltage";
+      Real Eq "EMF of generator";
+      Real Er0 "EMF of generator initial value";
+      Real PsiR "field winding flow coupling initial value";
+      Real PsiRD "D-axis damper winding flow coupling initial value";
+      Real PsiRQ "Q-axis damper winding flow coupling initial value";
+      Real Er_max "upper bound of EMF of generator";
+      Real Er_min "lower bound of EMF of generator";
+      Real Uf_full "field winding voltage actual value";
+      Real Xad "D-axis resistance to mutual induction";
+      Real Xaq "Q-axis resistance to mutual induction";
+      Real X2dt "D-axis subtransient reactance of generator and transformer";
+      Real X2qt "Q-axis subtransient reactance of generator and transformer";
+      Real Rs "Sum resistance of stator winding and step-up transformer";
+      Real Xsf "Leakage reactance of field winding";
+      Real Xs1d "D-axis leakage reactance of damping winding";
+      Real Xs1q "Q-axis leakage reactance of damping winding";
+      Real X1 "interim reactance №1";
+      Real X2 "interim reactance №2";
+      Real X3 "interim reactance №3";
+      Real Ugen "generator full voltage actual value";
+      Real Mu0 "Turbine rotation moment initial value";
+      Real Ro;
+      Real Mu;
+      Real Mt_pp "Turbine rotation moment actual value";
+      Real Pgen "Generator active power actual value";
+      Real Qgen "Generator reactive power actual value";
+      Real UdG;
+      Real UqG;
+      Real IdG;
+      Real IqG;
+      Real DeltaIJ;
+      Real Ssys "system slip";
+      //------------------------------------------------------------------
+      // Integrated Variables
+      Real Yr "field winding flow coupling actual value";
+      Real Yrd "D-axis damper winding flow coupling actual value";
+      Real Yrq "Q-axis damper winding flow coupling actual value";
+      Real s "generator slip";
+      Real DGi "Generator power angle initial value";
+      Real Me "electrical moment";
+      Real Yad "D-axis flow coupling of mutual inductance";
+      Real Yaq "Q-axis flow coupling of mutual inductance";
+      Real iq "Q-axis generator stator winding current actual value";
+      Real id "D-axis generator stator winding current actual value";
+      Real ir "D-axis generator field winding current actual value";
+      Real ird "D-axis generator damper winding current actual value";
+      Real irq "Q-axis generator damper winding current actual value";
+      Real ud "D-axis generator voltage actual value";
+      Real uq "Q-axis generator voltage actual value";
+      Real E11d;
+      Real E11q;
+      Real TauC "Time constant of servo motor actual value";
+      Real MT_MAX "Turbine overloading coefficient actual value";
+      Real MT_MIN "Turbine minimum-loading coefficient actual value";
+      Real Xd "D-axis synchronous reactance actual value";
+      Real Xq "Q-axis synchronous reactance actual value";
+      Real Xs "Leakage reactance actual value";
+      Real X1d "D-axis transient reactance actual value";
+      Real X2d "D-axis subtransient reactance actual value";
+      Real X2q "Q-axis subtransient reactance actual value";
+      Real Rf "Active resistance of field winding actual value";
+      Real R1d "Active resistance of d-axis damper winding actual value";
+      Real R1q "Active resistance of q-axis damper winding actual value";
+      Real Tj "Inertia coefficient actual value";
+      Real f "frequency";
+      LEPSE.Interfaces.Pin_v2 Stator_pin annotation (extent=[68,-8; 88,12],
+          Placement(transformation(extent={{90,-10},{110,10}},
+                                                             rotation=0),
+            iconTransformation(extent={{90,-10},{110,10}})));
+      LEPSE.Interfaces.Single_Pin Ef_pin annotation (extent=[-90,-8; -70,12],
+          Placement(transformation(extent={{-110,-10},{-90,10}},
+                                                               rotation=0),
+            iconTransformation(extent={{-110,-10},{-90,10}})));
+      LEPSE.Interfaces.Single_Pin dUtr_pin annotation (
+        extent=[-60,66; -40,86],
+        layer="icon",
+        Placement(transformation(extent={{-64,90},{-44,110}},rotation=0),
+            iconTransformation(extent={{-64,90},{-44,110}})));
+      LEPSE.Interfaces.Single_Pin dWu_pin annotation (
+        extent=[-26,66; -6,86],
+        layer="icon",
+        Placement(transformation(extent={{-36,90},{-16,110}},rotation=0),
+            iconTransformation(extent={{-36,90},{-16,110}})));
+      LEPSE.Interfaces.Single_Pin dWf_pin annotation (
+        extent=[6,66; 26,86],
+        layer="icon",
+        Placement(transformation(extent={{-10,90},{10,110}},
+                                                           rotation=0),
+            iconTransformation(extent={{-10,90},{10,110}})));
+      LEPSE.Interfaces.Single_Pin dIf_pin annotation (
+        extent=[40,66; 60,86],
+        layer="icon",
+        Placement(transformation(extent={{18,90},{38,110}},
+                                                          rotation=0),
+            iconTransformation(extent={{18,90},{38,110}})));
+      LEPSE.Interfaces.Single_Pin Ut_pin
+        annotation (Placement(transformation(extent={{46,90},{66,110}}),
+            iconTransformation(extent={{46,90},{66,110}})));
+    equation
+      // equations of currents, voltages, and flux densities
+      when initial() then
+        EQ = sqrt((Ut + ((Ra + Rt)*Pg + (Xq + Xt)*Qg)/Ut)^2 + (((Xq + Xt)*Pg - (
+          Ra + Rt)*Qg)/Ut)^2);
+        Dg = atan((((Xq + Xt)*Pg - (Ra + Rt)*Qg)/Ut)/(Ut + ((Ra + Rt)*Pg + (Xq
+           + Xt)*Qg)/Ut));
+        //----------------------
+        Uq = Ut*cos(Dg);
+        Ud = -Ut*sin(Dg);
+        //----------------------
+        Id = ((Uq - EQ)*(Xq + Xt) - (Ra + Rt)*Ud)/((Ra + Rt)^2 + (Xq + Xt)^2);
+        Iq = (-Ud - (Ra + Rt)*Id)/(Xq + Xt);
+        Mt = EQ*Iq;
+        Mu0 = Mt;
+        Eiq = Uq - Id*(Xs + Xt) + (Ra + Rt)*Iq;
+        Ir = -Id + Eiq/Xad;
+        Uf = Ir*Rf;
+        Eq = Ir*Xad;
+        Er0 = Eq;
+        PsiR = Eiq + Xsf*Ir;
+        PsiRQ = -Ud - Iq*(Xs + Xt) - Id*(Ra + Rt);
+        PsiRD = Eiq;
+        Er_max = Kemax*Er0;
+        Er_min = Kemin*Er0;
+
+        //-------Initialization State Variables------------------
+        reinit(DGi, Dg);
+        reinit(s, 0);
+        reinit(Yr, PsiR);
+        reinit(Yrd, PsiRD);
+        reinit(Yrq, PsiRQ);
+        reinit(Mu, Mu0);
+      end when;
+
+      //-------------Calculated parameters of system----------------
+      Xad = Xd - Xs;
+      Xaq = Xq - Xs;
+      X2dt = X2d + Xt;
+      X2qt = X2q + Xt;
+      Rs = Ra + Rt;
+      Xsf = 1/(1/(X1d - Xs) - 1/Xad);
+      Xs1d = 1/(1/(X2d - Xs) - 1/Xad - 1/Xsf);
+      Xs1q = 1/(1/(X2q - Xs) - 1/Xaq);
+      X1 = (X2d - Xs)/Xsf;
+      X2 = (X2d - Xs)/Xs1d;
+      X3 = (X2q - Xs)/Xs1q;
+      //--------------------------------------------------------------------------------
+      Tj = if time < TkzOn then Tj_p else Tj_p*Pg_new/Pg;
+
+      Xd = if time < TkzOn then Xd_p else Xd_p*Pg/Pg_new;
+      Xq = if time < TkzOn then Xq_p else Xq_p*Pg/Pg_new;
+      Xs = if time < TkzOn then Xs_p else Xs_p*Pg/Pg_new;
+      X1d = if time < TkzOn then X1d_p else X1d_p*Pg/Pg_new;
+      X2d = if time < TkzOn then X2d_p else X2d_p*Pg/Pg_new;
+      X2q = if time < TkzOn then X2q_p else X2q_p*Pg/Pg_new;
+
+      Rf = if time < TkzOn then Rf_p else Rf_p*Pg/Pg_new;
+      R1d = if time < TkzOn then R1d_p else R1d_p*Pg/Pg_new;
+      R1q = if time < TkzOn then R1q_p else R1q_p*Pg/Pg_new;
+      //--------------------------------------------------------------------------------
+      der(DGi) = Wc*s;
+
+      Uf_full = if (Uf*Xad/Rf + dEr) > Er_max then Er_max*Rf/Xad else if (Uf*Xad
+        /Rf + dEr) < Er_min then Er_min*Rf/Xad else Uf + Rf*dEr/Xad;
+
+      der(Yr) = Wc*(Uf_full - Rf*ir);
+      der(Yrd) = -Wc*R1d*ird;
+      der(Yrq) = -Wc*R1q*irq;
+      der(s) = (Mt_pp - Me)/Tj;
+
+      Ro = if time >= Timp and time < Timp + dTimp then -Aimp else -Mu + Mu0 - s
+        /Sigma;
+
+      TauC = if time < Timp + dTimp then TauC_up else TauC_down;
+
+      der(Mu) = if time >= TregOff and time < TregOn then Ro/10e6 else Ro/TauC;
+      //--------------------------------------------------------------------------------
+      MT_MIN = if time < TkzOn then Mtmin*Pg else Pg_new - 0.01;
+      MT_MAX = if time < TkzOn then Mtmax*Pg else Pg_new + 0.01;
+
+      Mt_pp = if Mu >= MT_MIN and Mu <= MT_MAX then Mu else if Mu > MT_MAX then
+        MT_MAX else MT_MIN;
+      //--------------------------------------------------------------------------------
+
+      Me = Yad*iq - Yaq*id;
+      ir = (Yr - Yad)/Xsf;
+      ird = (Yrd - Yad)/Xs1d;
+      irq = (Yrq - Yaq)/Xs1q;
+      id = if time >= TgenOff and time < TgenOff + dTgenOff then 0 else ((uq -
+        E11q)*X2qt - Rs*(ud + E11d))/(X2dt*X2qt + Rs^2);
+      iq = if time >= TgenOff and time < TgenOff + dTgenOff then 0 else (-ud -
+        E11d - Rs*id)/X2qt;
+      E11d = X3*Yrq;
+      E11q = X1*Yr + X2*Yrd;
+      Yad = E11q + id*(X2d - Xs);
+      Yaq = E11d + iq*(X2q - Xs);
+      Ugen = sqrt(ud^2 + uq^2);
+      dUtr = sqrt(ud^2 + uq^2) - Ut;
+      dWu = Wc*Ssys;
+      dWf = if UqG <> 0 then atan2(UdG, UqG) else atan2(UdG, 0.001);
+      dIf = ir - Ir;
+      //----------------------------------------
+      Pgen = uq*iq + ud*id;
+      Qgen = -uq*id + ud*iq;
+      //-----------------------------------------------------------
+      uq = UqG*cos(DeltaIJ) - UdG*sin(DeltaIJ);
+      ud = UqG*sin(DeltaIJ) + UdG*cos(DeltaIJ);
+      //-----------------------------------------------------------
+      IqG = iq*cos(DeltaIJ) + id*sin(DeltaIJ);
+      IdG = id*cos(DeltaIJ) - iq*sin(DeltaIJ);
+      //-----------------------------------------------------------
+      f = Wc*(1-s)/2/PI;
+
+      //------connectors------
+
+      //--Stator--
+      Stator_pin.Vd = UdG;
+      Stator_pin.Vq = UqG;
+
+      Stator_pin.Id = IdG;
+      Stator_pin.Iq = IqG;
+
+      //---input-rotor--field--voltage---
+      Ef_pin.Signal = dEr;
+
+      //----to--excitation--system---
+      dUtr_pin.Signal = dUtr;
+      dWu_pin.Signal = dWu;
+      dWf_pin.Signal = dWf;
+      dIf_pin.Signal = dIf;
+      Ut_pin.Signal = Ut;
+      connect(dUtr_pin, dUtr_pin) annotation (Line(
+          points={{-54,100},{-54,100}},
+          color={255,255,0},
+          thickness=0.5));
+
+      annotation (
+        Coordsys(
+          extent=[-100, -100; 100, 100],
+          grid=[2, 2],
+          component=[20, 20]),
+        Window(
+          x=0.06,
+          y=0.07,
+          width=0.6,
+          height=0.77),
+        Diagram(coordinateSystem(
+            preserveAspectRatio=false,
+            preserveOrientation=false,
+            extent={{-100,-100},{100,100}},
+            grid={2,2},
+            initialScale=0), graphics),
+        Icon(
+          coordinateSystem(
+            preserveAspectRatio=false,
+            preserveOrientation=false,
+            extent={{-100,-100},{100,100}},
+            grid={2,2},
+            initialScale=0),
+          graphics={
+            Ellipse(
+              extent={{-66,66},{70,-64}},
+              lineColor={0,0,255},
+              lineThickness=1),
+            Text(extent={{-36,36},{40,-38}},  textString=
+                                                   "SM"),
+            Text(extent={{-74,-56},{86,-98}},
+              textColor={0,0,0},
+              textString="%name"),
+            Line(
+              points={{-58,0},{-94,0}},
+              color={0,0,255},
+              thickness=1),
+            Line(
+              points={{96,0},{62,0}},
+              color={0,0,255},
+              thickness=1),
+            Line(
+              points={{-46,48},{-54,60},{-54,94}},
+              color={0,0,255},
+              thickness=1),
+            Line(
+              points={{-26,60},{-26,96}},
+              color={0,0,255},
+              thickness=1),
+            Line(
+              points={{0,66},{0,98}},
+              color={0,0,255},
+              thickness=1),
+            Line(
+              points={{48,48},{56,60},{56,94}},
+              color={0,0,255},
+              thickness=1),
+            Line(
+              points={{28,60},{28,94}},
+              color={0,0,255},
+              thickness=1)},
+          Ellipse(extent=[-60, 62; 60, -58], style(thickness=2)),
+          Text(extent=[-38, 38; 38, -36], string="SM"),
+          Text(extent=[-80, -58; 80, -100], string="%name"),
+          Line(points=[-60, 2; -72, 2], style(thickness=2)),
+          Line(points=[70, 2; 60, 2], style(thickness=2))),
+                  __Dymola_Commands(editCall=plot(
+                {"L0709_1.P1","L0709_1.U1m"},
+                legends={"Calibration L0709_1.P1","Calibration L0709_1.U1m"},
+                colors={{255,0,0},{255,0,0}}) "Calibration_U"), Documentation(
+            info="<html>
+<p>Synchronous generator model</p>
+</html>"));
+    end Synch_Machine;
+
+    model Summator
+      LEPSE.Interfaces.Single_Pin inp1 annotation (
+        extent=[-94,14; -74,66],
+        layer="icon",
+        Placement(transformation(extent={{-110,16},{-90,68}},rotation=0),
+            iconTransformation(extent={{-110,16},{-90,68}})));
+      LEPSE.Interfaces.Single_Pin inp2 annotation (
+        extent=[-94,-66; -74,-14],
+        layer="icon",
+        Placement(transformation(extent={{-110,-66},{-90,-14}},rotation=0),
+            iconTransformation(extent={{-110,-66},{-90,-14}})));
+      LEPSE.Interfaces.Single_Pin out annotation (
+        extent=[74,-26; 94,26],
+        layer="icon",
+        Placement(transformation(extent={{90,-26},{110,26}},rotation=0),
+            iconTransformation(extent={{90,-26},{110,26}})));
+    equation
+      // the sum of 2 input signals
+      out.Signal = inp1.Signal + inp2.Signal;
+      annotation (
+        Coordsys(
+          extent=[-100, -100; 100, 100],
+          grid=[2, 2],
+          component=[20, 20]),
+        Icon(
+          coordinateSystem(
+            preserveAspectRatio=false,
+            preserveOrientation=false,
+            extent={{-100,-100},{100,100}},
+            grid={2,2},
+            initialScale=0),
+          graphics={
+            Rectangle(
+              extent={{-60,80},{60,-80}},
+              lineColor={0,0,255},
+              lineThickness=1,
+              fillColor={255,255,255},
+              fillPattern=FillPattern.Forward),
+            Line(
+              points={{-60,40},{-94,40}},
+              color={0,0,255},
+              thickness=1),
+            Line(
+              points={{-60,-40},{-96,-40}},
+              color={0,0,255},
+              thickness=1),
+            Line(
+              points={{96,0},{60,0}},
+              color={0,0,255},
+              thickness=1),
+            Rectangle(
+              extent={{-50,42},{-14,38}},
+              lineColor={28,108,200},
+              fillColor={0,0,0},
+              fillPattern=FillPattern.Solid,
+              lineThickness=1),
+            Rectangle(
+              extent={{-34,60},{-30,20}},
+              lineColor={28,108,200},
+              fillColor={0,0,0},
+              fillPattern=FillPattern.Solid,
+              lineThickness=1),
+            Rectangle(
+              extent={{-34,-20},{-30,-60}},
+              lineColor={28,108,200},
+              fillColor={0,0,0},
+              fillPattern=FillPattern.Solid,
+              lineThickness=1),
+            Rectangle(
+              extent={{-50,-38},{-14,-42}},
+              lineColor={28,108,200},
+              fillColor={0,0,0},
+              fillPattern=FillPattern.Solid,
+              lineThickness=1)},
+          Rectangle(extent=[-60, 80; 60, -80], style(
+              color=73,
+              thickness=2,
+              fillColor=7,
+              fillPattern=7)),
+          Line(points=[-60, 40; -76, 40], style(thickness=2)),
+          Line(points=[-60, -40; -76, -40], style(thickness=2)),
+          Line(points=[76, 0; 60, 0], style(thickness=2)),
+          Rectangle(extent=[-50, 42; -14, 38], style(fillColor=0)),
+          Rectangle(extent=[-34, 60; -30, 20], style(fillColor=0)),
+          Rectangle(extent=[-34, -20; -30, -60], style(fillColor=0)),
+          Rectangle(extent=[-50, -38; -14, -42], style(fillColor=0))),
+        Window(
+          x=0.29,
+          y=0.02,
+          width=0.6,
+          height=0.6),
+        Documentation(info="<html>
+<p>The adder model</p>
+</html>"));
+    end Summator;
+
+    model logical_switch
+      parameter Real a1 "Uforc, Voltage of field forcing input";
+      parameter Real a2 "Udeforc, Voltage of field forcing removing";
+      parameter Real a3 "K0U, Voltage deviation control coefficient";
+      parameter Real a4 "Tforcedelay, Delay of field forcing removing";
+      Real T_force_on "moment of time, when forcing starts";
+
+      LEPSE.Interfaces.Single_Pin inp1 annotation (
+        extent=[-94,14; -74,66],
+        layer="icon",
+        Placement(transformation(extent={{-110,8},{-90,60}}, rotation=0),
+            iconTransformation(extent={{-110,8},{-90,60}})));
+      LEPSE.Interfaces.Single_Pin inp2 annotation (
+        extent=[-94,-66; -74,-14],
+        layer="icon",
+        Placement(transformation(extent={{-110,-62},{-90,-10}},
+                                                              rotation=0),
+            iconTransformation(extent={{-110,-62},{-90,-10}})));
+      LEPSE.Interfaces.Single_Pin inp2inf annotation (
+        extent=[-94,-66; -74,-14],
+        layer="icon",
+        Placement(transformation(
+            extent={{-10,-26},{10,26}},
+            rotation=90,
+            origin={2,-118}), iconTransformation(
+            extent={{-10,-26},{10,26}},
+            rotation=90,
+            origin={2,-118})));
+      LEPSE.Interfaces.Single_Pin out annotation (
+        extent=[74,-26; 94,26],
+        layer="icon",
+        Placement(transformation(extent={{90,-34},{110,18}},rotation=0),
+            iconTransformation(extent={{90,-34},{110,18}})));
+      Interfaces.Single_Pin inp1inf annotation (Placement(transformation(extent={{-24,110},
+                {26,130}}),          iconTransformation(extent={{-24,110},{26,
+                130}})));
+
+    initial equation
+      pre(T_force_on) = 0;
+
+      // the condition of forcing's start
+    equation
+      when abs(inp1inf.Signal) < (inp2inf.Signal - a2) then
+        T_force_on = time;
+      end when;
+
+      // the value of output signal
+      out.Signal = if (abs(inp1inf.Signal) > (inp2inf.Signal - a1)) then (inp1.Signal)
+         else (if (abs(inp1inf.Signal) > (inp2inf.Signal - a2)) then (inp1.Signal)
+         else (if (time < T_force_on + a4) then (inp1.Signal) else (inp2.Signal)));
+
+      annotation (
+        Coordsys(
+          extent=[-100, -100; 100, 100],
+          grid=[2, 2],
+          component=[20, 20]),
+        Icon(
+          coordinateSystem(
+            preserveAspectRatio=false,
+            preserveOrientation=false,
+            extent={{-100,-120},{100,120}},
+            grid={2,2},
+            initialScale=0),
+          graphics={
+            Rectangle(
+              extent={{-58,74},{62,-86}},
+              lineColor={0,0,255},
+              lineThickness=1,
+              fillPattern=FillPattern.Forward,
+              fillColor={244,125,35}),
+            Line(
+              points={{-46,34},{-94,34}},
+              color={0,0,255},
+              thickness=1),
+            Line(
+              points={{-48,-34},{-94,-34}},
+              color={0,0,255},
+              thickness=1),
+            Line(
+              points={{98,-6},{44,-6}},
+              color={0,0,255},
+              thickness=1),
+            Line(
+              points={{-162,80}},
+              color={162,29,33},
+              thickness=1,
+              smooth=Smooth.Bezier),
+            Line(
+              points={{-6,-6},{-46,34}},
+              color={0,0,255},
+              thickness=1),
+            Line(
+              points={{16,-6},{-6,-6}},
+              color={28,108,200},
+              thickness=1),
+            Line(
+              points={{50,-6},{16,-6}},
+              color={0,0,255},
+              thickness=1),
+            Text(extent={{-158,176},{162,136}},
+              textColor={0,0,0},
+              textString="%name"),
+            Line(
+              points={{10,6},{-16,6}},
+              color={0,0,255},
+              thickness=1,
+              origin={8,-96},
+              rotation=90),
+            Line(
+              points={{0,118},{0,74}},
+              color={0,0,255},
+              thickness=1)},
+          Rectangle(extent=[-60, 80; 60, -80], style(
+              color=73,
+              thickness=2,
+              fillColor=7,
+              fillPattern=7)),
+          Line(points=[-60, 40; -76, 40], style(thickness=2)),
+          Line(points=[-60, -40; -76, -40], style(thickness=2)),
+          Line(points=[76, 0; 60, 0], style(thickness=2)),
+          Rectangle(extent=[-50, 42; -14, 38], style(fillColor=0)),
+          Rectangle(extent=[-34, 60; -30, 20], style(fillColor=0)),
+          Rectangle(extent=[-34, -20; -30, -60], style(fillColor=0)),
+          Rectangle(extent=[-50, -38; -14, -42], style(fillColor=0))),
+        Window(
+          x=0.29,
+          y=0.02,
+          width=0.6,
+          height=0.6),
+        Diagram(coordinateSystem(extent={{-100,-120},{100,120}})),
+        Documentation(info="<html>
+<p>The model of the logic key of the automatic excitation regulator</p>
+</html>"));
+    end logical_switch;
+    annotation (__Dymola_UserMetaData(MetaData(category="User Meta Data 1",
+            value={ERROR})), Icon(graphics={Bitmap(extent={{-108,-96},{108,96}},
+              fileName="modelica://LEPSE/Images/PTL.png")}));
+  end Basic;
+
   package Examples
 
     model KKT_base
-    Real delta_G07_G01, delta_G13_G01, delta_G23_G01, delta_G24_G01, delta_G33_G01, delta_G36_G01, delta_G44_G01, delta_G53_G01, delta_G54_G01;
+      Real delta_G07_G01(start=-1.2780330181121826),
+           delta_G13_G01(start=-0.5716190934181213),
+           delta_G23_G01(start=0.24687373638153076),
+           delta_G24_G01(start=0.1558079868555069),
+           delta_G33_G01(start=-0.8314602375030518),
+           delta_G36_G01(start=-0.544788122177124),
+           delta_G44_G01(start=-0.31162023544311523),
+           delta_G53_G01(start=-1.0288209915161133),
+           delta_G54_G01(start=-0.7352678179740906)
+                                   "Mutual angles";
 
       LEPSE.Basic.HVline L0102(
         Rline=0.0274,
@@ -88,7 +2102,7 @@
         Bline1=0.0202,
         Bline2=0.0202)
         annotation (Placement(transformation(extent={{442,8},{462,28}})));
-      LEPSE.Basic.Constant_Conductivity_Load N01(Gn=52.89, Bn=-24.99)
+      LEPSE.Basic.Constant_Conductivity_Load N01(Gn=52.9, Bn=-24.69)
                                                                     annotation (
          Placement(transformation(
             extent={{-10,-10},{10,10}},
@@ -166,7 +2180,7 @@
         Xline=2.7983,
         Bline1=0.0046,
         Bline2=0.0046)
-        annotation (Placement(transformation(extent={{68,-62},{88,-42}})));
+        annotation (Placement(transformation(extent={{66,-60},{86,-40}})));
       LEPSE.Basic.Transformer T2452(Rline=0.0123, Xline=0.4493) annotation (
           Placement(transformation(
             extent={{-10,-10},{10,10}},
@@ -233,7 +2247,7 @@
         annotation (Placement(transformation(
             extent={{-10,-10},{10,10}},
             rotation=270,
-            origin={64,-16})));
+            origin={62,-16})));
       LEPSE.Basic.HVline L3234(
         Rline=0.3015,
         Xline=1.0723,
@@ -427,46 +2441,126 @@
             extent={{-10,-10},{10,10}},
             rotation=90,
             origin={436,-8})));
-      Submodel3 G54 "Niva HPP"
+      Submodel3 G54(G54_Regulator(
+          ExcitationCurrent(x(start={-0.023175831884145737})),
+          FrequencyBlockD(x(start={0.47270649671554565})),
+          FrequencyDerivative(x(start={0.47276583313941956})),
+          FrequencyDeviation(x(start={0.47277745604515076})),
+          SimpleExciter(x(start={-0.09808942675590515})),
+          VoltageDerivative(x(start={0.003923555836081505})),
+          VoltageDeviation(x(start={0.0039235432632267475}))))
+                    "Niva HPP"
                     annotation (Placement(transformation(origin={-37.4642,
                 33.3892},                                                    extent={{151.464,
                 -199.389},{183.466,-167.389}})));
-      Submodel4 G07 "Kolskaya NPP"
+      Submodel4 G07(G07_Regulator(
+          ExcitationCurrent(x(start={-0.26756539940834045})),
+          FrequencyBlockD(x(start={0.47270649671554565})),
+          FrequencyDerivative(x(start={0.47276681661605835})),
+          FrequencyDeviation(x(start={0.47277846932411194})),
+          SimpleExciter(x(start={-0.3302517831325531})),
+          VoltageDerivative(x(start={0.013200302608311176})),
+          VoltageDeviation(x(start={0.01319999247789383}))))
+                    "Kolskaya NPP"
                     annotation (Placement(transformation(rotation=0, extent={{-16,-16},
                 {16,16}},
             origin={166,48})));
-      Submodel6 G44 "Serebryanskaya HPP-16"
+      Submodel6 G44(G44_Regulator(
+          ExcitationCurrent(x(start={-0.03847995400428772})),
+          FrequencyBlockD(x(start={0.47270649671554565})),
+          FrequencyDerivative(x(start={0.4727666974067688})),
+          FrequencyDeviation(x(start={0.47277843952178955})),
+          SimpleExciter(x(start={-0.22746887803077698})),
+          VoltageDerivative(x(start={0.009098716080188751})),
+          VoltageDeviation(x(start={0.009098692797124386}))))
+                    "Serebryanskaya HPP-16"
                     annotation (Placement(transformation(rotation=0, extent={{-16,-17},
                 {16,17}},
             origin={470,-109})));
-      Submodel7 G53 "Knyazhegubskaya HPP"
+      Submodel7 G53(G53_Regulator(
+          ExcitationCurrent(x(start={-0.07316956669092178})),
+          FrequencyBlockD(x(start={0.47270649671554565})),
+          FrequencyDerivative(x(start={0.4727654457092285})),
+          FrequencyDeviation(x(start={0.47277697920799255})),
+          SimpleExciter(x(start={-0.440280944108963})),
+          VoltageDerivative(x(start={0.017611216753721237})),
+          VoltageDeviation(x(start={0.017611203715205193}))))
+                    "Knyazhegubskaya HPP"
                     annotation (Placement(transformation(rotation=0, extent={{70,-126},
                 {102,-94}})));
-      Submodel8 G36 "Apatitskaya TPP"
+      Submodel8 G36(G36_Regulator(
+          ExcitationCurrent(x(start={0.010285085998475552})),
+          FrequencyBlockD(x(start={0.47270649671554565})),
+          FrequencyDerivative(x(start={0.4727649688720703})),
+          FrequencyDeviation(x(start={0.4727763831615448})),
+          SimpleExciter(x(start={0.07171475887298584})),
+          VoltageDerivative(x(start={-0.0028685845900326967})),
+          VoltageDeviation(x(start={-0.002868581097573042}))))
+                    "Apatitskaya TPP"
                     annotation (Placement(transformation(rotation=180,
                                                                      extent={{-16,-17},
                 {16,17}},
             origin={346,-147})));
-      Submodel9 G33 "Iovskaya + Kumskaya HPP"
+      Submodel9 G33(G33_Regulator(
+          ExcitationCurrent(x(start={-0.04945843666791916})),
+          FrequencyBlockD(x(start={0.47270649671554565})),
+          FrequencyDerivative(x(start={0.47276630997657776})),
+          FrequencyDeviation(x(start={0.4727780222892761})),
+          SimpleExciter(x(start={-0.22212731838226318})),
+          VoltageDerivative(x(start={0.008885062299668789})),
+          VoltageDeviation(x(start={0.008885042741894722}))))
+                    "Iovskaya + Kumskaya HPP"
                     annotation (Placement(transformation(rotation=180,
-                                                                     extent={{-14,-17},
-                {14,17}},
-            origin={232,-115})));
-      Submodel10 G01 "Petrozavodsk - infinite bus"
+                                                                     extent={{-16,-17},
+                {16,17}},
+            origin={234,-115})));
+      Submodel10 G01(G01_Regulator(
+          ExcitationCurrent(x(start={-0.36905884742736816})),
+          FrequencyBlockD(x(start={0.47270649671554565})),
+          FrequencyDerivative(x(start={0.4727068543434143})),
+          FrequencyDeviation(x(start={0.4727068543434143})),
+          SimpleExciter(x(start={-0.01379958726465702})),
+          VoltageDerivative(x(start={0.000275991769740358})),
+          VoltageDeviation(x(start={0.0002759917115326971}))))
+                     "Petrozavodsk - infinite bus"
                      annotation (Placement(transformation(rotation=0, extent={{-17,-17},
                 {17,17}},
             origin={-53,33})));
-      Submodel1_1 G23 "Onda HPP"
+      Submodel1_1 G23(G23_Regulator(
+          ExcitationCurrent(x(start={0.007613298017531633})),
+          FrequencyBlockD(x(start={0.47270649671554565})),
+          FrequencyDerivative(x(start={0.4727334678173065})),
+          FrequencyDeviation(x(start={0.4727388024330139})),
+          SimpleExciter(x(start={0.07452328503131866})),
+          VoltageDerivative(x(start={-0.0029810427222400904})),
+          VoltageDeviation(x(start={-0.002981110941618681}))))
+                      "Onda HPP"
                       annotation (Placement(transformation(
             rotation=0,
             extent={{-23,-19},{23,19}},
             origin={-11,-89})));
-      Submodel2_1 G24 "Putkinskaya HPP"
+      Submodel2_1 G24(G24_Regulator(
+          ExcitationCurrent(x(start={0.01093677245080471})),
+          FrequencyBlockD(x(start={0.47270649671554565})),
+          FrequencyDerivative(x(start={0.4727424681186676})),
+          FrequencyDeviation(x(start={0.47274959087371826})),
+          SimpleExciter(x(start={0.15797199308872223})),
+          VoltageDerivative(x(start={-0.006319026928395033})),
+          VoltageDeviation(x(start={-0.006319116335362196}))))
+                      "Putkinskaya HPP"
                       annotation (Placement(transformation(
             rotation=180,
             extent={{-16,-16},{16,16}},
             origin={146,-16})));
-      Submodel5_1 G13 "Serebryanskaya HPP-15"
+      Submodel5_1 G13(G013_Regulator(
+          ExcitationCurrent(x(start={-0.030580386519432068})),
+          FrequencyBlockD(x(start={0.47270649671554565})),
+          FrequencyDerivative(x(start={0.472766637802124})),
+          FrequencyDeviation(x(start={0.4727783799171448})),
+          SimpleExciter(x(start={-0.37765565514564514})),
+          VoltageDerivative(x(start={0.0151061387732625})),
+          VoltageDeviation(x(start={0.015106085687875748}))))
+                      "Serebryanskaya HPP-15"
                       annotation (Placement(transformation(
             rotation=0,
             extent={{-17,-16},{17,16}},
@@ -519,131 +2613,134 @@
             extent={{-10,-10},{10,10}},
             rotation=180,
             origin={112,-14})));
-      LEPSE.Basic.Node node_1 annotation (Placement(transformation(extent={{-30,
-                18},{-24,24}}), iconTransformation(extent={{-120,-100},{-100,
+      LEPSE.Interfaces.Node node_1 annotation (Placement(transformation(extent=
+                {{-30,18},{-24,24}}), iconTransformation(extent={{-120,-100},{-100,
                 -80}})));
-      LEPSE.Basic.Node node_2 annotation (Placement(transformation(extent={{6,
-                18},{12,24}}), iconTransformation(extent={{-120,-100},{-100,-80}})));
-      LEPSE.Basic.Node node_3 annotation (Placement(transformation(extent={{36,
-                18},{42,24}}), iconTransformation(extent={{-120,-100},{-100,-80}})));
-      LEPSE.Basic.Node node_4 annotation (Placement(transformation(extent={{74,
-                18},{80,24}}), iconTransformation(extent={{-120,-100},{-100,-80}})));
-      LEPSE.Basic.Node node_5 annotation (Placement(transformation(extent={{124,
-                18},{130,24}}), iconTransformation(extent={{-120,-100},{-100,
+      LEPSE.Interfaces.Node node_2 annotation (Placement(transformation(extent=
+                {{6,18},{12,24}}), iconTransformation(extent={{-120,-100},{-100,
                 -80}})));
-      LEPSE.Basic.Node node_6 annotation (Placement(transformation(extent={{186,
-                18},{192,24}}), iconTransformation(extent={{-120,-100},{-100,
+      LEPSE.Interfaces.Node node_3 annotation (Placement(transformation(extent=
+                {{36,18},{42,24}}), iconTransformation(extent={{-120,-100},{-100,
                 -80}})));
-      LEPSE.Basic.Node node_7 annotation (Placement(transformation(extent={{242,
-                18},{248,24}}), iconTransformation(extent={{-120,-100},{-100,
+      LEPSE.Interfaces.Node node_4 annotation (Placement(transformation(extent=
+                {{74,18},{80,24}}), iconTransformation(extent={{-120,-100},{-100,
                 -80}})));
-      LEPSE.Basic.Node node_8 annotation (Placement(transformation(extent={{262,
-                -28},{268,-22}}), iconTransformation(extent={{-120,-100},{-100,
+      LEPSE.Interfaces.Node node_5 annotation (Placement(transformation(extent=
+                {{124,18},{130,24}}), iconTransformation(extent={{-120,-100},{-100,
                 -80}})));
-      LEPSE.Basic.Node node_9 annotation (Placement(transformation(extent={{274,
-                18},{280,24}}), iconTransformation(extent={{-120,-100},{-100,
+      LEPSE.Interfaces.Node node_6 annotation (Placement(transformation(extent=
+                {{186,18},{192,24}}), iconTransformation(extent={{-120,-100},{-100,
                 -80}})));
-      LEPSE.Basic.Node node_10 annotation (Placement(transformation(extent={{
-                304,18},{310,24}}), iconTransformation(extent={{-120,-100},{
-                -100,-80}})));
-      LEPSE.Basic.Node node_11 annotation (Placement(transformation(extent={{
-                400,20},{406,26}}), iconTransformation(extent={{-120,-100},{
-                -100,-80}})));
-      LEPSE.Basic.Node node_12 annotation (Placement(transformation(extent={{
-                432,20},{438,26}}), iconTransformation(extent={{-120,-100},{
-                -100,-80}})));
-      LEPSE.Basic.Node node_13 annotation (Placement(transformation(extent={{
-                468,20},{474,26}}), iconTransformation(extent={{-120,-100},{
-                -100,-80}})));
-      LEPSE.Basic.Node node_14 annotation (Placement(transformation(extent={{
-                468,66},{474,72}}), iconTransformation(extent={{-120,-100},{
-                -100,-80}})));
-      LEPSE.Basic.Node node_15 annotation (Placement(transformation(extent={{
-                192,46},{198,52}}), iconTransformation(extent={{-120,-100},{
-                -100,-80}})));
-      LEPSE.Basic.Node node_16 annotation (Placement(transformation(extent={{18,
-                -92},{24,-86}}), iconTransformation(extent={{-120,-100},{-100,
+      LEPSE.Interfaces.Node node_7 annotation (Placement(transformation(extent=
+                {{242,18},{248,24}}), iconTransformation(extent={{-120,-100},{-100,
                 -80}})));
-      LEPSE.Basic.Node node_17 annotation (Placement(transformation(extent={{
-                124,-18},{130,-12}}), iconTransformation(extent={{-120,-100},{
-                -100,-80}})));
-      LEPSE.Basic.Node node_21 annotation (Placement(transformation(extent={{-30,
-                -34},{-24,-28}}), iconTransformation(extent={{-120,-100},{-100,
-                -80}})));
-      LEPSE.Basic.Node node_22 annotation (Placement(transformation(extent={{6,
-                -34},{12,-28}}), iconTransformation(extent={{-120,-100},{-100,
-                -80}})));
-      LEPSE.Basic.Node node_23 annotation (Placement(transformation(extent={{34,
-                -34},{40,-28}}), iconTransformation(extent={{-120,-100},{-100,
-                -80}})));
-      LEPSE.Basic.Node node_24 annotation (Placement(transformation(extent={{88,
-                -20},{94,-14}}), iconTransformation(extent={{-120,-100},{-100,
-                -80}})));
-      LEPSE.Basic.Node node_31 annotation (Placement(transformation(extent={{
-                186,-16},{192,-10}}), iconTransformation(extent={{-120,-100},{
-                -100,-80}})));
-      LEPSE.Basic.Node node_32 annotation (Placement(transformation(extent={{
-                162,-48},{168,-42}}), iconTransformation(extent={{-120,-100},{
-                -100,-80}})));
-      LEPSE.Basic.Node node_33 annotation (Placement(transformation(extent={{
-                212,-62},{218,-56}}), iconTransformation(extent={{-120,-100},{
-                -100,-80}})));
-      LEPSE.Basic.Node node_34 annotation (Placement(transformation(extent={{
-                250,-62},{256,-56}}), iconTransformation(extent={{-120,-100},{
-                -100,-80}})));
-      LEPSE.Basic.Node node_35 annotation (Placement(transformation(extent={{
-                268,-76},{274,-70}}), iconTransformation(extent={{-120,-100},{
-                -100,-80}})));
-      LEPSE.Basic.Node node_36 annotation (Placement(transformation(extent={{
-                284,-124},{290,-118}}), iconTransformation(extent={{-120,-100},
+      LEPSE.Interfaces.Node node_8 annotation (Placement(transformation(extent=
+                {{262,-28},{268,-22}}), iconTransformation(extent={{-120,-100},
                 {-100,-80}})));
-      LEPSE.Basic.Node node_48 annotation (Placement(transformation(extent={{110,
-                -112},{116,-106}}),     iconTransformation(extent={{-120,-100},
-                {-100,-80}})));
-      LEPSE.Basic.Node node_53 annotation (Placement(transformation(extent={{
-                132,-74},{138,-68}}), iconTransformation(extent={{-120,-100},{
-                -100,-80}})));
-      LEPSE.Basic.Node node_51 annotation (Placement(transformation(extent={{60,
-                -50},{66,-44}}), iconTransformation(extent={{-120,-100},{-100,
+      LEPSE.Interfaces.Node node_9 annotation (Placement(transformation(extent=
+                {{274,18},{280,24}}), iconTransformation(extent={{-120,-100},{-100,
                 -80}})));
-      LEPSE.Basic.Node node_52 annotation (Placement(transformation(extent={{88,
-                -50},{94,-44}}), iconTransformation(extent={{-120,-100},{-100,
+      LEPSE.Interfaces.Node node_10 annotation (Placement(transformation(extent
+              ={{304,18},{310,24}}), iconTransformation(extent={{-120,-100},{-100,
                 -80}})));
-      LEPSE.Basic.Node node_47 annotation (Placement(transformation(extent={{
-                202,-120},{208,-114}}), iconTransformation(extent={{-120,-100},
+      LEPSE.Interfaces.Node node_11 annotation (Placement(transformation(extent
+              ={{400,20},{406,26}}), iconTransformation(extent={{-120,-100},{-100,
+                -80}})));
+      LEPSE.Interfaces.Node node_12 annotation (Placement(transformation(extent
+              ={{432,20},{438,26}}), iconTransformation(extent={{-120,-100},{-100,
+                -80}})));
+      LEPSE.Interfaces.Node node_13 annotation (Placement(transformation(extent
+              ={{468,20},{474,26}}), iconTransformation(extent={{-120,-100},{-100,
+                -80}})));
+      LEPSE.Interfaces.Node node_14 annotation (Placement(transformation(extent
+              ={{468,66},{474,72}}), iconTransformation(extent={{-120,-100},{-100,
+                -80}})));
+      LEPSE.Interfaces.Node node_15 annotation (Placement(transformation(extent
+              ={{192,46},{198,52}}), iconTransformation(extent={{-120,-100},{-100,
+                -80}})));
+      LEPSE.Interfaces.Node node_16 annotation (Placement(transformation(extent
+              ={{18,-92},{24,-86}}), iconTransformation(extent={{-120,-100},{-100,
+                -80}})));
+      LEPSE.Interfaces.Node node_17 annotation (Placement(transformation(extent
+              ={{124,-18},{130,-12}}), iconTransformation(extent={{-120,-100},{
+                -100,-80}})));
+      LEPSE.Interfaces.Node node_21 annotation (Placement(transformation(extent
+              ={{-30,-34},{-24,-28}}), iconTransformation(extent={{-120,-100},{
+                -100,-80}})));
+      LEPSE.Interfaces.Node node_22 annotation (Placement(transformation(extent
+              ={{6,-34},{12,-28}}), iconTransformation(extent={{-120,-100},{-100,
+                -80}})));
+      LEPSE.Interfaces.Node node_23 annotation (Placement(transformation(extent
+              ={{34,-34},{40,-28}}), iconTransformation(extent={{-120,-100},{-100,
+                -80}})));
+      LEPSE.Interfaces.Node node_24 annotation (Placement(transformation(extent
+              ={{88,-20},{94,-14}}), iconTransformation(extent={{-120,-100},{-100,
+                -80}})));
+      LEPSE.Interfaces.Node node_31 annotation (Placement(transformation(extent
+              ={{186,-16},{192,-10}}), iconTransformation(extent={{-120,-100},{
+                -100,-80}})));
+      LEPSE.Interfaces.Node node_32 annotation (Placement(transformation(extent
+              ={{162,-48},{168,-42}}), iconTransformation(extent={{-120,-100},{
+                -100,-80}})));
+      LEPSE.Interfaces.Node node_33 annotation (Placement(transformation(extent
+              ={{212,-62},{218,-56}}), iconTransformation(extent={{-120,-100},{
+                -100,-80}})));
+      LEPSE.Interfaces.Node node_34 annotation (Placement(transformation(extent
+              ={{250,-62},{256,-56}}), iconTransformation(extent={{-120,-100},{
+                -100,-80}})));
+      LEPSE.Interfaces.Node node_35 annotation (Placement(transformation(extent
+              ={{268,-76},{274,-70}}), iconTransformation(extent={{-120,-100},{
+                -100,-80}})));
+      LEPSE.Interfaces.Node node_36 annotation (Placement(transformation(extent
+              ={{284,-124},{290,-118}}), iconTransformation(extent={{-120,-100},
                 {-100,-80}})));
-      LEPSE.Basic.Node node_54 annotation (Placement(transformation(extent={{
-                182,-152},{188,-146}}), iconTransformation(extent={{-120,-100},
+      LEPSE.Interfaces.Node node_48 annotation (Placement(transformation(extent
+              ={{110,-112},{116,-106}}), iconTransformation(extent={{-120,-100},
                 {-100,-80}})));
-      LEPSE.Basic.Node node_55 annotation (Placement(transformation(extent={{
-                238,-152},{244,-146}}), iconTransformation(extent={{-120,-100},
+      LEPSE.Interfaces.Node node_53 annotation (Placement(transformation(extent
+              ={{132,-74},{138,-68}}), iconTransformation(extent={{-120,-100},{
+                -100,-80}})));
+      LEPSE.Interfaces.Node node_51 annotation (Placement(transformation(extent
+              ={{60,-50},{66,-44}}), iconTransformation(extent={{-120,-100},{-100,
+                -80}})));
+      LEPSE.Interfaces.Node node_52 annotation (Placement(transformation(extent
+              ={{88,-50},{94,-44}}), iconTransformation(extent={{-120,-100},{-100,
+                -80}})));
+      LEPSE.Interfaces.Node node_47 annotation (Placement(transformation(extent
+              ={{202,-120},{208,-114}}), iconTransformation(extent={{-120,-100},
                 {-100,-80}})));
-      LEPSE.Basic.Node node_46 annotation (Placement(transformation(extent={{
-                312,-152},{318,-146}}), iconTransformation(extent={{-120,-100},
+      LEPSE.Interfaces.Node node_54 annotation (Placement(transformation(extent
+              ={{182,-152},{188,-146}}), iconTransformation(extent={{-120,-100},
                 {-100,-80}})));
-      LEPSE.Basic.Node node_39 annotation (Placement(transformation(extent={{
-                334,-88},{340,-82}}), iconTransformation(extent={{-120,-100},{
+      LEPSE.Interfaces.Node node_55 annotation (Placement(transformation(extent
+              ={{238,-152},{244,-146}}), iconTransformation(extent={{-120,-100},
+                {-100,-80}})));
+      LEPSE.Interfaces.Node node_46 annotation (Placement(transformation(extent
+              ={{312,-152},{318,-146}}), iconTransformation(extent={{-120,-100},
+                {-100,-80}})));
+      LEPSE.Interfaces.Node node_39 annotation (Placement(transformation(extent
+              ={{334,-88},{340,-82}}), iconTransformation(extent={{-120,-100},{
                 -100,-80}})));
-      LEPSE.Basic.Node node_37 annotation (Placement(transformation(extent={{
-                334,-10},{340,-4}}), iconTransformation(extent={{-120,-100},{
+      LEPSE.Interfaces.Node node_37 annotation (Placement(transformation(extent
+              ={{334,-10},{340,-4}}), iconTransformation(extent={{-120,-100},{-100,
+                -80}})));
+      LEPSE.Interfaces.Node node_38 annotation (Placement(transformation(extent
+              ={{364,-54},{370,-48}}), iconTransformation(extent={{-120,-100},{
                 -100,-80}})));
-      LEPSE.Basic.Node node_38 annotation (Placement(transformation(extent={{
-                364,-54},{370,-48}}), iconTransformation(extent={{-120,-100},{
+      LEPSE.Interfaces.Node node_40 annotation (Placement(transformation(extent
+              ={{400,-44},{406,-38}}), iconTransformation(extent={{-120,-100},{
                 -100,-80}})));
-      LEPSE.Basic.Node node_40 annotation (Placement(transformation(extent={{
-                400,-44},{406,-38}}), iconTransformation(extent={{-120,-100},{
+      LEPSE.Interfaces.Node node_45 annotation (Placement(transformation(extent
+              ={{486,-22},{492,-16}}), iconTransformation(extent={{-120,-100},{
                 -100,-80}})));
-      LEPSE.Basic.Node node_45 annotation (Placement(transformation(extent={{
-                486,-22},{492,-16}}), iconTransformation(extent={{-120,-100},{
+      LEPSE.Interfaces.Node node_43 annotation (Placement(transformation(extent
+              ={{492,-96},{498,-90}}), iconTransformation(extent={{-120,-100},{
                 -100,-80}})));
-      LEPSE.Basic.Node node_43 annotation (Placement(transformation(extent={{
-                492,-96},{498,-90}}), iconTransformation(extent={{-120,-100},{
+      LEPSE.Interfaces.Node node_44 annotation (Placement(transformation(extent
+              ={{466,-44},{472,-38}}), iconTransformation(extent={{-120,-100},{
                 -100,-80}})));
-      LEPSE.Basic.Node node_44 annotation (Placement(transformation(extent={{
-                466,-44},{472,-38}}), iconTransformation(extent={{-120,-100},{
-                -100,-80}})));
-      LEPSE.Basic.Node node_42 annotation (Placement(transformation(extent={{
-                434,-44},{440,-38}}), iconTransformation(extent={{-120,-100},{
+      LEPSE.Interfaces.Node node_42 annotation (Placement(transformation(extent
+              ={{434,-44},{440,-38}}), iconTransformation(extent={{-120,-100},{
                 -100,-80}})));
       LEPSE.Basic.HVline L0709_2(
         TLineOff=40,
@@ -656,7 +2753,7 @@
         annotation (Placement(transformation(extent={{254,-12},{274,8}})));
       LEPSE.Basic.ShortCircuitShunt shortCircuitShunt(
         Bn=-12,
-        TkzOn=40,
+        TkzOn=40.0,
         dTkzOn=0.11) annotation (Placement(transformation(
             extent={{-10,-10},{10,10}},
             rotation=180,
@@ -671,13 +2768,12 @@
             extent={{-10,-10},{10,10}},
             rotation=0,
             origin={168,-150})));
-      Basic.Node       node_18 annotation (Placement(transformation(extent={{148,
-                -152},{154,-146}}),
-                                 iconTransformation(extent={{-120,-100},{-100,
+      Interfaces.Node node_18 annotation (Placement(transformation(extent={{148,
+                -152},{154,-146}}), iconTransformation(extent={{-120,-100},{-100,
                 -80}})));
     equation
-
-     der(delta_G07_G01) = G01.G01.Wc*(G01.G01.s - G07.G07.s);
+      // the formulas of the derivatives of the angles
+      der(delta_G07_G01) = G01.G01.Wc*(G01.G01.s - G07.G07.s);
       der(delta_G13_G01) = G01.G01.Wc*(G01.G01.s - G13.G13.s);
       der(delta_G23_G01) = G01.G01.Wc*(G01.G01.s - G23.G23.s);
       der(delta_G24_G01) = G01.G01.Wc*(G01.G01.s - G24.G24.s);
@@ -687,6 +2783,7 @@
       der(delta_G53_G01) = G01.G01.Wc*(G01.G01.s - G53.G53.s);
       der(delta_G54_G01) = G01.G01.Wc*(G01.G01.s - G54.G54.s);
 
+      // the equations of the relation of power and mutual angles
       G01.G01.DeltaIJ = 0;
       G07.G07.DeltaIJ = delta_G07_G01;
       G13.G13.DeltaIJ = delta_G13_G01;
@@ -698,6 +2795,7 @@
       G53.G53.DeltaIJ = delta_G53_G01;
       G54.G54.DeltaIJ = delta_G54_G01;
 
+      // equating of basis slip to G01 generatot's slip
       G01.G01.Ssys=G01.G01.s;
       G07.G07.Ssys=G01.G01.s;
       G13.G13.Ssys=G01.G01.s;
@@ -709,11 +2807,11 @@
       G53.G53.Ssys=G01.G01.s;
       G54.G54.Ssys=G01.G01.s;
 
-      connect(L3840.inp, L3738.inp) annotation (Line(points={{378.4,-41},{378.4,-40},
-              {367,-40},{367,-29.6}},     color={28,108,200}));
+      connect(L3840.inp, L3738.inp) annotation (Line(points={{376.2,-42},{376.2,
+              -40},{368,-40},{368,-31.8}},color={28,108,200}));
 
-      connect(T1242.inp, L4042.out) annotation (Line(points={{435,-15.8},{435,
-              -32},{436,-32},{436,-40.8},{427.8,-40.8}},
+      connect(T1242.inp, L4042.out) annotation (Line(points={{435,-17.8},{435,
+              -32},{436,-32},{436,-42},{430,-42}},
                                             color={28,108,200}));
     protected
       model KKT_1
@@ -744,7 +2842,7 @@
               extent={{-13,-13},{13,13}},
               rotation=0,
               origin={-65,37})));
-        LEPSE.Basic.Pin_v2 Stator_pin annotation (Placement(transformation(
+        LEPSE.Interfaces.Pin_v2 Stator_pin annotation (Placement(transformation(
                 rotation=0, extent={{70,-2},{90,18}})));
       equation
         connect(G01.dUtr_pin,G01_Regulator. dV_pin) annotation (Line(
@@ -842,40 +2940,40 @@
               extent={{-10,-10},{10,10}},
               rotation=0,
               origin={-5,-4})));
-        LEPSE.Basic.Pin_v2 Stator_pin annotation (Placement(transformation(
+        LEPSE.Interfaces.Pin_v2 Stator_pin annotation (Placement(transformation(
                 rotation=0, extent={{65.5,-1.5},{82,10}}), iconTransformation(
                 extent={{66,-6},{82,10}})));
       equation
         connect(G54.dUtr_pin,G54_Regulator. dV_pin) annotation (Line(
-            points={{13.4,3.6},{17,3.6},{17,10},{-23,10},{-23,3},{-14.25,3}},
+            points={{13.6,6},{17,6},{17,10},{-23,10},{-23,1},{-15.0833,1}},
             color={255,255,0},
             thickness=0.5));
         connect(G54_Regulator.dV_pin,G54_Regulator. dV1_pin) annotation (Line(
-            points={{-14.25,3},{-14.25,2},{-14,2},{-14.4,2},{-14.1,2},{-14.25,0}},
+            points={{-15.0833,1},{-15.0833,2},{-14,2},{-14.4,2},{-15.0833,2},{
+                -15.0833,-2}},
             color={255,255,0},
             thickness=0.5));
         connect(G54.dWu_pin,G54_Regulator. dfsys_pin) annotation (Line(
-            points={{15.8,3.6},{15,3.6},{15,8},{-21,8},{-21,-3},{-14.25,-3}},
+            points={{16.4,6},{15,6},{15,8},{-21,8},{-21,-5},{-15.0833,-5}},
             color={255,255,0},
             thickness=0.5));
         connect(G54.dWf_pin,G54_Regulator. dfU_pin) annotation (Line(
-            points={{18.2,3.6},{18.2,12},{-23,12},{-23,-6},{-14.25,-6}},
+            points={{19,6},{19,12},{-23,12},{-23,-8},{-15.0833,-8}},
             color={255,255,0},
             thickness=0.5));
         connect(G54.dIf_pin,G54_Regulator. dif1_pin) annotation (Line(
-            points={{20.8,3.6},{20.8,14},{-25,14},{-25,-9},{-14.25,-9}},
+            points={{21.8,6},{21.8,14},{-25,14},{-25,-10.4},{-15.0833,-10.4}},
             color={255,255,0},
             thickness=0.5));
         connect(G54_Regulator.out_pin,G54. Ef_pin) annotation (Line(
-            points={{4.08333,-2.8},{7,-2.8},{7,-3.8},{11,-3.8}},
+            points={{5.08333,-4.8},{7,-4.8},{7,-4},{9,-4}},
             color={255,255,0},
             thickness=0.5));
         connect(Stator_pin, G54.Stator_pin)
-          annotation (Line(points={{73.75,4.25},{73.75,-3.8},{26.8,-3.8}},
+          annotation (Line(points={{73.75,4.25},{73.75,-4},{29,-4}},
                                                           color={28,108,200}));
         connect(G54_Regulator.Ut_pin, G54.Ut_pin) annotation (Line(
-            points={{-14.3333,-12},{-14.3333,-18},{-28,-18},{-28,16},{23.2,16},{
-                23.2,3.6}},
+            points={{-15,-12.4},{-15,-18},{-28,-18},{-28,16},{24.6,16},{24.6,6}},
             color={255,255,0},
             thickness=0.5));
           annotation (Line(points={{80,8},{-26,8},{-26,20.2},{-34.2,20.2}},
@@ -894,12 +2992,12 @@
             graphics={
               Ellipse(
               extent={{-74,72},{72,-58}},
-              lineColor={28,108,200}),
+              lineColor={0,0,255}),
               Text(extent={{-44,54},{46,20}}, textString=
                                                   "SM"),
               Text(extent={{-50,22},{50,-4}}, textString=
                                                   "with"),
-              Text(extent={{-78,-58},{74,-84}}, textString=
+              Text(extent={{-78,104},{74,78}},  textString=
                                                     "%name"),
               Text(extent={{-50,-20},{50,-30}}, textString=
                                                    "ARV")},
@@ -948,41 +3046,39 @@
               extent={{-10,-10},{10,10}},
               rotation=0,
               origin={-9,4})));
-        LEPSE.Basic.Pin_v2 Stator_pin annotation (Placement(transformation(
+        LEPSE.Interfaces.Pin_v2 Stator_pin annotation (Placement(transformation(
                 rotation=0, extent={{-90.5,-17},{-72,2}}), iconTransformation(
                 extent={{66,-8},{86,12}})));
       equation
         connect(G07.dUtr_pin,G07_Regulator. dV_pin) annotation (Line(
-            points={{11.4,-2.4},{13,-2.4},{13,18},{-27,18},{-27,10},{-18.4167,
-                10}},
+            points={{11.6,0},{13,0},{13,18},{-27,18},{-27,9},{-19.0833,9}},
             color={255,255,0},
             thickness=0.5));
         connect(G07_Regulator.dV_pin,G07_Regulator. dV1_pin) annotation (Line(
-            points={{-18.4167,10},{-18.4167,10},{-18.25,10},{-18.25,8}},
+            points={{-19.0833,9},{-18.25,9},{-18.25,6},{-19.0833,6}},
             color={255,255,0},
             thickness=0.5));
         connect(G07.dWu_pin,G07_Regulator. dfsys_pin) annotation (Line(
-            points={{13.8,-2.4},{11,-2.4},{11,16},{-25,16},{-25,5},{-18.25,5}},
+            points={{14.4,0},{11,0},{11,16},{-25,16},{-25,3},{-19.0833,3}},
             color={255,255,0},
             thickness=0.5));
         connect(G07.dWf_pin,G07_Regulator. dfU_pin) annotation (Line(
-            points={{16.2,-2.4},{16.2,20},{-27,20},{-27,2},{-18.25,2}},
+            points={{17,0},{17,20},{-27,20},{-27,0},{-19.0833,0}},
             color={255,255,0},
             thickness=0.5));
         connect(G07.dIf_pin,G07_Regulator. dif1_pin) annotation (Line(
-            points={{18.8,-2.4},{18.8,22},{-29,22},{-29,-0.4},{-18.25,-0.4}},
+            points={{19.8,0},{19.8,22},{-29,22},{-29,-2.4},{-19.0833,-2.4}},
             color={255,255,0},
             thickness=0.5));
         connect(G07_Regulator.out_pin,G07. Ef_pin) annotation (Line(
-            points={{0.0833333,5.2},{3,5.2},{3,-9.8},{9,-9.8}},
+            points={{1.08333,3.2},{3,3.2},{3,-10},{7,-10}},
             color={255,255,0},
             thickness=0.5));
-        connect(Stator_pin, G07.Stator_pin) annotation (Line(points={{-81.25,-7.5},
-                {-82,-7.5},{-82,-28},{30,-28},{30,-9.8},{24.8,-9.8}},
+        connect(Stator_pin, G07.Stator_pin) annotation (Line(points={{-81.25,
+                -7.5},{-82,-7.5},{-82,-28},{30,-28},{30,-10},{27,-10}},
                                           color={28,108,200}));
         connect(G07_Regulator.Ut_pin, G07.Ut_pin) annotation (Line(
-            points={{-18.1667,-2.4},{-18.1667,-10},{-32,-10},{-32,24},{21.2,24},
-                {21.2,-2.4}},
+            points={{-19,-4.4},{-19,-10},{-32,-10},{-32,24},{22.6,24},{22.6,0}},
             color={255,255,0},
             thickness=0.5));
           annotation (Line(points={{80,8},{-26,8},{-26,20.2},{-34.2,20.2}},
@@ -1001,12 +3097,12 @@
             graphics={
               Ellipse(
               extent={{-74,72},{72,-58}},
-              lineColor={28,108,200}),
+              lineColor={0,0,255}),
               Text(extent={{-44,54},{46,20}}, textString=
                                                   "SM"),
               Text(extent={{-50,22},{50,-4}}, textString=
                                                   "with"),
-              Text(extent={{-78,-58},{74,-84}}, textString=
+              Text(extent={{-78,104},{74,78}},  textString=
                                                     "%name"),
               Text(extent={{-50,-20},{50,-30}}, textString=
                                                    "ARV")},
@@ -1056,40 +3152,40 @@
               extent={{-10,-10},{10,10}},
               rotation=180,
               origin={16,3})));
-        LEPSE.Basic.Pin_v2 Stator_pin annotation (Placement(transformation(
+        LEPSE.Interfaces.Pin_v2 Stator_pin annotation (Placement(transformation(
                 rotation=0, extent={{-161,-7.5},{-146,8}}), iconTransformation(
                 extent={{66,-8},{84,9.5}})));
       equation
         connect(G44.dUtr_pin,G44_Regulator. dV_pin) annotation (Line(
-            points={{-10.4,-2.6},{-12,-2.6},{-12,-12},{30,-12},{30,-4},{25.25,-4}},
+            points={{-10.6,-5},{-12,-5},{-12,-12},{30,-12},{30,-2},{26.0833,-2}},
             color={255,255,0},
             thickness=0.5));
         connect(G44_Regulator.dV_pin,G44_Regulator. dV1_pin) annotation (Line(
-            points={{25.25,-4},{25.25,-1}},
+            points={{26.0833,-2},{26.0833,0},{26.0833,0},{26.0833,1}},
             color={255,255,0},
             thickness=0.5));
         connect(G44.dWu_pin,G44_Regulator. dfsys_pin) annotation (Line(
-            points={{-12.8,-2.6},{-10,-2.6},{-10,-14},{32,-14},{32,2},{25.25,2}},
+            points={{-13.4,-5},{-10,-5},{-10,-14},{32,-14},{32,4},{26.0833,4}},
             color={255,255,0},
             thickness=0.5));
         connect(G44.dWf_pin,G44_Regulator. dfU_pin) annotation (Line(
-            points={{-15.2,-2.6},{-18,-2.6},{-18,-16},{34,-16},{34,5},{25.25,5}},
+            points={{-16,-5},{-18,-5},{-18,-16},{34,-16},{34,7},{26.0833,7}},
             color={255,255,0},
             thickness=0.5));
         connect(G44.dIf_pin,G44_Regulator. dif1_pin) annotation (Line(
-            points={{-17.8,-2.6},{-16,-2.6},{-16,-18},{36,-18},{36,8},{25.25,8}},
+            points={{-18.8,-5},{-16,-5},{-16,-18},{36,-18},{36,9.4},{26.0833,
+                9.4}},
             color={255,255,0},
             thickness=0.5));
         connect(G44_Regulator.out_pin,G44. Ef_pin) annotation (Line(
-            points={{6.91667,1.8},{6.91667,4.8},{-8,4.8}},
+            points={{5.91667,3.8},{5.91667,5},{-6,5}},
             color={255,255,0},
             thickness=0.5));
-        connect(Stator_pin, G44.Stator_pin) annotation (Line(points={{-153.5,0.25},
-                {-32,0.25},{-32,4.8},{-23.8,4.8}},
+        connect(Stator_pin, G44.Stator_pin) annotation (Line(points={{-153.5,
+                0.25},{-32,0.25},{-32,5},{-26,5}},
                               color={28,108,200}));
         connect(G44_Regulator.Ut_pin, G44.Ut_pin) annotation (Line(
-            points={{25.3333,11},{25.3333,10},{38,10},{38,-20},{-20.2,-20},{-20.2,
-                -2.6}},
+            points={{26,11.4},{26,10},{38,10},{38,-20},{-21.6,-20},{-21.6,-5}},
             color={255,255,0},
             thickness=0.5));
          annotation (Line(points={{80,8},{-26,8},{-26,20.2},{-34.2,20.2}},
@@ -1108,12 +3204,12 @@
             graphics={
               Ellipse(
               extent={{-74,72},{72,-58}},
-              lineColor={28,108,200}),
+              lineColor={0,0,255}),
               Text(extent={{-44,54},{46,20}}, textString=
                                                   "SM"),
               Text(extent={{-50,22},{50,-4}}, textString=
                                                   "with"),
-              Text(extent={{-78,-58},{74,-84}}, textString=
+              Text(extent={{-76,102},{76,76}},  textString=
                                                     "%name"),
               Text(extent={{-50,-20},{50,-30}}, textString=
                                                    "ARV")},
@@ -1160,39 +3256,39 @@
               extent={{-10,-10},{10,10}},
               rotation=0,
               origin={-24,-6})));
-        LEPSE.Basic.Pin_v2 Stator_pin annotation (Placement(transformation(
+        LEPSE.Interfaces.Pin_v2 Stator_pin annotation (Placement(transformation(
                 rotation=0, extent={{66,-10},{86,10}}), iconTransformation(
                 extent={{66,-10},{86,10}})));
       equation
         connect(G53.dUtr_pin,G53_Regulator. dV_pin) annotation (Line(
-            points={{-5.6,1.6},{-2,1.6},{-2,8},{-42,8},{-42,0},{-33.4167,0}},
+            points={{-5.4,4},{-2,4},{-2,8},{-42,8},{-42,-1},{-34.0833,-1}},
             color={255,255,0},
             thickness=0.5));
         connect(G53_Regulator.dV_pin,G53_Regulator. dV1_pin) annotation (Line(
-            points={{-33.4167,0},{-33.4167,0},{-34,0},{-33.4,0},{-33.25,0},{
-                -33.25,-2}},
+            points={{-34.0833,-1},{-34.0833,-1},{-34.0833,0},{-33.4,0},{
+                -34.0833,0},{-34.0833,-4}},
             color={255,255,0},
             thickness=0.5));
         connect(G53.dWu_pin,G53_Regulator. dfsys_pin) annotation (Line(
-            points={{-3.2,1.6},{-4,1.6},{-4,6},{-40,6},{-40,-5},{-33.25,-5}},
+            points={{-2.6,4},{-4,4},{-4,6},{-40,6},{-40,-7},{-34.0833,-7}},
             color={255,255,0},
             thickness=0.5));
         connect(G53.dWf_pin,G53_Regulator. dfU_pin) annotation (Line(
-            points={{-0.8,1.6},{-0.8,10},{-42,10},{-42,-8},{-33.25,-8}},
+            points={{0,4},{0,10},{-42,10},{-42,-10},{-34.0833,-10}},
             color={255,255,0},
             thickness=0.5));
         connect(G53.dIf_pin,G53_Regulator. dif1_pin) annotation (Line(
-            points={{1.8,1.6},{1.8,12},{-44,12},{-44,-10.4},{-33.25,-10.4}},
+            points={{2.8,4},{2.8,12},{-44,12},{-44,-12.4},{-34.0833,-12.4}},
             color={255,255,0},
             thickness=0.5));
         connect(G53_Regulator.out_pin,G53. Ef_pin) annotation (Line(
-            points={{-14.9167,-4.8},{-12,-4.8},{-12,-5.8},{-8,-5.8}},
+            points={{-13.9167,-6.8},{-12,-6.8},{-12,-6},{-10,-6}},
             color={255,255,0},
             thickness=0.5));
-        connect(Stator_pin, G53.Stator_pin) annotation (Line(points={{76,0},{14,0},
-                {14,-5.8},{7.8,-5.8}},        color={28,108,200}));
+        connect(Stator_pin, G53.Stator_pin) annotation (Line(points={{76,0},{14,
+                0},{14,-6},{10,-6}},          color={28,108,200}));
         connect(G53_Regulator.Ut_pin, G53.Ut_pin) annotation (Line(
-            points={{-33.1667,-12.4},{-46,-12.4},{-46,14},{4.2,14},{4.2,1.6}},
+            points={{-34,-14.4},{-46,-14.4},{-46,14},{5.6,14},{5.6,4}},
             color={255,255,0},
             thickness=0.5));
           annotation (Line(points={{80,8},{-26,8},{-26,20.2},{-34.2,20.2}},
@@ -1211,12 +3307,12 @@
             graphics={
               Ellipse(
               extent={{-74,72},{72,-58}},
-              lineColor={28,108,200}),
+              lineColor={0,0,255}),
               Text(extent={{-44,54},{46,20}}, textString=
                                                   "SM"),
               Text(extent={{-50,22},{50,-4}}, textString=
                                                   "with"),
-              Text(extent={{-78,-58},{74,-84}}, textString=
+              Text(extent={{-76,102},{76,76}},  textString=
                                                     "%name"),
               Text(extent={{-50,-20},{50,-30}}, textString=
                                                    "ARV")},
@@ -1261,7 +3357,7 @@
               extent={{-10,-10},{10,10}},
               rotation=180,
               origin={4,5})));
-        LEPSE.Basic.Pin_v2 Stator_pin annotation (Placement(transformation(
+        LEPSE.Interfaces.Pin_v2 Stator_pin annotation (Placement(transformation(
                 rotation=0, extent={{63,-15.5},{83,10.5}}), iconTransformation(
                 extent={{64,-8},{83,10.5}})));
       equation
@@ -1282,7 +3378,8 @@
             color={255,255,0},
             thickness=0.5));
         connect(G36.dIf_pin,G36_Regulator. dif1_pin) annotation (Line(
-            points={{-43.8,-0.6},{-42,-0.6},{-42,-16},{24,-16},{24,10},{13.25,10}},
+            points={{-43.8,-0.6},{-42,-0.6},{-42,-16},{24,-16},{24,9.4},{13.25,
+                9.4}},
             color={255,255,0},
             thickness=0.5));
         connect(G36_Regulator.out_pin,G36. Ef_pin) annotation (Line(
@@ -1293,8 +3390,8 @@
                 -2.5},{26,-18},{-56,-18},{-56,6.8},{-49.8,6.8}},
                               color={28,108,200}));
         connect(G36_Regulator.Ut_pin, G36.Ut_pin) annotation (Line(
-            points={{13.3333,13},{13.3333,12},{18,12},{18,22},{-60,22},{-60,-6},{
-                -46.2,-6},{-46.2,-0.6}},
+            points={{13.1667,11.4},{13.1667,12},{18,12},{18,22},{-60,22},{-60,
+                -6},{-46.2,-6},{-46.2,-0.6}},
             color={255,255,0},
             thickness=0.5));
          annotation (Line(points={{80,8},{-26,8},{-26,20.2},{-34.2,20.2}},
@@ -1313,7 +3410,7 @@
             graphics={
               Ellipse(
               extent={{-74,72},{72,-58}},
-              lineColor={28,108,200}),
+              lineColor={0,0,255}),
               Text(extent={{-44,54},{46,20}}, textString=
                                                   "SM"),
               Text(extent={{-50,22},{50,-4}}, textString=
@@ -1363,7 +3460,7 @@
               extent={{-10,-10},{10,10}},
               rotation=180,
               origin={3,9})));
-        LEPSE.Basic.Pin_v2 Stator_pin annotation (Placement(transformation(
+        LEPSE.Interfaces.Pin_v2 Stator_pin annotation (Placement(transformation(
                 rotation=0, extent={{69.5,-3.5},{76.5,3.5}}),
               iconTransformation(extent={{65.5,-7.5},{84,10}})));
       equation
@@ -1385,8 +3482,8 @@
             color={255,255,0},
             thickness=0.5));
         connect(G33.dIf_pin,G33_Regulator. dif1_pin) annotation (Line(
-            points={{-40.8,-2.6},{-38,-2.6},{-38,-6},{-42,-6},{-42,-16},{22,-16},{
-                22,14},{12.25,14}},
+            points={{-40.8,-2.6},{-38,-2.6},{-38,-6},{-42,-6},{-42,-16},{22,-16},
+                {22,13.4},{12.25,13.4}},
             color={255,255,0},
             thickness=0.5));
         connect(G33_Regulator.out_pin,G33. Ef_pin) annotation (Line(
@@ -1397,8 +3494,8 @@
                 {24,-18},{-56,-18},{-56,4.8},{-46.8,4.8}},
                                         color={28,108,200}));
         connect(G33_Regulator.Ut_pin, G33.Ut_pin) annotation (Line(
-            points={{12.3333,17},{12.3333,24},{-56,24},{-56,2},{-54,2},{-54,-8},{
-                -43.2,-8},{-43.2,-2.6}},
+            points={{12.1667,15.4},{12.1667,24},{-56,24},{-56,2},{-54,2},{-54,
+                -8},{-43.2,-8},{-43.2,-2.6}},
             color={255,255,0},
             thickness=0.5));
          annotation (Line(points={{80,8},{-26,8},{-26,20.2},{-34.2,20.2}},
@@ -1417,7 +3514,7 @@
             graphics={
               Ellipse(
               extent={{-74,72},{72,-58}},
-              lineColor={28,108,200}),
+              lineColor={0,0,255}),
               Text(extent={{-44,54},{46,20}}, textString=
                                                   "SM"),
               Text(extent={{-50,22},{50,-4}}, textString=
@@ -1462,47 +3559,47 @@
               origin={-46,22})));
         LEPSE.Basic.Excitation_Regulator G01_Regulator(
           K0u=-50,
+          K1u=-2,
           K0w=0,
           K1w=0) annotation (Placement(transformation(
               extent={{-13,-13},{13,13}},
               rotation=0,
               origin={-71,39})));
-        LEPSE.Basic.Pin_v2 Stator_pin annotation (Placement(transformation(
+        LEPSE.Interfaces.Pin_v2 Stator_pin annotation (Placement(transformation(
                 rotation=0, extent={{64,-10},{84,10}}), iconTransformation(
                 extent={{64,-10},{84,10}})));
       equation
         connect(G01.dUtr_pin,G01_Regulator. dV_pin) annotation (Line(
-            points={{-51.6,29.6},{-52,29.6},{-52,56},{-88,56},{-88,46.8},{
-                -83.2417,46.8}},
+            points={{-51.4,32},{-52,32},{-52,56},{-88,56},{-88,45.5},{-84.1083,
+                45.5}},
             color={255,255,0},
             thickness=0.5));
         connect(G01_Regulator.dV_pin,G01_Regulator. dV1_pin) annotation (Line(
-            points={{-83.2417,46.8},{-82.92,46.8},{-82.92,44.2},{-83.025,44.2}},
+            points={{-84.1083,45.5},{-82.92,45.5},{-82.92,41.6},{-84.1083,41.6}},
             color={255,255,0},
             thickness=0.5));
         connect(G01.dWu_pin,G01_Regulator. dfsys_pin) annotation (Line(
-            points={{-49.2,29.6},{-48,29.6},{-48,54},{-84,54},{-84,40.3},{-83.025,
-                40.3}},
+            points={{-48.6,32},{-48,32},{-48,54},{-84,54},{-84,37.7},{-84.1083,
+                37.7}},
             color={255,255,0},
             thickness=0.5));
         connect(G01.dWf_pin,G01_Regulator. dfU_pin) annotation (Line(
-            points={{-46.8,29.6},{-46.8,58},{-90,58},{-90,36.4},{-83.025,36.4}},
+            points={{-46,32},{-46,58},{-90,58},{-90,33.8},{-84.1083,33.8}},
             color={255,255,0},
             thickness=0.5));
         connect(G01.dIf_pin,G01_Regulator. dif1_pin) annotation (Line(
-            points={{-44.2,29.6},{-44.2,60},{-92,60},{-92,33.28},{-83.025,33.28}},
+            points={{-43.2,32},{-43.2,60},{-92,60},{-92,30.68},{-84.1083,30.68}},
             color={255,255,0},
             thickness=0.5));
         connect(G01_Regulator.out_pin,G01. Ef_pin) annotation (Line(
-            points={{-59.1917,40.56},{-60,40.56},{-60,22.2},{-54,22.2}},
+            points={{-57.8917,37.96},{-60,37.96},{-60,22},{-56,22}},
             color={255,255,0},
             thickness=0.5));
         connect(Stator_pin, G01.Stator_pin)
-          annotation (Line(points={{74,0},{-30,0},{-30,22.2},{-38.2,22.2}},
+          annotation (Line(points={{74,0},{-30,0},{-30,22},{-36,22}},
                                                             color={28,108,200}));
         connect(G01_Regulator.Ut_pin, G01.Ut_pin) annotation (Line(
-            points={{-82.9167,30.68},{-94,30.68},{-94,62},{-41.8,62},{-41.8,
-                29.6}},
+            points={{-84,28.08},{-94,28.08},{-94,62},{-40.4,62},{-40.4,32}},
             color={255,255,0},
             thickness=0.5));
          annotation (
@@ -1520,12 +3617,12 @@
             graphics={
               Ellipse(
               extent={{-74,72},{72,-58}},
-              lineColor={28,108,200}),
+              lineColor={0,0,255}),
               Text(extent={{-44,54},{46,20}}, textString=
                                                   "SM"),
               Text(extent={{-50,22},{50,-4}}, textString=
                                                   "with"),
-              Text(extent={{-78,-58},{74,-84}}, textString=
+              Text(extent={{-74,102},{78,76}},  textString=
                                                     "%name"),
               Line(points={{80,6},{72,6}}),
               Text(extent={{-50,-20},{50,-30}}, textString=
@@ -1571,41 +3668,41 @@
               extent={{-10,-10},{10,10}},
               rotation=180,
               origin={7,4})));
-        LEPSE.Basic.Pin_v2 Stator_pin annotation (Placement(transformation(
+        LEPSE.Interfaces.Pin_v2 Stator_pin annotation (Placement(transformation(
               rotation=180,
               extent={{-8,-8},{8,8}},
               origin={-132,4}), iconTransformation(extent={{64,-8},{82,10}})));
       equation
         connect(G23.dUtr_pin,G23_Regulator. dV_pin) annotation (Line(
-            points={{-9.4,-1.6},{-9.4,-12},{19,-12},{19,-3},{16.25,-3}},
+            points={{-9.6,-4},{-9.6,-12},{19,-12},{19,-1},{17.0833,-1}},
             color={255,255,0},
             thickness=0.5));
         connect(G23_Regulator.dV_pin,G23_Regulator. dV1_pin) annotation (Line(
-            points={{16.25,-3},{14.1,-3},{14.1,0},{16.25,0}},
+            points={{17.0833,-1},{14.1,-1},{14.1,2},{17.0833,2}},
             color={255,255,0},
             thickness=0.5));
         connect(G23.dWu_pin,G23_Regulator. dfsys_pin) annotation (Line(
-            points={{-11.8,-1.6},{-11.8,-14},{21,-14},{21,3},{16.25,3}},
+            points={{-12.4,-4},{-12.4,-14},{21,-14},{21,5},{17.0833,5}},
             color={255,255,0},
             thickness=0.5));
         connect(G23.dWf_pin,G23_Regulator. dfU_pin) annotation (Line(
-            points={{-14.2,-1.6},{-14.2,-16},{23,-16},{23,6},{16.25,6}},
+            points={{-15,-4},{-15,-16},{23,-16},{23,8},{17.0833,8}},
             color={255,255,0},
             thickness=0.5));
         connect(G23.dIf_pin,G23_Regulator. dif1_pin) annotation (Line(
-            points={{-16.8,-1.6},{-16.8,-18},{25,-18},{25,6},{16.25,6},{16.25,9}},
+            points={{-17.8,-4},{-17.8,-18},{25,-18},{25,6},{17.0833,6},{17.0833,
+                10.4}},
             color={255,255,0},
             thickness=0.5));
         connect(G23_Regulator.out_pin,G23. Ef_pin) annotation (Line(
-            points={{-2.08333,2.8},{-5,2.8},{-5,2},{-7,2},{-7,5.8}},
+            points={{-3.08333,4.8},{-5,4.8},{-5,2},{-5,2},{-5,6}},
             color={255,255,0},
             thickness=0.5));
         connect(Stator_pin, G23.Stator_pin)
-          annotation (Line(points={{-132,4},{-30,4},{-30,5.8},{-22.8,5.8}},
+          annotation (Line(points={{-132,4},{-30,4},{-30,6},{-25,6}},
                                          color={28,108,200}));
         connect(G23_Regulator.Ut_pin, G23.Ut_pin) annotation (Line(
-            points={{16.3333,12},{16.3333,18},{30,18},{30,-20},{-19.2,-20},{-19.2,
-                -1.6}},
+            points={{17,12.4},{17,18},{30,18},{30,-20},{-20.6,-20},{-20.6,-4}},
             color={255,255,0},
             thickness=0.5));
         annotation (
@@ -1623,12 +3720,12 @@
             graphics={
               Ellipse(
               extent={{-74,72},{72,-58}},
-              lineColor={28,108,200}),
+              lineColor={0,0,255}),
               Text(extent={{-44,54},{46,20}}, textString=
                                                   "SM"),
               Text(extent={{-50,22},{50,-4}}, textString=
                                                   "with"),
-              Text(extent={{-78,-58},{74,-84}}, textString=
+              Text(extent={{-78,108},{74,82}},  textString=
                                                     "%name"),
               Text(extent={{-50,-20},{50,-30}}, textString=
                                                    "ARV")},
@@ -1674,39 +3771,40 @@
               extent={{-10,-10},{10,10}},
               rotation=180,
               origin={-30,-2})));
-        LEPSE.Basic.Pin_v2 Stator_pin annotation (Placement(transformation(
+        LEPSE.Interfaces.Pin_v2 Stator_pin annotation (Placement(transformation(
                 rotation=0, extent={{71,1.5},{77,7.5}}), iconTransformation(
                 extent={{65,-6.5},{82,10}})));
       equation
         connect(G24.dUtr_pin,G24_Regulator. dV_pin) annotation (Line(
-            points={{-24.4,-9.6},{-24.4,-16},{20,-16},{20,1},{15.25,1}},
+            points={{-24.6,-12},{-24.6,-16},{20,-16},{20,3},{16.0833,3}},
             color={255,255,0},
             thickness=0.5));
         connect(G24_Regulator.dV_pin,G24_Regulator. dV1_pin) annotation (Line(
-            points={{15.25,1},{15.25,2},{16,2},{15.4,2},{15.1,2},{15.25,4}},
+            points={{16.0833,3},{16.0833,2},{16,2},{15.4,2},{16.0833,2},{
+                16.0833,6}},
             color={255,255,0},
             thickness=0.5));
         connect(G24.dWu_pin,G24_Regulator. dfsys_pin) annotation (Line(
-            points={{-26.8,-9.6},{-24,-9.6},{-24,-18},{22,-18},{22,7},{15.25,7}},
+            points={{-27.4,-12},{-24,-12},{-24,-18},{22,-18},{22,9},{16.0833,9}},
             color={255,255,0},
             thickness=0.5));
         connect(G24.dWf_pin,G24_Regulator. dfU_pin) annotation (Line(
-            points={{-29.2,-9.6},{-32,-9.6},{-32,-20},{24,-20},{24,10},{15.25,10}},
+            points={{-30,-12},{-32,-12},{-32,-20},{24,-20},{24,12},{16.0833,12}},
             color={255,255,0},
             thickness=0.5));
         connect(G24.dIf_pin,G24_Regulator. dif1_pin) annotation (Line(
-            points={{-31.8,-9.6},{-31.8,-22},{26,-22},{26,13},{15.25,13}},
+            points={{-32.8,-12},{-32.8,-22},{26,-22},{26,14.4},{16.0833,14.4}},
             color={255,255,0},
             thickness=0.5));
         connect(G24_Regulator.out_pin,G24. Ef_pin) annotation (Line(
-            points={{-3.08333,6.8},{-16,6.8},{-16,-2.2},{-22,-2.2}},
+            points={{-4.08333,8.8},{-16,8.8},{-16,-2},{-20,-2}},
             color={255,255,0},
             thickness=0.5));
-        connect(Stator_pin, G24.Stator_pin) annotation (Line(points={{74,4.5},{74,
-                -26},{-44,-26},{-44,-2.2},{-37.8,-2.2}},
+        connect(Stator_pin, G24.Stator_pin) annotation (Line(points={{74,4.5},{
+                74,-26},{-44,-26},{-44,-2},{-40,-2}},
                                          color={28,108,200}));
         connect(G24_Regulator.Ut_pin, G24.Ut_pin) annotation (Line(
-            points={{15.3333,16},{28,16},{28,-24},{-34.2,-24},{-34.2,-9.6}},
+            points={{16,16.4},{28,16.4},{28,-24},{-35.6,-24},{-35.6,-12}},
             color={255,255,0},
             thickness=0.5));
          annotation (
@@ -1724,12 +3822,12 @@
             graphics={
               Ellipse(
               extent={{-74,72},{72,-58}},
-              lineColor={28,108,200}),
+              lineColor={0,0,255}),
               Text(extent={{-44,54},{46,20}}, textString=
                                                   "SM"),
               Text(extent={{-50,22},{50,-4}}, textString=
                                                   "with"),
-              Text(extent={{-78,-58},{74,-84}}, textString=
+              Text(extent={{-74,-68},{78,-94}}, textString=
                                                     "%name"),
               Text(extent={{-50,-20},{50,-30}}, textString=
                                                    "ARV")},
@@ -1775,39 +3873,40 @@
               extent={{-10,-10},{10,10}},
               rotation=0,
               origin={2,2})));
-        LEPSE.Basic.Pin_v2 Stator_pin annotation (Placement(transformation(
+        LEPSE.Interfaces.Pin_v2 Stator_pin annotation (Placement(transformation(
                 rotation=0, extent={{59,-6.5},{81,7}}), iconTransformation(
                 extent={{66,-8},{84,10}})));
       equation
         connect(G13.dUtr_pin,G013_Regulator. dV_pin) annotation (Line(
-            points={{20.4,-4.4},{24,-4.4},{24,16},{-16,16},{-16,9},{-7.25,9}},
+            points={{20.6,-2},{24,-2},{24,16},{-16,16},{-16,7},{-8.08333,7}},
             color={255,255,0},
             thickness=0.5));
         connect(G013_Regulator.dV_pin,G013_Regulator. dV1_pin) annotation (Line(
-            points={{-7.25,9},{-7.25,8},{-8,8},{-7.4,8},{-7.1,8},{-7.25,6}},
+            points={{-8.08333,7},{-8.08333,8},{-8,8},{-7.4,8},{-8.08333,8},{
+                -8.08333,4}},
             color={255,255,0},
             thickness=0.5));
         connect(G13.dWu_pin,G013_Regulator. dfsys_pin) annotation (Line(
-            points={{22.8,-4.4},{22,-4.4},{22,14},{-14,14},{-14,3},{-7.25,3}},
+            points={{23.4,-2},{22,-2},{22,14},{-14,14},{-14,1},{-8.08333,1}},
             color={255,255,0},
             thickness=0.5));
         connect(G13.dWf_pin,G013_Regulator. dfU_pin) annotation (Line(
-            points={{25.2,-4.4},{25.2,16},{-20,16},{-20,0},{-7.25,0}},
+            points={{26,-2},{26,16},{-20,16},{-20,-2},{-8.08333,-2}},
             color={255,255,0},
             thickness=0.5));
         connect(G13.dIf_pin,G013_Regulator. dif1_pin) annotation (Line(
-            points={{27.8,-4.4},{27.8,20},{-18,20},{-18,-3},{-7.25,-3}},
+            points={{28.8,-2},{28.8,20},{-18,20},{-18,-4.4},{-8.08333,-4.4}},
             color={255,255,0},
             thickness=0.5));
         connect(G013_Regulator.out_pin,G13. Ef_pin) annotation (Line(
-            points={{11.0833,3.2},{14,3.2},{14,-11.8},{18,-11.8}},
+            points={{12.0833,1.2},{14,1.2},{14,-12},{16,-12}},
             color={255,255,0},
             thickness=0.5));
-        connect(Stator_pin, G13.Stator_pin) annotation (Line(points={{70,0.25},{80,
-                0.25},{80,-11.8},{33.8,-11.8}},
+        connect(Stator_pin, G13.Stator_pin) annotation (Line(points={{70,0.25},
+                {80,0.25},{80,-12},{36,-12}},
                                color={28,108,200}));
         connect(G013_Regulator.Ut_pin, G13.Ut_pin) annotation (Line(
-            points={{-7.33333,-6},{-24,-6},{-24,22},{30.2,22},{30.2,-4.4}},
+            points={{-8,-6.4},{-24,-6.4},{-24,22},{31.6,22},{31.6,-2}},
             color={255,255,0},
             thickness=0.5));
          annotation (
@@ -1825,12 +3924,12 @@
             graphics={
               Ellipse(
               extent={{-74,72},{72,-58}},
-              lineColor={28,108,200}),
+              lineColor={0,0,255}),
               Text(extent={{-44,54},{46,20}}, textString=
                                                   "SM"),
               Text(extent={{-50,22},{50,-4}}, textString=
                                                   "with"),
-              Text(extent={{-78,-58},{74,-84}}, textString=
+              Text(extent={{-76,104},{76,78}},  textString=
                                                     "%name"),
               Text(extent={{-50,-20},{50,-30}}, textString=
                                                    "ARV")},
@@ -1848,509 +3947,563 @@
       end Submodel5_1;
     equation
       connect(L0102.out, node_2)
-        annotation (Line(points={{1.8,21.2},{1.8,21},{9,21}}, color={28,108,200}));
+        annotation (Line(points={{4,20},{4,21},{9,21}},       color={28,108,200}));
       connect(node_2, L0203.inp)
-        annotation (Line(points={{9,21},{16.4,21}}, color={28,108,200}));
+        annotation (Line(points={{9,21},{12,21},{12,20},{14.2,20}},
+                                                    color={28,108,200}));
       connect(node_2, T0222.out)
-        annotation (Line(points={{9,21},{9,-8}}, color={28,108,200}));
-      connect(L0203.out, node_3) annotation (Line(points={{31.8,21.2},{31.8,21},{39,
+        annotation (Line(points={{9,21},{9,-6.2}},
+                                                 color={28,108,200}));
+      connect(L0203.out, node_3) annotation (Line(points={{34,20},{34,21},{39,
               21}}, color={28,108,200}));
       connect(node_3, L0304.inp)
-        annotation (Line(points={{39,21},{52.4,21}}, color={28,108,200}));
-      connect(N03.inp, node_3) annotation (Line(points={{64,41.4},{64,32},{39,32},{
-              39,21}}, color={28,108,200}));
-      connect(node_3, T0323.out) annotation (Line(points={{39,21},{39,6.5},{37,6.5},
-              {37,-8}}, color={28,108,200}));
-      connect(L0304.out, node_4) annotation (Line(points={{67.8,21.2},{62,21},{77,
-              21}}, color={28,108,200}));
+        annotation (Line(points={{39,21},{46,21},{46,20},{50.2,20}},
+                                                     color={28,108,200}));
+      connect(N03.inp, node_3) annotation (Line(points={{64,40.2},{64,32},{39,
+              32},{39,21}},
+                       color={28,108,200}));
+      connect(node_3, T0323.out) annotation (Line(points={{39,21},{39,6.5},{37,
+              6.5},{37,-6.2}},
+                        color={28,108,200}));
+      connect(L0304.out, node_4) annotation (Line(points={{70,20},{74,20},{74,
+              21},{77,21}},
+                    color={28,108,200}));
       connect(node_4, L0405.inp)
-        annotation (Line(points={{77,21},{94.4,21}}, color={28,108,200}));
-      connect(node_4, T0424.out) annotation (Line(points={{77,21},{76,21},{76,4},{
-              91,4}},                color={28,108,200}));
-      connect(L0405.out, node_5) annotation (Line(points={{109.8,21.2},{124,21.2},{
+        annotation (Line(points={{77,21},{86,21},{86,20},{92.2,20}},
+                                                     color={28,108,200}));
+      connect(node_4, T0424.out) annotation (Line(points={{77,21},{76,21},{76,
+              5.8},{91,5.8}},        color={28,108,200}));
+      connect(L0405.out, node_5) annotation (Line(points={{112,20},{124,20},{
               124,21},{127,21}}, color={28,108,200}));
       connect(node_5, L0506.inp)
-        annotation (Line(points={{127,21},{144.4,21}}, color={28,108,200}));
-      connect(L0506.out, node_6) annotation (Line(points={{159.8,21.2},{162,21},{
+        annotation (Line(points={{127,21},{136,21},{136,20},{142.2,20}},
+                                                       color={28,108,200}));
+      connect(L0506.out, node_6) annotation (Line(points={{162,20},{162,21},{
               189,21}}, color={28,108,200}));
-      connect(T0631.out, node_6) annotation (Line(points={{189,10},{189,21}},
+      connect(T0631.out, node_6) annotation (Line(points={{189,11.8},{189,21}},
                          color={28,108,200}));
       connect(node_6, L0607.inp)
-        annotation (Line(points={{189,21},{218.4,21}}, color={28,108,200}));
-      connect(N08.inp, node_8) annotation (Line(points={{281.4,-24},{282,-25},{265,
-              -25}}, color={28,108,200}));
-      connect(T0835.out, node_8) annotation (Line(points={{271,-34},{271,-31},{265,
-              -31},{265,-25}}, color={28,108,200}));
-      connect(L0708.out, node_8) annotation (Line(points={{247.2,-15.8},{247.2,-25},
-              {265,-25}}, color={28,108,200}));
-      connect(N10.inp, node_10) annotation (Line(points={{308,47.4},{307,46},{307,
-              21}}, color={28,108,200}));
-      connect(L0910.out, node_10) annotation (Line(points={{299.8,21.2},{299.8,21},
-              {307,21}}, color={28,108,200}));
+        annotation (Line(points={{189,21},{204,21},{204,20},{216.2,20}},
+                                                       color={28,108,200}));
+      connect(N08.inp, node_8) annotation (Line(points={{280.2,-24},{280.2,-25},
+              {265,-25}},
+                     color={28,108,200}));
+      connect(T0835.out, node_8) annotation (Line(points={{271,-32.2},{271,-31},
+              {265,-31},{265,-25}},
+                               color={28,108,200}));
+      connect(L0708.out, node_8) annotation (Line(points={{246,-18},{246,-25},{
+              265,-25}},  color={28,108,200}));
+      connect(N10.inp, node_10) annotation (Line(points={{308,46.2},{307,46.2},
+              {307,21}},
+                    color={28,108,200}));
+      connect(L0910.out, node_10) annotation (Line(points={{302,20},{302,21},{
+              307,21}},  color={28,108,200}));
       connect(node_10, L1011.inp)
-        annotation (Line(points={{307,21},{316.4,21}}, color={28,108,200}));
+        annotation (Line(points={{307,21},{312,21},{312,20},{314.2,20}},
+                                                       color={28,108,200}));
       connect(node_11, L1112.inp)
-        annotation (Line(points={{403,23},{412.4,23}}, color={28,108,200}));
-      connect(node_11, T1140.out) annotation (Line(points={{403,23},{403,0}},
+        annotation (Line(points={{403,23},{408,23},{408,22},{410.2,22}},
+                                                       color={28,108,200}));
+      connect(node_11, T1140.out) annotation (Line(points={{403,23},{403,1.8}},
                               color={28,108,200}));
       connect(node_11, N11.inp) annotation (Line(points={{403,23},{403,34.5},{
-              404,34.5},{404,47.4}},
+              404,34.5},{404,46.2}},
                                  color={28,108,200}));
-      connect(node_11, L1011.out) annotation (Line(points={{403,23},{340,23},{340,
-              21.2},{331.8,21.2}}, color={28,108,200}));
-      connect(L1112.out, node_12) annotation (Line(points={{427.8,23.2},{427.8,23},
-              {435,23}}, color={28,108,200}));
+      connect(node_11, L1011.out) annotation (Line(points={{403,23},{340,23},{
+              340,20},{334,20}},   color={28,108,200}));
+      connect(L1112.out, node_12) annotation (Line(points={{430,22},{430,23},{
+              435,23}},  color={28,108,200}));
       connect(node_12, L1213.inp)
-        annotation (Line(points={{435,23},{444.4,23}}, color={28,108,200}));
+        annotation (Line(points={{435,23},{440,23},{440,22},{442.2,22}},
+                                                       color={28,108,200}));
       connect(node_12, T1242.out)
-        annotation (Line(points={{435,23},{435,0}}, color={28,108,200}));
-      connect(L1213.out, node_13) annotation (Line(points={{459.8,23.2},{459.8,23},
-              {471,23}}, color={28,108,200}));
+        annotation (Line(points={{435,23},{435,1.8}},
+                                                    color={28,108,200}));
+      connect(L1213.out, node_13) annotation (Line(points={{462,22},{462,23},{
+              471,23}},  color={28,108,200}));
       connect(node_13, N13.inp) annotation (Line(points={{471,23},{494,23},{494,
-              33.4}},      color={28,108,200}));
+              32.2}},      color={28,108,200}));
       connect(node_13, T1345.out)
-        annotation (Line(points={{471,23},{489,23},{489,12}}, color={28,108,200}));
-      connect(node_13, T1314.inp) annotation (Line(points={{471,23},{471,42.2}},
+        annotation (Line(points={{471,23},{489,23},{489,13.8}},
+                                                              color={28,108,200}));
+      connect(node_13, T1314.inp) annotation (Line(points={{471,23},{471,40.2}},
                                        color={28,108,200}));
       connect(T1314.out, node_14)
-        annotation (Line(points={{471,58},{471,69}}, color={28,108,200}));
+        annotation (Line(points={{471,59.8},{471,69}},
+                                                     color={28,108,200}));
       connect(node_14, G13.Stator_pin) annotation (Line(points={{471,69},{452,
               69},{452,68},{443.75,68},{443.75,68.16}},
                                          color={28,108,200}));
       connect(G07.Stator_pin, node_15) annotation (Line(points={{178.16,48.32},
               {188,48.32},{188,49},{195,49}},
                                 color={28,108,200}));
-      connect(node_15, T0715.out) annotation (Line(points={{195,49},{210,49}},
+      connect(node_15, T0715.out) annotation (Line(points={{195,49},{208.2,49}},
                              color={28,108,200}));
       connect(T1623.inp, node_16)
-        annotation (Line(points={{21,-81.8},{21,-89}},   color={28,108,200}));
+        annotation (Line(points={{21,-83.8},{21,-89}},   color={28,108,200}));
       connect(G23.Stator_pin, node_16) annotation (Line(points={{4.27857,
               -88.8417},{4.27857,-89},{21,-89}},
                                         color={28,108,200}));
       connect(T1724.inp, node_17)
-        annotation (Line(points={{119.8,-15},{127,-15}}, color={28,108,200}));
+        annotation (Line(points={{121.8,-15},{127,-15}}, color={28,108,200}));
       connect(node_17, G24.Stator_pin) annotation (Line(points={{127,-15},{
               134.24,-15},{134.24,-16.28}},
                                         color={28,108,200}));
       connect(T0121.inp, node_21)
-        annotation (Line(points={{-27,-23.8},{-27,-31}}, color={28,108,200}));
+        annotation (Line(points={{-27,-25.8},{-27,-31}}, color={28,108,200}));
       connect(node_21, L2122.inp)
-        annotation (Line(points={{-27,-31},{-17.6,-31}}, color={28,108,200}));
-      connect(node_21, N21.inp) annotation (Line(points={{-27,-31},{-28,-31},{-28,
-              -53.4}}, color={28,108,200}));
-      connect(T0222.inp, node_22)
-        annotation (Line(points={{9,-23.8},{9,-31}}, color={28,108,200}));
-      connect(L2122.out, node_22) annotation (Line(points={{-2.2,-30.8},{-2.2,-31},
-              {9,-31}},
-                     color={28,108,200}));
-      connect(node_22, L2223.inp)
-        annotation (Line(points={{9,-31},{14.4,-31}}, color={28,108,200}));
-      connect(node_22, N22.inp) annotation (Line(points={{9,-31},{9,-40.5},{8,-40.5},
-              {8,-53.4}}, color={28,108,200}));
-      connect(T0323.inp, node_23)
-        annotation (Line(points={{37,-23.8},{37,-31}}, color={28,108,200}));
-      connect(L2223.out, node_23) annotation (Line(points={{29.8,-30.8},{29.8,-31},
-              {37,-31}}, color={28,108,200}));
-      connect(T2351.out, node_23) annotation (Line(points={{40,-47},{40,-31},{37,
-              -31}},                   color={28,108,200}));
-      connect(T1623.out, node_23) annotation (Line(points={{21,-66},{20,-66},{20,
-              -50},{37,-50},{37,-31}},
-                              color={28,108,200}));
-      connect(N24.inp, node_24) annotation (Line(points={{72.6,-16},{72,-16},{72,
-              -17},{91,-17}}, color={28,108,200}));
-      connect(node_24, T1724.out) annotation (Line(points={{91,-17},{92,-15},{104,
-              -15}}, color={28,108,200}));
-      connect(T0424.inp, node_24)
-        annotation (Line(points={{91,-11.8},{91,-17}}, color={28,108,200}));
-      connect(node_24, T2452.out)
-        annotation (Line(points={{91,-17},{91,-22}}, color={28,108,200}));
-      connect(T0631.inp, node_31)
-        annotation (Line(points={{189,-5.8},{189,-13}}, color={28,108,200}));
-      connect(node_31, L3132.out) annotation (Line(points={{189,-13},{190,-13},
-              {190,-14},{179.8,-14},{179.8,-14.8}},
-                                               color={28,108,200}));
-      connect(L3132.inp, node_32)
-        annotation (Line(points={{164.4,-15},{164.4,-42},{165,-42},{165,-45}},
+        annotation (Line(points={{-27,-31},{-22,-31},{-22,-32},{-19.8,-32}},
                                                          color={28,108,200}));
-      connect(T3253.out, node_32) annotation (Line(points={{160,-55},{160,-50},{165,
-              -50},{165,-45}}, color={28,108,200}));
-      connect(node_32, L3234.inp) annotation (Line(points={{165,-45},{176.5,-45},{
-              176.5,-43},{186.4,-43}}, color={28,108,200}));
-      connect(L3233.inp, node_32) annotation (Line(points={{186.4,-59},{176.2,-59},
-              {176.2,-45},{165,-45}}, color={28,108,200}));
-      connect(L3233.out, node_33) annotation (Line(points={{201.8,-58.8},{201.8,-59},
+      connect(node_21, N21.inp) annotation (Line(points={{-27,-31},{-28,-31},{
+              -28,-52.2}},
+                       color={28,108,200}));
+      connect(T0222.inp, node_22)
+        annotation (Line(points={{9,-25.8},{9,-31}}, color={28,108,200}));
+      connect(L2122.out, node_22) annotation (Line(points={{0,-32},{0,-31},{9,
+              -31}}, color={28,108,200}));
+      connect(node_22, L2223.inp)
+        annotation (Line(points={{9,-31},{12,-31},{12,-32},{12.2,-32}},
+                                                      color={28,108,200}));
+      connect(node_22, N22.inp) annotation (Line(points={{9,-31},{9,-40.5},{8,
+              -40.5},{8,-52.2}},
+                          color={28,108,200}));
+      connect(T0323.inp, node_23)
+        annotation (Line(points={{37,-25.8},{37,-31}}, color={28,108,200}));
+      connect(L2223.out, node_23) annotation (Line(points={{32,-32},{32,-31},{
+              37,-31}},  color={28,108,200}));
+      connect(T2351.out, node_23) annotation (Line(points={{38.2,-47},{38.2,-31},
+              {37,-31}},               color={28,108,200}));
+      connect(T1623.out, node_23) annotation (Line(points={{21,-64.2},{20,-64.2},
+              {20,-50},{37,-50},{37,-31}},
+                              color={28,108,200}));
+      connect(N24.inp, node_24) annotation (Line(points={{71.8,-16},{72,-16},{
+              72,-17},{91,-17}},
+                              color={28,108,200}));
+      connect(node_24, T1724.out) annotation (Line(points={{91,-17},{91,-15},{
+              102.2,-15}},
+                     color={28,108,200}));
+      connect(T0424.inp, node_24)
+        annotation (Line(points={{91,-13.8},{91,-17}}, color={28,108,200}));
+      connect(node_24, T2452.out)
+        annotation (Line(points={{91,-17},{91,-20.2}},
+                                                     color={28,108,200}));
+      connect(T0631.inp, node_31)
+        annotation (Line(points={{189,-7.8},{189,-13}}, color={28,108,200}));
+      connect(node_31, L3132.out) annotation (Line(points={{189,-13},{190,-13},
+              {190,-14},{182,-14},{182,-16}},  color={28,108,200}));
+      connect(L3132.inp, node_32)
+        annotation (Line(points={{162.2,-16},{162.2,-42},{165,-42},{165,-45}},
+                                                         color={28,108,200}));
+      connect(T3253.out, node_32) annotation (Line(points={{161.8,-55},{161.8,
+              -50},{165,-50},{165,-45}},
+                               color={28,108,200}));
+      connect(node_32, L3234.inp) annotation (Line(points={{165,-45},{176.5,-45},
+              {176.5,-44},{184.2,-44}},color={28,108,200}));
+      connect(L3233.inp, node_32) annotation (Line(points={{184.2,-60},{176.2,
+              -60},{176.2,-45},{165,-45}},
+                                      color={28,108,200}));
+      connect(L3233.out, node_33) annotation (Line(points={{204,-60},{204,-59},
               {215,-59}}, color={28,108,200}));
       connect(node_33, L3334.inp)
-        annotation (Line(points={{215,-59},{230.4,-59}}, color={28,108,200}));
+        annotation (Line(points={{215,-59},{222,-59},{222,-60},{228.2,-60}},
+                                                         color={28,108,200}));
       connect(node_33, N33.inp) annotation (Line(points={{215,-59},{216,-59},{
-              216,-62},{224,-62},{224,-71.4}},
+              216,-62},{224,-62},{224,-70.2}},
                                            color={28,108,200}));
-      connect(node_33, L3347.out) annotation (Line(points={{215,-59},{215,-74.5},{
-              204.8,-74.5},{204.8,-90.2}}, color={28,108,200}));
-      connect(L3234.out, node_34) annotation (Line(points={{201.8,-42.8},{256,-42.8},
+      connect(node_33, L3347.out) annotation (Line(points={{215,-59},{215,-74.5},
+              {206,-74.5},{206,-88}},      color={28,108,200}));
+      connect(L3234.out, node_34) annotation (Line(points={{204,-44},{256,-44},
               {256,-52},{253,-52},{253,-59}}, color={28,108,200}));
-      connect(L3334.out, node_34) annotation (Line(points={{245.8,-58.8},{245.8,-59},
+      connect(L3334.out, node_34) annotation (Line(points={{248,-60},{248,-59},
               {253,-59}}, color={28,108,200}));
-      connect(node_34, N34.inp) annotation (Line(points={{253,-59},{254,-59},{254,
-              -62},{252,-62},{252,-67.4}}, color={28,108,200}));
-      connect(node_34, L3438.inp) annotation (Line(points={{253,-59},{274.5,-59},{
-              274.5,-51},{296.4,-51}}, color={28,108,200}));
-      connect(node_35, N35.inp) annotation (Line(points={{271,-73},{272,-73},{272,
-              -74},{289.4,-74}}, color={28,108,200}));
-      connect(node_35, L3536.out) annotation (Line(points={{271,-73},{271,-78.5},{
-              268.8,-78.5},{268.8,-86.2}}, color={28,108,200}));
+      connect(node_34, N34.inp) annotation (Line(points={{253,-59},{254,-59},{
+              254,-62},{252,-62},{252,-66.2}},
+                                           color={28,108,200}));
+      connect(node_34, L3438.inp) annotation (Line(points={{253,-59},{274.5,-59},
+              {274.5,-52},{294.2,-52}},color={28,108,200}));
+      connect(node_35, N35.inp) annotation (Line(points={{271,-73},{272,-73},{
+              272,-74},{288.2,-74}},
+                                 color={28,108,200}));
+      connect(node_35, L3536.out) annotation (Line(points={{271,-73},{271,-78.5},
+              {270,-78.5},{270,-84}},      color={28,108,200}));
       connect(node_35, T0835.inp)
-        annotation (Line(points={{271,-73},{271,-49.8}}, color={28,108,200}));
-      connect(L3536.inp, node_36) annotation (Line(points={{269,-101.6},{269,-112},
-              {287,-112},{287,-121}}, color={28,108,200}));
-      connect(L3639.inp, node_36) annotation (Line(points={{308.4,-85},{308.4,-112},
-              {287,-112},{287,-121}}, color={28,108,200}));
-      connect(T3655.out, node_36) annotation (Line(points={{263,-134},{262,-134},{
-              262,-121},{287,-121}}, color={28,108,200}));
-      connect(N36.inp, node_36) annotation (Line(points={{288,-149.4},{288,-121},
+        annotation (Line(points={{271,-73},{271,-51.8}}, color={28,108,200}));
+      connect(L3536.inp, node_36) annotation (Line(points={{270,-103.8},{270,
+              -112},{287,-112},{287,-121}},
+                                      color={28,108,200}));
+      connect(L3639.inp, node_36) annotation (Line(points={{306.2,-86},{306.2,
+              -112},{287,-112},{287,-121}},
+                                      color={28,108,200}));
+      connect(T3655.out, node_36) annotation (Line(points={{263,-132.2},{262,
+              -132.2},{262,-121},{287,-121}},
+                                     color={28,108,200}));
+      connect(N36.inp, node_36) annotation (Line(points={{288,-148.2},{288,-121},
               {287,-121}},            color={28,108,200}));
-      connect(T3646.out, node_36) annotation (Line(points={{303,-122},{300,-121},{
-              287,-121}},            color={28,108,200}));
+      connect(T3646.out, node_36) annotation (Line(points={{303,-120.2},{300,
+              -121},{287,-121}},     color={28,108,200}));
       connect(T4853.inp, node_48)
-        annotation (Line(points={{120.2,-109},{113,-109}}, color={28,108,200}));
+        annotation (Line(points={{118.2,-109},{113,-109}}, color={28,108,200}));
       connect(G53.Stator_pin, node_48)
         annotation (Line(points={{98.16,-110},{106,-110},{106,-109},{113,-109}},
                                                             color={28,108,200}));
-      connect(L5253.out, node_53) annotation (Line(points={{127.8,-46.8},{135,-46.8},
+      connect(L5253.out, node_53) annotation (Line(points={{130,-48},{135,-48},
               {135,-71}},                    color={28,108,200}));
-      connect(T3253.inp, node_53) annotation (Line(points={{144.2,-55},{144.2,-56},
-              {136,-56},{136,-70},{135,-70},{135,-71}}, color={28,108,200}));
-      connect(T4853.out, node_53) annotation (Line(points={{136,-109},{136,-94},
-              {135,-94},{135,-71}},                     color={28,108,200}));
-      connect(N53.inp, node_53) annotation (Line(points={{166,-71.4},{148,-71.4},{
-              148,-71},{135,-71}}, color={28,108,200}));
-      connect(L5354.inp, node_53) annotation (Line(points={{160.4,-95},{150.2,-95},
-              {150.2,-71},{135,-71}}, color={28,108,200}));
+      connect(T3253.inp, node_53) annotation (Line(points={{142.2,-55},{142.2,
+              -56},{136,-56},{136,-70},{135,-70},{135,-71}},
+                                                        color={28,108,200}));
+      connect(T4853.out, node_53) annotation (Line(points={{137.8,-109},{137.8,
+              -94},{135,-94},{135,-71}},                color={28,108,200}));
+      connect(N53.inp, node_53) annotation (Line(points={{166,-70.2},{148,-70.2},
+              {148,-71},{135,-71}},color={28,108,200}));
+      connect(L5354.inp, node_53) annotation (Line(points={{158.2,-96},{150.2,
+              -96},{150.2,-71},{135,-71}},
+                                      color={28,108,200}));
       connect(T2351.inp, node_51)
-        annotation (Line(points={{55.8,-47},{63,-47}}, color={28,108,200}));
+        annotation (Line(points={{57.8,-47},{63,-47}}, color={28,108,200}));
       connect(node_51, L5152.inp)
-        annotation (Line(points={{63,-47},{70.4,-47}}, color={28,108,200}));
+        annotation (Line(points={{63,-47},{66,-47},{66,-46},{66.2,-46}},
+                                                       color={28,108,200}));
       connect(node_51, N51.inp) annotation (Line(points={{63,-47},{62,-47},{62,
-              -55.4}}, color={28,108,200}));
-      connect(L5152.out, node_52) annotation (Line(points={{85.8,-46.8},{85.8,-46},
-              {88,-46},{88,-47},{91,-47}}, color={28,108,200}));
+              -54.2}}, color={28,108,200}));
+      connect(L5152.out, node_52) annotation (Line(points={{86,-46},{88,-46},{
+              88,-47},{91,-47}},           color={28,108,200}));
       connect(T2452.inp, node_52)
-        annotation (Line(points={{91,-37.8},{91,-47}}, color={28,108,200}));
+        annotation (Line(points={{91,-39.8},{91,-47}}, color={28,108,200}));
       connect(node_52, N52.inp) annotation (Line(points={{91,-47},{92,-47},{92,
-              -55.4}},              color={28,108,200}));
-      connect(node_52, L5253.inp) annotation (Line(points={{91,-47},{112.4,-47}},
-                                       color={28,108,200}));
-      connect(G33.Stator_pin, node_47) annotation (Line(points={{221.535,
-              -115.213},{221.535,-117},{205,-117}},
+              -54.2}},              color={28,108,200}));
+      connect(node_52, L5253.inp) annotation (Line(points={{91,-47},{102,-47},{
+              102,-48},{110.2,-48}},   color={28,108,200}));
+      connect(G33.Stator_pin, node_47) annotation (Line(points={{222.04,
+              -115.213},{222.04,-117},{205,-117}},
                                       color={28,108,200}));
       connect(node_47, L3347.inp)
-        annotation (Line(points={{205,-117},{205,-105.6}}, color={28,108,200}));
+        annotation (Line(points={{205,-117},{205,-112},{205,-107.8},{206,-107.8}},
+                                                           color={28,108,200}));
       connect(node_54, L5455.inp)
-        annotation (Line(points={{185,-149},{208.4,-149}}, color={28,108,200}));
-      connect(node_54, N54.inp) annotation (Line(points={{185,-149},{186,-149},{186,
-              -167.4}},                       color={28,108,200}));
-      connect(node_54, L5354.out) annotation (Line(points={{185,-149},{186,-149},{
-              186,-94.8},{175.8,-94.8}}, color={28,108,200}));
-      connect(L5455.out, node_55) annotation (Line(points={{223.8,-148.8},{234,
-              -148.8},{234,-149},{241,-149}}, color={28,108,200}));
-      connect(node_55, N55.inp) annotation (Line(points={{241,-149},{242,-149},{242,
-              -169.4}},                       color={28,108,200}));
-      connect(node_55, T3655.inp) annotation (Line(points={{241,-149},{251.5,-149},
-              {251.5,-149.8},{263,-149.8}}, color={28,108,200}));
-      connect(T3646.inp, node_46) annotation (Line(points={{303,-137.8},{303,-148},
-              {315,-148},{315,-149}},
+        annotation (Line(points={{185,-149},{196,-149},{196,-150},{206.2,-150}},
+                                                           color={28,108,200}));
+      connect(node_54, N54.inp) annotation (Line(points={{185,-149},{186,-149},
+              {186,-166.2}},                  color={28,108,200}));
+      connect(node_54, L5354.out) annotation (Line(points={{185,-149},{186,-149},
+              {186,-96},{178,-96}},      color={28,108,200}));
+      connect(L5455.out, node_55) annotation (Line(points={{226,-150},{234,-150},
+              {234,-149},{241,-149}},         color={28,108,200}));
+      connect(node_55, N55.inp) annotation (Line(points={{241,-149},{242,-149},
+              {242,-168.2}},                  color={28,108,200}));
+      connect(node_55, T3655.inp) annotation (Line(points={{241,-149},{251.5,
+              -149},{251.5,-151.8},{263,-151.8}},
+                                            color={28,108,200}));
+      connect(T3646.inp, node_46) annotation (Line(points={{303,-139.8},{303,
+              -148},{315,-148},{315,-149}},
                            color={28,108,200}));
       connect(node_46, G36.Stator_pin) annotation (Line(points={{315,-149},{316,
               -149},{316,-147.213},{334.24,-147.213}},
                                              color={28,108,200}));
-      connect(L3639.out, node_39) annotation (Line(points={{323.8,-84.8},{323.8,-85},
+      connect(L3639.out, node_39) annotation (Line(points={{326,-86},{326,-85},
               {337,-85}}, color={28,108,200}));
-      connect(node_39, N39.inp) annotation (Line(points={{337,-85},{338,-85},{338,
-              -103.4}}, color={28,108,200}));
-      connect(node_39, L3739.inp) annotation (Line(points={{337,-85},{338,-85},{338,
-              -42},{337,-42},{337,-33.6}}, color={28,108,200}));
-      connect(node_39, L3839.inp) annotation (Line(points={{337,-85},{338,-85},{338,
-              -86},{367,-86},{367,-71.6}}, color={28,108,200}));
+      connect(node_39, N39.inp) annotation (Line(points={{337,-85},{338,-85},{
+              338,-102.2}},
+                        color={28,108,200}));
+      connect(node_39, L3739.inp) annotation (Line(points={{337,-85},{338,-85},
+              {338,-42},{338,-35.8},{338,-35.8}},
+                                           color={28,108,200}));
+      connect(node_39, L3839.inp) annotation (Line(points={{337,-85},{338,-85},
+              {338,-86},{368,-86},{368,-73.8}},
+                                           color={28,108,200}));
       connect(T0937.inp, node_37)
-        annotation (Line(points={{315.8,-7},{337,-7}}, color={28,108,200}));
-      connect(node_37, L3739.out) annotation (Line(points={{337,-7},{336.8,-7},{
-              336.8,-18.2}}, color={28,108,200}));
+        annotation (Line(points={{317.8,-7},{337,-7}}, color={28,108,200}));
+      connect(node_37, L3739.out) annotation (Line(points={{337,-7},{338,-7},{
+              338,-16}},     color={28,108,200}));
       connect(node_37, N37.inp) annotation (Line(points={{337,-7},{338,-7},{338,
-              2},{354,2},{354,1.4},{380,1.4}},
+              2},{354,2},{354,0.2},{380,0.2}},
                                           color={28,108,200}));
-      connect(node_37, L3738.out) annotation (Line(points={{337,-7},{338,-7},{338,
-              -8},{366,-8},{366,-14.2},{366.8,-14.2}},
+      connect(node_37, L3738.out) annotation (Line(points={{337,-7},{338,-7},{
+              338,-8},{366,-8},{366,-12},{368,-12}},
                                            color={28,108,200}));
       connect(node_38, L3738.inp)
-        annotation (Line(points={{367,-51},{368,-51},{368,-40},{367,-40},{367,-29.6}},
-                                                         color={28,108,200}));
-      connect(node_38, L3839.out) annotation (Line(points={{367,-51},{366.8,-51},{
-              366.8,-56.2}}, color={28,108,200}));
-      connect(N38.inp, node_38) annotation (Line(points={{354,-57.4},{354,-51},{367,
-              -51}}, color={28,108,200}));
-      connect(L3438.out, node_38) annotation (Line(points={{311.8,-50.8},{354,-50.8},
+        annotation (Line(points={{367,-51},{368,-51},{368,-40},{368,-31.8},{368,
+              -31.8}},                                   color={28,108,200}));
+      connect(node_38, L3839.out) annotation (Line(points={{367,-51},{368,-51},
+              {368,-54}},    color={28,108,200}));
+      connect(N38.inp, node_38) annotation (Line(points={{354,-56.2},{354,-51},
+              {367,-51}},
+                     color={28,108,200}));
+      connect(L3438.out, node_38) annotation (Line(points={{314,-52},{354,-52},
               {354,-51},{367,-51}}, color={28,108,200}));
-      connect(T1140.inp, node_40) annotation (Line(points={{403,-15.8},{403,-41}},
+      connect(T1140.inp, node_40) annotation (Line(points={{403,-17.8},{403,-41}},
                                    color={28,108,200}));
-      connect(L3840.out, node_40) annotation (Line(points={{393.8,-40.8},{393.8,-41},
+      connect(L3840.out, node_40) annotation (Line(points={{396,-42},{396,-41},
               {403,-41}}, color={28,108,200}));
-      connect(node_40, N40.inp) annotation (Line(points={{403,-41},{404,-41},{404,
-              -65.4}},                     color={28,108,200}));
+      connect(node_40, N40.inp) annotation (Line(points={{403,-41},{404,-41},{
+              404,-64.2}},                 color={28,108,200}));
       connect(node_40, L4042.inp)
-        annotation (Line(points={{403,-41},{412.4,-41}}, color={28,108,200}));
-      connect(T1345.inp, node_45) annotation (Line(points={{489,-3.8},{489,-19}},
+        annotation (Line(points={{403,-41},{408,-41},{408,-42},{410.2,-42}},
+                                                         color={28,108,200}));
+      connect(T1345.inp, node_45) annotation (Line(points={{489,-5.8},{489,-19}},
                          color={28,108,200}));
-      connect(node_45, L4445.out) annotation (Line(points={{489,-19},{488,-19},{488,
-              -28},{494,-28},{494,-40.8},{493.8,-40.8}}, color={28,108,200}));
-      connect(T4344.inp, node_43) annotation (Line(points={{495,-83.8},{495,-93}},
+      connect(node_45, L4445.out) annotation (Line(points={{489,-19},{488,-19},
+              {488,-28},{494,-28},{494,-42},{496,-42}},  color={28,108,200}));
+      connect(T4344.inp, node_43) annotation (Line(points={{495,-85.8},{495,-93}},
                           color={28,108,200}));
       connect(node_43, G44.Stator_pin) annotation (Line(points={{495,-93},{496,
               -93},{496,-108.873},{482,-108.873}},
                                             color={28,108,200}));
-      connect(L4244.out, node_44) annotation (Line(points={{461.8,-40.8},{461.8,-41},
+      connect(L4244.out, node_44) annotation (Line(points={{464,-42},{464,-41},
               {469,-41}}, color={28,108,200}));
       connect(node_44, L4445.inp)
-        annotation (Line(points={{469,-41},{478.4,-41}}, color={28,108,200}));
-      connect(node_44, N44.inp) annotation (Line(points={{469,-41},{470,-41},{470,
-              -67.4}}, color={28,108,200}));
-      connect(node_44, T4344.out) annotation (Line(points={{469,-41},{470,-41},{470,
-              -58},{496,-58},{496,-68},{495,-68}},
+        annotation (Line(points={{469,-41},{474,-41},{474,-42},{476.2,-42}},
+                                                         color={28,108,200}));
+      connect(node_44, N44.inp) annotation (Line(points={{469,-41},{470,-41},{
+              470,-66.2}},
+                       color={28,108,200}));
+      connect(node_44, T4344.out) annotation (Line(points={{469,-41},{470,-41},
+              {470,-58},{496,-58},{496,-66.2},{495,-66.2}},
                                      color={28,108,200}));
-      connect(L4042.out, node_42) annotation (Line(points={{427.8,-40.8},{427.8,
-              -41},{437,-41}},
-                          color={28,108,200}));
-      connect(node_42, N42.inp) annotation (Line(points={{437,-41},{438,-41},{438,
-              -63.4}}, color={28,108,200}));
+      connect(L4042.out, node_42) annotation (Line(points={{430,-42},{430,-41},
+              {437,-41}}, color={28,108,200}));
+      connect(node_42, N42.inp) annotation (Line(points={{437,-41},{438,-41},{
+              438,-62.2}},
+                       color={28,108,200}));
       connect(node_42, L4244.inp)
-        annotation (Line(points={{437,-41},{438,-41},{438,-42},{454,-42},{454,-41},
-              {446.4,-41}},                              color={28,108,200}));
-      connect(L0103.out, node_3) annotation (Line(points={{13.8,49.2},{13.8,49.6},{
-              39,49.6},{39,21}}, color={28,108,200}));
+        annotation (Line(points={{437,-41},{438,-41},{438,-42},{454,-42},{454,
+              -42},{444.2,-42}},                         color={28,108,200}));
+      connect(L0103.out, node_3) annotation (Line(points={{16,48},{16,49.6},{39,
+              49.6},{39,21}},    color={28,108,200}));
       connect(node_1, G01.Stator_pin) annotation (Line(points={{-27,21},{-34,21},
               {-34,33},{-40.42,33}},color={28,108,200}));
-      connect(node_1, L0103.inp) annotation (Line(points={{-27,21},{-28,21},{-28,20},
-              {-26,20},{-26,49},{-1.6,49}},
+      connect(node_1, L0103.inp) annotation (Line(points={{-27,21},{-28,21},{
+              -28,20},{-26,20},{-26,48},{-3.8,48}},
                          color={28,108,200}));
       connect(node_1, L0102.inp)
-        annotation (Line(points={{-27,21},{-13.6,21}}, color={28,108,200}));
-      connect(node_1, N01.inp) annotation (Line(points={{-27,21},{-27,13.5},{-40,
-              13.5},{-40,6.6}}, color={28,108,200}));
-      connect(node_1, T0121.out) annotation (Line(points={{-27,21},{-26,21},{-26,20},
-              {-28,20},{-28,-8},{-27,-8}},
+        annotation (Line(points={{-27,21},{-20,21},{-20,20},{-15.8,20}},
+                                                       color={28,108,200}));
+      connect(node_1, N01.inp) annotation (Line(points={{-27,21},{-27,13.5},{
+              -40,13.5},{-40,7.8}},
+                                color={28,108,200}));
+      connect(node_1, T0121.out) annotation (Line(points={{-27,21},{-26,21},{
+              -26,20},{-28,20},{-28,-6.2},{-27,-6.2}},
                               color={28,108,200}));
-      connect(node_7, L0607.out) annotation (Line(points={{245,21},{245,21.2},{
-              233.8,21.2}}, color={28,108,200}));
+      connect(node_7, L0607.out) annotation (Line(points={{245,21},{245,20},{
+              236,20}},     color={28,108,200}));
       connect(node_7, L0709_1.inp)
-        annotation (Line(points={{245,21},{256.4,21}}, color={28,108,200}));
-      connect(node_7, L0708.inp) annotation (Line(points={{245,21},{246,21},{246,8},
-              {247,8},{247,-0.4}}, color={28,108,200}));
-      connect(node_7, L0709_2.inp) annotation (Line(points={{245,21},{246,21},{246,
-              8},{248,8},{248,3},{256.4,3}}, color={28,108,200}));
-      connect(T0715.inp, node_7) annotation (Line(points={{225.8,49},{244,49},{244,
-              38},{245,38},{245,21}},
+        annotation (Line(points={{245,21},{250,21},{250,20},{254.2,20}},
+                                                       color={28,108,200}));
+      connect(node_7, L0708.inp) annotation (Line(points={{245,21},{246,21},{
+              246,8},{246,1.8},{246,1.8}},
+                                   color={28,108,200}));
+      connect(node_7, L0709_2.inp) annotation (Line(points={{245,21},{246,21},{
+              246,8},{248,8},{248,2},{254.2,2}},
+                                             color={28,108,200}));
+      connect(T0715.inp, node_7) annotation (Line(points={{227.8,49},{244,49},{
+              244,38},{245,38},{245,21}},
                         color={28,108,200}));
-      connect(N07.inp, node_7) annotation (Line(points={{244,63.4},{244,38},{245,38},
-              {245,21}}, color={28,108,200}));
-      connect(shortCircuitShunt.inp, node_7) annotation (Line(points={{260,51.2},{
-              260,32},{245,32},{245,21}}, color={28,108,200}));
-      connect(node_9, L0709_1.out) annotation (Line(points={{277,21},{278,21.2},{
-              271.8,21.2}}, color={28,108,200}));
+      connect(N07.inp, node_7) annotation (Line(points={{244,62.2},{244,38},{
+              245,38},{245,21}},
+                         color={28,108,200}));
+      connect(shortCircuitShunt.inp, node_7) annotation (Line(points={{260,46.2},
+              {260,32},{245,32},{245,21}},color={28,108,200}));
+      connect(node_9, L0709_1.out) annotation (Line(points={{277,21},{278,20},{
+              274,20}},     color={28,108,200}));
       connect(node_9, L0910.inp)
-        annotation (Line(points={{277,21},{284.4,21}}, color={28,108,200}));
-      connect(node_9, N09.inp) annotation (Line(points={{277,21},{278,21},{278,47.4}},
-                                    color={28,108,200}));
-      connect(node_9, L0709_2.out) annotation (Line(points={{277,21},{278,21},{278,
-              2},{271.8,2},{271.8,3.2}}, color={28,108,200}));
-      connect(shortCircuitShunt1.inp, node_7) annotation (Line(points={{270,51.2},{
-              260,51.2},{260,32},{245,32},{245,21}}, color={28,108,200}));
-      connect(N23.inp, node_23) annotation (Line(points={{36,-57.4},{37,-57.4},{37,
-              -31}}, color={28,108,200}));
-      connect(T0937.out, node_9) annotation (Line(points={{300,-7},{280,-7},{
+        annotation (Line(points={{277,21},{280,21},{280,20},{282.2,20}},
+                                                       color={28,108,200}));
+      connect(node_9, N09.inp) annotation (Line(points={{277,21},{278,21},{278,
+              46.2}},               color={28,108,200}));
+      connect(node_9, L0709_2.out) annotation (Line(points={{277,21},{278,21},{
+              278,2},{274,2},{274,2}},   color={28,108,200}));
+      connect(shortCircuitShunt1.inp, node_7) annotation (Line(points={{270,
+              46.2},{260,46.2},{260,32},{245,32},{245,21}},
+                                                     color={28,108,200}));
+      connect(N23.inp, node_23) annotation (Line(points={{36,-56.2},{37,-56.2},
+              {37,-31}},
+                     color={28,108,200}));
+      connect(T0937.out, node_9) annotation (Line(points={{298.2,-7},{280,-7},{
               280,2},{277,2},{277,21}}, color={28,108,200}));
       connect(T5054.out, node_54)
-        annotation (Line(points={{176,-149},{185,-149}}, color={28,108,200}));
+        annotation (Line(points={{177.8,-149},{185,-149}},
+                                                         color={28,108,200}));
       connect(G54.Stator_pin, node_18) annotation (Line(points={{141.842,
               -149.68},{141.842,-149},{151,-149}},
                                         color={28,108,200}));
-      connect(node_18, T5054.inp) annotation (Line(points={{151,-149},{160.2,
+      connect(node_18, T5054.inp) annotation (Line(points={{151,-149},{158.2,
               -149}}, color={28,108,200}));
       annotation (Diagram(coordinateSystem(extent={{-80,-200},{520,100}}),
             graphics={
             Text(
               extent={{-30,32},{-12,24}},
-              textColor={28,108,200},
+              textColor={0,0,255},
               textString="1"),
             Text(
               extent={{468,32},{486,24}},
-              textColor={28,108,200},
+              textColor={0,0,255},
               textString="13"),
             Text(
               extent={{30,32},{40,24}},
-              textColor={28,108,200},
+              textColor={0,0,255},
               textString="3"),
             Text(
               extent={{240,30},{258,22}},
-              textColor={28,108,200},
+              textColor={0,0,255},
               textString="7"),
             Text(
               extent={{264,32},{282,24}},
-              textColor={28,108,200},
+              textColor={0,0,255},
               textString="9"),
             Text(
               extent={{10,-22},{28,-30}},
-              textColor={28,108,200},
+              textColor={0,0,255},
               textString="22"),
             Text(
               extent={{38,-22},{56,-30}},
-              textColor={28,108,200},
+              textColor={0,0,255},
               textString="23"),
             Text(
               extent={{74,36},{84,28}},
-              textColor={28,108,200},
+              textColor={0,0,255},
               textString="4"),
             Text(
               extent={{56,-28},{74,-36}},
-              textColor={28,108,200},
+              textColor={0,0,255},
               textString="51"),
             Text(
               extent={{96,-34},{114,-42}},
-              textColor={28,108,200},
+              textColor={0,0,255},
               textString="52"),
             Text(
               extent={{70,-6},{88,-14}},
-              textColor={28,108,200},
+              textColor={0,0,255},
               textString="24"),
             Text(
               extent={{184,36},{194,28}},
-              textColor={28,108,200},
+              textColor={0,0,255},
               textString="6"),
             Text(
               extent={{116,-66},{134,-74}},
-              textColor={28,108,200},
+              textColor={0,0,255},
               textString="53"),
             Text(
               extent={{-46,-26},{-28,-34}},
-              textColor={28,108,200},
+              textColor={0,0,255},
               textString="21"),
             Text(
               extent={{0,32},{18,24}},
-              textColor={28,108,200},
+              textColor={0,0,255},
               textString="2"),
             Text(
               extent={{122,36},{132,28}},
-              textColor={28,108,200},
+              textColor={0,0,255},
               textString="5"),
             Text(
               extent={{148,-34},{166,-42}},
-              textColor={28,108,200},
+              textColor={0,0,255},
               textString="32"),
             Text(
               extent={{190,-8},{208,-16}},
-              textColor={28,108,200},
+              textColor={0,0,255},
               textString="31"),
             Text(
               extent={{206,-48},{224,-56}},
-              textColor={28,108,200},
+              textColor={0,0,255},
               textString="33"),
             Text(
               extent={{240,-48},{258,-56}},
-              textColor={28,108,200},
+              textColor={0,0,255},
               textString="34"),
             Text(
               extent={{182,-134},{200,-142}},
-              textColor={28,108,200},
+              textColor={0,0,255},
               textString="54"),
             Text(
               extent={{232,-138},{250,-146}},
-              textColor={28,108,200},
+              textColor={0,0,255},
               textString="55"),
             Text(
               extent={{262,-12},{280,-20}},
-              textColor={28,108,200},
+              textColor={0,0,255},
               textString="8"),
             Text(
               extent={{286,-102},{304,-110}},
-              textColor={28,108,200},
+              textColor={0,0,255},
               textString="36"),
             Text(
               extent={{256,-64},{274,-72}},
-              textColor={28,108,200},
+              textColor={0,0,255},
               textString="35"),
             Text(
               extent={{304,32},{322,24}},
-              textColor={28,108,200},
+              textColor={0,0,255},
               textString="10"),
             Text(
               extent={{336,-90},{354,-98}},
-              textColor={28,108,200},
+              textColor={0,0,255},
               textString="39"),
             Text(
               extent={{350,-40},{368,-48}},
-              textColor={28,108,200},
+              textColor={0,0,255},
               textString="38"),
             Text(
               extent={{336,0},{354,-8}},
-              textColor={28,108,200},
+              textColor={0,0,255},
               textString="37"),
             Text(
               extent={{384,34},{402,26}},
-              textColor={28,108,200},
+              textColor={0,0,255},
               textString="11"),
             Text(
               extent={{404,-30},{422,-38}},
-              textColor={28,108,200},
+              textColor={0,0,255},
               textString="40"),
             Text(
               extent={{438,-30},{456,-38}},
-              textColor={28,108,200},
+              textColor={0,0,255},
               textString="42"),
             Text(
               extent={{468,-28},{486,-36}},
-              textColor={28,108,200},
+              textColor={0,0,255},
               textString="44"),
             Text(
               extent={{486,-8},{504,-16}},
-              textColor={28,108,200},
+              textColor={0,0,255},
               textString="45"),
             Text(
               extent={{426,36},{444,28}},
-              textColor={28,108,200},
+              textColor={0,0,255},
               textString="12"),
             Text(
               extent={{476,-88},{494,-96}},
-              textColor={28,108,200},
+              textColor={0,0,255},
               textString="43"),
             Text(
               extent={{462,80},{480,72}},
-              textColor={28,108,200},
+              textColor={0,0,255},
               textString="14"),
             Text(
               extent={{186,64},{204,56}},
-              textColor={28,108,200},
+              textColor={0,0,255},
               textString="15"),
             Text(
               extent={{310,-136},{328,-144}},
-              textColor={28,108,200},
+              textColor={0,0,255},
               textString="46"),
             Text(
               extent={{104,-94},{122,-102}},
-              textColor={28,108,200},
+              textColor={0,0,255},
               textString="48"),
             Text(
               extent={{20,-84},{38,-92}},
-              textColor={28,108,200},
+              textColor={0,0,255},
               textString="16"),
             Text(
               extent={{118,0},{136,-8}},
-              textColor={28,108,200},
+              textColor={0,0,255},
               textString="17"),
             Text(
               extent={{188,-108},{206,-116}},
-              textColor={28,108,200},
+              textColor={0,0,255},
               textString="47"),
             Text(
               extent={{142,-134},{160,-142}},
-              textColor={28,108,200},
+              textColor={0,0,255},
               textString="50")}), Icon(coordinateSystem(extent={{-80,-200},{520,
                 100}}), graphics={
             Ellipse(lineColor = {75,138,73},
@@ -2363,9 +4516,12 @@
                     fillPattern = FillPattern.Solid,
                     points={{168,68},{358,-40},{168,-146},{168,68}})}),
         experiment(
-          StopTime=50,
+          StopTime=80,
           __Dymola_NumberOfIntervals=5000,
-          __Dymola_Algorithm="Dassl"));
+          __Dymola_Algorithm="Dassl"),
+        Documentation(info="<html>
+<p>Basic model for KKT-1</p>
+</html>"));
     end KKT_base;
 
     model KKT_1
@@ -2638,7 +4794,7 @@
         delta_G53_G01(start=0.21178215742111206),
         delta_G54_G01(start=0.48529040813446045));
     equation
-      connect(T0937.out, node_9) annotation (Line(points={{300,-7},{280,-7},{
+      connect(T0937.out, node_9) annotation (Line(points={{298.2,-7},{280,-7},{
               280,2},{277,2},{277,21}}, color={28,108,200}));
       annotation (experiment(
           StopTime=65,
@@ -5213,18 +7369,16 @@
 <p>All power staions are presented as dynamic equivalents of the totality of their generators. </p>
 <p>Infinite power buses are represented by the G1 generator, which equates the connection with the Leningrad power system. </p>
 <p><b>0 s</b>: start;</p>
-<p><b>40 s: </b>start of 2-phase short circuit in node_7, partial N10 load-off;</p>
-<p><b>40.14 s: </b>end of short circuit, L0709_2 disconnection;</p>
-<p><b>44 s</b>: automatic reclosing of L0709_2; start of the second short circuit in node_7;</p>
-<p><b>44.14 s</b>: end of the second short circuit, L0709_2 second disconnection;</p>
+<p><b>40 s: </b>start of two-phase short-circuit in node_7, partial N10 load-off;</p>
+<p><b>40.14 s: </b>end of short-circuit, L0709_2 disconnection;</p>
+<p><b>44 s</b>: automatic reclosing of L0709_2; start of the second short-circuit in node_7;</p>
+<p><b>44.14 s</b>: end of the second short-circuit, L0709_2 second disconnection;</p>
 <p><b>65 s</b>: end. </p>
 </html>"));
     end KKT_1;
 
     model three_maschine_scheme
-      Real delta_G1_G2(start=-0.663044810295105),
-                        delta_G1_G3(start=0.36994481086730957),
-                                     delta_G2_G3(start=1.0329896211624146);
+      Real delta_G1_G2(start=-0.663044810295105), delta_G1_G3(start=0.36994481086730957), delta_G2_G3(start=1.0329896211624146) "Mutual angles";
 
       LEPSE.Basic.Transformer T_G1(Rline=0.002886, Xline=0.11)
         annotation (Placement(transformation(extent={{60,60},{80,80}})));
@@ -5259,7 +7413,7 @@
           Placement(transformation(
             extent={{-10,-10},{10,10}},
             rotation=90,
-            origin={14,2})));
+            origin={12,2})));
       LEPSE.Basic.Constant_Conductivity_Load N1(Gn=0.5, Bn=-0.05434)
         annotation (Placement(transformation(extent={{66,-34},{86,-14}})));
       LEPSE.Basic.HVline L6(
@@ -5321,26 +7475,26 @@
         TkzOn=50,
         dTkzOn=0.2)
         annotation (Placement(transformation(extent={{-16,44},{4,64}})));
-      LEPSE.Basic.Electrical_Braking ElBr02(
+      LEPSE.Basic.Electrical_Braking_Series ElBr02(
         Rline=0.2,
         TLineOff=1000,
         dTLineOff=10)
         annotation (Placement(transformation(extent={{96,-64},{116,-44}})));
-      LEPSE.Basic.Electrical_Braking_Parallel ElBrShun02(
+      LEPSE.Basic.Electrical_Braking_Shunt ElBrShun02(
         Rline=0.2,
         TLineOff=1000,
         dTLineOff=10) annotation (Placement(transformation(
             extent={{-10,-10},{10,10}},
             rotation=0,
             origin={50,-76})));
-      LEPSE.Basic.Electrical_Braking ElBr01(
+      LEPSE.Basic.Electrical_Braking_Series ElBr01(
         Rline=0.2,
         TLineOff=1000,
         dTLineOff=10) annotation (Placement(transformation(
             extent={{-10,-10},{10,10}},
             rotation=0,
             origin={104,70})));
-      LEPSE.Basic.Electrical_Braking_Parallel ElBrShunt01(
+      LEPSE.Basic.Electrical_Braking_Shunt ElBrShunt01(
         Rline=0.2,
         TLineOff=1000,
         dTLineOff=10)
@@ -5430,52 +7584,55 @@
                                                               extent={{-17,-17},
                 {17,17}},
             origin={153,73})));
-      Basic.Node node_14 annotation (Placement(transformation(extent={{-184,68},
-                {-178,74}}), iconTransformation(extent={{-294,-8},{-274,12}})));
-      Basic.Node node_13 annotation (Placement(transformation(extent={{-138,68},
-                {-132,74}}), iconTransformation(extent={{-294,-14},{-274,6}})));
-      Basic.Node node_15 annotation (Placement(transformation(extent={{-140,16},
-                {-134,22}}), iconTransformation(extent={{-294,-26},{-274,-6}})));
-      Basic.Node node_12 annotation (Placement(transformation(extent={{-86,68},
-                {-80,74}}), iconTransformation(extent={{-294,-20},{-274,0}})));
-      Basic.Node node_10 annotation (Placement(transformation(extent={{-58,34},
-                {-52,40}}), iconTransformation(extent={{-294,-66},{-274,-46}})));
-      Basic.Node node_11 annotation (Placement(transformation(extent={{-58,-16},
-                {-52,-10}}), iconTransformation(extent={{-294,-78},{-274,-58}})));
-      Basic.Node node_7 annotation (Placement(transformation(extent={{8,68},{14,
-                74}}), iconTransformation(extent={{-276,-54},{-256,-34}})));
-      Basic.Node node_16 annotation (Placement(transformation(extent={{8,114},{
-                14,120}}), iconTransformation(extent={{-284,-12},{-264,8}})));
-      Basic.Node node_8 annotation (Placement(transformation(extent={{50,68},{
-                56,74}}), iconTransformation(extent={{-290,-18},{-270,2}})));
-      Basic.Node node_21 annotation (Placement(transformation(extent={{120,68},
-                {126,74}}), iconTransformation(extent={{-278,-14},{-258,6}})));
-      Basic.Node node_9 annotation (Placement(transformation(extent={{82,68},{
-                88,74}}), iconTransformation(extent={{-294,-34},{-274,-14}})));
-      Basic.Node node_5 annotation (Placement(transformation(extent={{10,16},{
-                16,22}}), iconTransformation(extent={{-294,-66},{-274,-46}})));
-      Basic.Node node_4 annotation (Placement(transformation(extent={{10,-16},{
-                16,-10}}), iconTransformation(extent={{-292,-76},{-272,-56}})));
-      Basic.Node node_6 annotation (Placement(transformation(extent={{56,-16},{
-                62,-10}}),iconTransformation(extent={{-292,-78},{-272,-58}})));
-      Basic.Node node_3 annotation (Placement(transformation(extent={{10,-48},{
-                16,-42}}), iconTransformation(extent={{-294,-118},{-274,-98}})));
-      Basic.Node node_2 annotation (Placement(transformation(extent={{46,-56},{
-                52,-50}}), iconTransformation(extent={{-294,-116},{-274,-96}})));
-      Basic.Node node_1 annotation (Placement(transformation(extent={{82,-56},{
-                88,-50}}), iconTransformation(extent={{-292,-118},{-272,-98}})));
-      Basic.Node node_22 annotation (Placement(transformation(extent={{120,-56},
-                {126,-50}}), iconTransformation(extent={{-294,-116},{-274,-96}})));
+      Interfaces.Node node_14 annotation (Placement(transformation(extent={{-184,
+                68},{-178,74}}), iconTransformation(extent={{-294,-8},{-274,12}})));
+      Interfaces.Node node_13 annotation (Placement(transformation(extent={{-138,
+                68},{-132,74}}), iconTransformation(extent={{-294,-14},{-274,6}})));
+      Interfaces.Node node_15 annotation (Placement(transformation(extent={{-140,
+                16},{-134,22}}), iconTransformation(extent={{-294,-26},{-274,-6}})));
+      Interfaces.Node node_12 annotation (Placement(transformation(extent={{-86,
+                68},{-80,74}}), iconTransformation(extent={{-294,-20},{-274,0}})));
+      Interfaces.Node node_10 annotation (Placement(transformation(extent={{-58,
+                34},{-52,40}}), iconTransformation(extent={{-294,-66},{-274,-46}})));
+      Interfaces.Node node_11 annotation (Placement(transformation(extent={{-58,
+                -16},{-52,-10}}), iconTransformation(extent={{-294,-78},{-274,-58}})));
+      Interfaces.Node node_7 annotation (Placement(transformation(extent={{8,68},
+                {14,74}}), iconTransformation(extent={{-276,-54},{-256,-34}})));
+      Interfaces.Node node_16 annotation (Placement(transformation(extent={{8,
+                114},{14,120}}), iconTransformation(extent={{-284,-12},{-264,8}})));
+      Interfaces.Node node_8 annotation (Placement(transformation(extent={{50,
+                68},{56,74}}), iconTransformation(extent={{-290,-18},{-270,2}})));
+      Interfaces.Node node_21 annotation (Placement(transformation(extent={{120,
+                68},{126,74}}), iconTransformation(extent={{-278,-14},{-258,6}})));
+      Interfaces.Node node_9 annotation (Placement(transformation(extent={{82,
+                68},{88,74}}), iconTransformation(extent={{-294,-34},{-274,-14}})));
+      Interfaces.Node node_5 annotation (Placement(transformation(extent={{10,
+                16},{16,22}}), iconTransformation(extent={{-294,-66},{-274,-46}})));
+      Interfaces.Node node_4 annotation (Placement(transformation(extent={{10,-16},
+                {16,-10}}), iconTransformation(extent={{-292,-76},{-272,-56}})));
+      Interfaces.Node node_6 annotation (Placement(transformation(extent={{56,-16},
+                {62,-10}}), iconTransformation(extent={{-292,-78},{-272,-58}})));
+      Interfaces.Node node_3 annotation (Placement(transformation(extent={{10,-48},
+                {16,-42}}), iconTransformation(extent={{-294,-118},{-274,-98}})));
+      Interfaces.Node node_2 annotation (Placement(transformation(extent={{46,-56},
+                {52,-50}}), iconTransformation(extent={{-294,-116},{-274,-96}})));
+      Interfaces.Node node_1 annotation (Placement(transformation(extent={{82,-56},
+                {88,-50}}), iconTransformation(extent={{-292,-118},{-272,-98}})));
+      Interfaces.Node node_22 annotation (Placement(transformation(extent={{120,
+                -56},{126,-50}}), iconTransformation(extent={{-294,-116},{-274,
+                -96}})));
     equation
-
+      // the formulas of the derivatives of the angles
       der(delta_G1_G2) = G1.G1.Wc*(G1.G1.s - G2.G2.s);
       der(delta_G1_G3) = G1.G1.Wc*(G1.G1.s - G3.G3.s);
       der(delta_G2_G3) = G1.G1.Wc*(G2.G2.s - G3.G3.s);
 
+      // the equations of the relation of power and mutual angles
       G1.G1.DeltaIJ = 0;
       G2.G2.DeltaIJ = delta_G1_G2;
       G3.G3.DeltaIJ = delta_G1_G3;
 
+      // equating of basis slip to G1 generatot's slip
       G1.G1.Ssys = G1.G1.s;
       G2.G2.Ssys = G1.G1.s;
       G3.G3.Ssys = G1.G1.s;
@@ -5506,18 +7663,17 @@
               extent={{-10,-10},{10,10}},
               rotation=0,
               origin={-64,20})));
-        Basic.Pin_v2 Stator_pin annotation (Placement(transformation(rotation=0,
-                extent={{-16,14},{-2,28}}),
-                                         iconTransformation(extent={{2,9},{22,
-                  29}})));
+        Interfaces.Pin_v2 Stator_pin annotation (Placement(transformation(
+                rotation=0, extent={{-16,14},{-2,28}}), iconTransformation(
+                extent={{2,9},{22,29}})));
       equation
         connect(G2.dUtr_pin,excitation_Regulator1. dV_pin) annotation (Line(
-            points={{-47.6,29.6},{-47.6,36},{-78,36},{-78,26},{-73.4167,26}},
+            points={{-47.6,29.6},{-47.6,36},{-78,36},{-78,27},{-73.25,27}},
             color={255,255,0},
             thickness=0.5));
         connect(excitation_Regulator1.dV_pin,excitation_Regulator1. dV1_pin)
           annotation (Line(
-            points={{-73.4167,26},{-73.4167,24},{-73.25,24}},
+            points={{-73.25,27},{-73.25,24},{-73.25,24}},
             color={255,255,0},
             thickness=0.5));
         connect(G2.dWu_pin,excitation_Regulator1. dfsys_pin) annotation (Line(
@@ -5548,7 +7704,7 @@
               coordinateSystem(extent={{-120,-40},{0,80}}), graphics={
               Ellipse(
               extent={{-124,80},{4,-38}},
-              lineColor={28,108,200}),
+              lineColor={0,0,255}),
               Text(extent={{-102,58},{-18,32}},
                                               textString=
                                                   "SM"),
@@ -5584,15 +7740,16 @@
               extent={{-10,-10},{10,10}},
               rotation=0,
               origin={-8,-4})));
-        Basic.Pin_v2 Stator_pin annotation (Placement(transformation(rotation=0,
-                extent={{51,3},{57,9}}), iconTransformation(extent={{47,-7},{58,4}})));
+        Interfaces.Pin_v2 Stator_pin annotation (Placement(transformation(
+                rotation=0, extent={{51,3},{57,9}}), iconTransformation(extent=
+                  {{47,-7},{58,4}})));
       equation
         connect(G3.dUtr_pin,G3_Regulator. dV_pin) annotation (Line(
-            points={{6.4,3.6},{6.4,12},{-16,12},{-16,2},{-17.4167,2}},
+            points={{6.4,3.6},{6.4,12},{-16,12},{-16,3},{-17.25,3}},
             color={255,255,0},
             thickness=0.5));
         connect(G3_Regulator.dV_pin,G3_Regulator. dV1_pin) annotation (Line(
-            points={{-17.4167,2},{-17.25,2},{-17.25,0}},
+            points={{-17.25,3},{-17.25,3},{-17.25,0}},
             color={255,255,0},
             thickness=0.5));
         connect(G3.dWu_pin,G3_Regulator. dfsys_pin) annotation (Line(
@@ -5613,8 +7770,8 @@
             color={255,255,0},
             thickness=0.5));
         connect(G3.Ut_pin,G3_Regulator. Ut_pin) annotation (Line(
-            points={{16.2,3.6},{16.2,22},{-26,22},{-26,-20},{-17.1667,-20},{-17.1667,
-                -10.4}},
+            points={{16.2,3.6},{16.2,22},{-26,22},{-26,-20},{-17.1667,-20},{
+                -17.1667,-10.4}},
             color={255,255,0},
             thickness=0.5));
         connect(Stator_pin, G3.Stator_pin) annotation (Line(points={{54,6},{54,-3.8},
@@ -5623,7 +7780,7 @@
               coordinateSystem(extent={{-30,-30},{30,30}}), graphics={
               Ellipse(
               extent={{-42,38},{48,-42}},
-              lineColor={28,108,200}),
+              lineColor={0,0,255}),
               Text(extent={{-34,28},{36,10}}, textString=
                                                   "SM"),
               Text(extent={{-36,8},{40,-8}},  textString=
@@ -5660,16 +7817,17 @@
               extent={{-10,-10},{10,10}},
               rotation=0,
               origin={38,36})));
-        Basic.Pin_v2 pin_v2_2 annotation (Placement(transformation(extent={{80,36},
-                  {84,40}}),  iconTransformation(extent={{100,44},{114,58}})));
+        Interfaces.Pin_v2 pin_v2_2 annotation (Placement(transformation(extent=
+                  {{80,36},{84,40}}), iconTransformation(extent={{100,44},{114,
+                  58}})));
       equation
         connect(G1.dUtr_pin,excitation_Regulator. dV_pin) annotation (Line(
-            points={{54.4,45.6},{54.4,52},{24,52},{24,42},{28.5833,42}},
+            points={{54.4,45.6},{54.4,52},{24,52},{24,43},{28.75,43}},
             color={255,255,0},
             thickness=0.5));
         connect(excitation_Regulator.dV_pin,excitation_Regulator. dV1_pin)
           annotation (Line(
-            points={{28.5833,42},{28.75,42},{28.75,40}},
+            points={{28.75,43},{28.75,43},{28.75,40}},
             color={255,255,0},
             thickness=0.5));
         connect(G1.dWu_pin,excitation_Regulator. dfsys_pin) annotation (Line(
@@ -5701,7 +7859,7 @@
               coordinateSystem(extent={{-40,-40},{120,120}}), graphics={
               Ellipse(
               extent={{-26,110},{102,-8}},
-              lineColor={28,108,200}),
+              lineColor={0,0,255}),
               Text(extent={{-4,88},{80,62}},  textString=
                                                   "SM"),
               Text(extent={{-4,54},{80,36}},  textString=
@@ -5715,130 +7873,145 @@
       connect(G3.Stator_pin, node_14) annotation (Line(points={{-196.5,71.5},{
               -196.5,71},{-181,71}}, color={28,108,200}));
       connect(shortCircuitShunt18.inp, node_14) annotation (Line(points={{-180,
-              50.8},{-181,50.8},{-181,71}}, color={28,108,200}));
+              55.8},{-181,55.8},{-181,71}}, color={28,108,200}));
       connect(node_14, T2_HV.inp)
-        annotation (Line(points={{-181,71},{-169.8,71}}, color={28,108,200}));
+        annotation (Line(points={{-181,71},{-171.8,71}}, color={28,108,200}));
       connect(T2_HV.out, node_13)
-        annotation (Line(points={{-154,71},{-135,71}}, color={28,108,200}));
-      connect(T2_LV.inp, node_13) annotation (Line(points={{-137,51.8},{-136,
-              51.8},{-136,71},{-135,71}}, color={28,108,200}));
+        annotation (Line(points={{-152.2,71},{-135,71}},
+                                                       color={28,108,200}));
+      connect(T2_LV.inp, node_13) annotation (Line(points={{-137,53.8},{-136,
+              53.8},{-136,71},{-135,71}}, color={28,108,200}));
       connect(node_13, T2_MV.inp)
-        annotation (Line(points={{-135,71},{-119.8,71}}, color={28,108,200}));
+        annotation (Line(points={{-135,71},{-121.8,71}}, color={28,108,200}));
       connect(T2_LV.out, node_15)
-        annotation (Line(points={{-137,36},{-137,19}}, color={28,108,200}));
-      connect(N3.inp, node_15) annotation (Line(points={{-136,8.46},{-136,12},{
+        annotation (Line(points={{-137,34.2},{-137,19}},
+                                                       color={28,108,200}));
+      connect(N3.inp, node_15) annotation (Line(points={{-136,9.78},{-136,12},{
               -137,12},{-137,19}}, color={28,108,200}));
       connect(shortCircuitShunt16.inp, node_15) annotation (Line(points={{-152,
-              4.8},{-152,19},{-137,19}}, color={28,108,200}));
+              9.8},{-152,19},{-137,19}}, color={28,108,200}));
       connect(node_12, L3.inp)
-        annotation (Line(points={{-83,71},{-53.6,71}}, color={28,108,200}));
+        annotation (Line(points={{-83,71},{-70,71},{-70,70},{-55.8,70}},
+                                                       color={28,108,200}));
       connect(shortCircuitShunt12.inp, node_12) annotation (Line(points={{-90,
-              83.2},{-90,71},{-83,71}}, color={28,108,200}));
+              78.2},{-90,71},{-83,71}}, color={28,108,200}));
       connect(T2_MV.out, node_12)
-        annotation (Line(points={{-104,71},{-83,71}}, color={28,108,200}));
+        annotation (Line(points={{-102.2,71},{-83,71}},
+                                                      color={28,108,200}));
       connect(node_12, L5.inp) annotation (Line(points={{-83,71},{-90,71},{-90,
-              37},{-81.6,37}}, color={28,108,200}));
-      connect(L5.out, node_10) annotation (Line(points={{-66.2,37.2},{-66.2,37},
-              {-55,37}}, color={28,108,200}));
+              36},{-83.8,36}}, color={28,108,200}));
+      connect(L5.out, node_10) annotation (Line(points={{-64,36},{-64,37},{-55,
+              37}},      color={28,108,200}));
       connect(node_10, L4.inp)
-        annotation (Line(points={{-55,37},{-39.6,37}}, color={28,108,200}));
-      connect(node_10, shortCircuitShunt13.inp) annotation (Line(points={{-55,
-              37},{-54,37},{-54,42},{-64,42},{-64,51.2}}, color={28,108,200}));
+        annotation (Line(points={{-55,37},{-48,37},{-48,36},{-41.8,36}},
+                                                       color={28,108,200}));
+      connect(node_10, shortCircuitShunt13.inp) annotation (Line(points={{-55,37},
+              {-54,37},{-54,42},{-64,42},{-64,46.2}},     color={28,108,200}));
       connect(node_10, T1.out) annotation (Line(points={{-55,37},{-56,37},{-56,
-              24},{-55,24},{-55,18}}, color={28,108,200}));
-      connect(L3.out, node_7) annotation (Line(points={{-38.2,71.2},{-36,71},{
-              11,71}}, color={28,108,200}));
-      connect(shortCircuitShunt.inp, node_7) annotation (Line(points={{-6,58.8},
+              24},{-55,24},{-55,19.8}},
+                                      color={28,108,200}));
+      connect(L3.out, node_7) annotation (Line(points={{-36,70},{-36,71},{11,71}},
+                       color={28,108,200}));
+      connect(shortCircuitShunt.inp, node_7) annotation (Line(points={{-6,63.8},
               {-6,71},{11,71}}, color={28,108,200}));
-      connect(L4.out, node_7) annotation (Line(points={{-24.2,37.2},{-18,37.2},
-              {-18,71},{11,71}}, color={28,108,200}));
+      connect(L4.out, node_7) annotation (Line(points={{-22,36},{-18,36},{-18,
+              71},{11,71}},      color={28,108,200}));
       connect(L1.inp, node_7)
-        annotation (Line(points={{16.4,71},{11,71}}, color={28,108,200}));
-      connect(L6.inp, node_7) annotation (Line(points={{13,49.6},{13,58},{11,58},
+        annotation (Line(points={{14.2,70},{12,70},{12,71},{11,71}},
+                                                     color={28,108,200}));
+      connect(L6.inp, node_7) annotation (Line(points={{12,51.8},{12,58},{11,58},
               {11,71}}, color={28,108,200}));
       connect(T3.inp, node_7)
-        annotation (Line(points={{11,92.2},{11,71}}, color={28,108,200}));
+        annotation (Line(points={{11,90.2},{11,71}}, color={28,108,200}));
       connect(N4.inp, node_16)
-        annotation (Line(points={{-12.54,117},{11,117}}, color={28,108,200}));
+        annotation (Line(points={{-11.22,117},{11,117}}, color={28,108,200}));
       connect(shortCircuitShunt11.inp, node_16) annotation (Line(points={{-6,
-              104.8},{-6,117},{11,117}}, color={28,108,200}));
+              109.8},{-6,117},{11,117}}, color={28,108,200}));
       connect(T3.out, node_16)
-        annotation (Line(points={{11,108},{11,117}}, color={28,108,200}));
+        annotation (Line(points={{11,109.8},{11,117}},
+                                                     color={28,108,200}));
       connect(node_8, T_G1.inp)
-        annotation (Line(points={{53,71},{62.2,71}}, color={28,108,200}));
-      connect(L1.out, node_8) annotation (Line(points={{31.8,71.2},{31.8,71},{
-              53,71}}, color={28,108,200}));
-      connect(shortCircuitShunt10.inp, node_8) annotation (Line(points={{36,
-              54.8},{36,71},{53,71}}, color={28,108,200}));
-      connect(ElBrShunt01.inp, node_8) annotation (Line(points={{52,56.8},{52,
+        annotation (Line(points={{53,71},{60.2,71}}, color={28,108,200}));
+      connect(L1.out, node_8) annotation (Line(points={{34,70},{34,71},{53,71}},
+                       color={28,108,200}));
+      connect(shortCircuitShunt10.inp, node_8) annotation (Line(points={{36,59.8},
+              {36,71},{53,71}},       color={28,108,200}));
+      connect(ElBrShunt01.inp, node_8) annotation (Line(points={{52,57.8},{52,
               71},{53,71}}, color={28,108,200}));
       connect(G1.pin_v2_2, node_21) annotation (Line(points={{138.762,70.6625},
               {138,71},{123,71}}, color={28,108,200}));
       connect(ElBr01.out, node_21)
-        annotation (Line(points={{112.8,71},{123,71}}, color={28,108,200}));
+        annotation (Line(points={{114,68.4},{118,68.4},{118,71},{123,71}},
+                                                       color={28,108,200}));
       connect(shortCircuitShunt8.inp, node_21) annotation (Line(points={{124,
-              56.8},{123,56},{123,71}}, color={28,108,200}));
+              61.8},{123,56},{123,71}}, color={28,108,200}));
       connect(ElBr01.inp,node_9)
-        annotation (Line(points={{95.2,71},{85,71}}, color={28,108,200}));
-      connect(T_G1.out,node_9)  annotation (Line(points={{78,71},{85,71}},
+        annotation (Line(points={{94,68.4},{90,68.4},{90,71},{85,71}},
+                                                     color={28,108,200}));
+      connect(T_G1.out,node_9)  annotation (Line(points={{79.8,71},{85,71}},
                         color={28,108,200}));
       connect(node_9, shortCircuitShunt9.inp) annotation (Line(points={{85,71},
-              {85,61.5},{86,61.5},{86,54.8}}, color={28,108,200}));
+              {85,61.5},{86,61.5},{86,59.8}}, color={28,108,200}));
       connect(shortCircuitShunt7.inp,node_5)  annotation (Line(points={{-10,
-              14.8},{-10,19},{13,19}}, color={28,108,200}));
-      connect(L6.out,node_5)  annotation (Line(points={{13.2,34.2},{13,34.2},{
-              13,19}}, color={28,108,200}));
+              19.8},{-10,19},{13,19}}, color={28,108,200}));
+      connect(L6.out,node_5)  annotation (Line(points={{12,32},{13,32},{13,19}},
+                       color={28,108,200}));
       connect(AT_MV.out,node_5)
-        annotation (Line(points={{13,10},{13,19}}, color={28,108,200}));
+        annotation (Line(points={{11,11.8},{11,14},{13,14},{13,19}},
+                                                   color={28,108,200}));
       connect(shortCircuitShunt5.inp,node_4)  annotation (Line(points={{-12,
-              -13.2},{-12,-13},{13,-13}}, color={28,108,200}));
+              -8.2},{-12,-13},{13,-13}},  color={28,108,200}));
       connect(AT_MV.inp,node_4)
-        annotation (Line(points={{13,-5.8},{13,-13}}, color={28,108,200}));
+        annotation (Line(points={{11,-7.8},{11,-10},{13,-10},{13,-13}},
+                                                      color={28,108,200}));
       connect(AT_HV.out,node_4)
-        annotation (Line(points={{13,-20},{13,-13}}, color={28,108,200}));
-      connect(AT_LV.out,node_4)  annotation (Line(points={{30,-13},{13,-13}},
+        annotation (Line(points={{13,-18.2},{13,-13}},
+                                                     color={28,108,200}));
+      connect(AT_LV.out,node_4)  annotation (Line(points={{28.2,-13},{13,-13}},
                      color={28,108,200}));
       connect(AT_LV.inp,node_6)
-        annotation (Line(points={{45.8,-13},{59,-13}}, color={28,108,200}));
+        annotation (Line(points={{47.8,-13},{59,-13}}, color={28,108,200}));
       connect(shortCircuitShunt6.inp,node_6)  annotation (Line(points={{60,
-              -21.2},{59,-21.2},{59,-13}},
+              -16.2},{59,-16.2},{59,-13}},
                                          color={28,108,200}));
-      connect(N1.inp,node_6)  annotation (Line(points={{76,-15.4},{76,-13},{59,
+      connect(N1.inp,node_6)  annotation (Line(points={{76,-14.2},{76,-13},{59,
               -13}}, color={28,108,200}));
-      connect(AT_HV.inp,node_3)  annotation (Line(points={{13,-35.8},{14,-35.8},
+      connect(AT_HV.inp,node_3)  annotation (Line(points={{13,-37.8},{14,-37.8},
               {14,-45},{13,-45}}, color={28,108,200}));
-      connect(L2.inp,node_3)  annotation (Line(points={{20.4,-53},{13,-53},{13,
+      connect(L2.inp,node_3)  annotation (Line(points={{18.2,-54},{13,-54},{13,
               -45}}, color={28,108,200}));
       connect(shortCircuitShunt4.inp,node_3)  annotation (Line(points={{-10,
-              -45.2},{-10,-45},{13,-45}}, color={28,108,200}));
-      connect(T_G2.out,node_1)  annotation (Line(points={{76,-53},{85,-53}},
+              -40.2},{-10,-45},{13,-45}}, color={28,108,200}));
+      connect(T_G2.out,node_1)  annotation (Line(points={{77.8,-53},{85,-53}},
                                        color={28,108,200}));
       connect(shortCircuitShunt2.inp,node_1)  annotation (Line(points={{86,
-              -63.2},{85,-64},{85,-53}},          color={28,108,200}));
+              -58.2},{85,-64},{85,-53}},          color={28,108,200}));
       connect(ElBr02.inp,node_1)
-        annotation (Line(points={{97.2,-53},{85,-53}}, color={28,108,200}));
+        annotation (Line(points={{96,-55.6},{90,-55.6},{90,-53},{85,-53}},
+                                                       color={28,108,200}));
       connect(ElBr02.out, node_22)
-        annotation (Line(points={{114.8,-53},{123,-53}}, color={28,108,200}));
+        annotation (Line(points={{116,-55.6},{120,-55.6},{120,-53},{123,-53}},
+                                                         color={28,108,200}));
       connect(G2.Stator_pin, node_22) annotation (Line(points={{143.4,-52.7833},
               {143.4,-53},{123,-53}},             color={28,108,200}));
       connect(shortCircuitShunt1.inp, node_22) annotation (Line(points={{122,
-              -63.2},{123,-63.2},{123,-53}}, color={28,108,200}));
+              -58.2},{123,-58.2},{123,-53}}, color={28,108,200}));
       connect(node_2, T_G2.inp)
-        annotation (Line(points={{49,-53},{60.2,-53}}, color={28,108,200}));
+        annotation (Line(points={{49,-53},{58.2,-53}}, color={28,108,200}));
       connect(node_2, ElBrShun02.inp) annotation (Line(points={{49,-53},{46,-53},
-              {46,-54},{50,-54},{50,-67.2}}, color={28,108,200}));
-      connect(node_13, shortCircuitShunt17.inp) annotation (Line(points={{-135,
-              71},{-135,60.5},{-154,60.5},{-154,50.8}}, color={28,108,200}));
-      connect(N2.inp, node_11) annotation (Line(points={{-54,-25.54},{-55,
-              -25.54},{-55,-13}}, color={28,108,200}));
+              {46,-54},{50,-54},{50,-66.2}}, color={28,108,200}));
+      connect(node_13, shortCircuitShunt17.inp) annotation (Line(points={{-135,71},
+              {-135,60.5},{-154,60.5},{-154,55.8}},     color={28,108,200}));
+      connect(N2.inp, node_11) annotation (Line(points={{-54,-24.22},{-55,
+              -24.22},{-55,-13}}, color={28,108,200}));
       connect(node_11, T1.inp)
-        annotation (Line(points={{-55,-13},{-55,2.2}}, color={28,108,200}));
-      connect(node_11, shortCircuitShunt15.inp) annotation (Line(points={{-55,
-              -13},{-72,-13},{-72,-29.2}}, color={28,108,200}));
-      connect(node_2, L2.out) annotation (Line(points={{49,-53},{50,-52.8},{
-              35.8,-52.8}}, color={28,108,200}));
+        annotation (Line(points={{-55,-13},{-55,0.2}}, color={28,108,200}));
+      connect(node_11, shortCircuitShunt15.inp) annotation (Line(points={{-55,-13},
+              {-72,-13},{-72,-24.2}},      color={28,108,200}));
+      connect(node_2, L2.out) annotation (Line(points={{49,-53},{50,-54},{38,
+              -54}},        color={28,108,200}));
       connect(node_2, shortCircuitShunt3.inp) annotation (Line(points={{49,-53},
-              {49,-61.5},{36,-61.5},{36,-71.2}}, color={28,108,200}));
+              {49,-61.5},{36,-61.5},{36,-66.2}}, color={28,108,200}));
       annotation (experiment(
           StopTime=80,
           __Dymola_NumberOfIntervals=5000,
@@ -5846,76 +8019,76 @@
           __Dymola_Algorithm="Dassl"),
         Diagram(coordinateSystem(extent={{-240,-100},{180,140}}), graphics={
             Text(
-              extent={{-190,84},{-172,74}},
-              textColor={28,108,200},
+              extent={{-192,84},{-174,74}},
+              textColor={0,0,255},
               textString="14"),
             Text(
-              extent={{-144,84},{-126,74}},
-              textColor={28,108,200},
+              extent={{-146,84},{-128,74}},
+              textColor={0,0,255},
               textString="13"),
             Text(
-              extent={{-134,24},{-116,14}},
-              textColor={28,108,200},
+              extent={{-136,24},{-118,14}},
+              textColor={0,0,255},
               textString="15"),
             Text(
-              extent={{-90,84},{-72,74}},
-              textColor={28,108,200},
+              extent={{-92,84},{-74,74}},
+              textColor={0,0,255},
               textString="12"),
             Text(
-              extent={{-58,32},{-40,22}},
-              textColor={28,108,200},
+              extent={{-60,32},{-42,22}},
+              textColor={0,0,255},
               textString="10"),
             Text(
-              extent={{-54,-6},{-36,-16}},
-              textColor={28,108,200},
+              extent={{-56,-6},{-38,-16}},
+              textColor={0,0,255},
               textString="11"),
             Text(
-              extent={{14,24},{32,14}},
-              textColor={28,108,200},
+              extent={{12,24},{30,14}},
+              textColor={0,0,255},
               textString="5"),
             Text(
-              extent={{50,4},{68,-6}},
-              textColor={28,108,200},
+              extent={{48,4},{66,-6}},
+              textColor={0,0,255},
               textString="6"),
             Text(
               extent={{-4,-4},{14,-14}},
-              textColor={28,108,200},
+              textColor={0,0,255},
               textString="4"),
             Text(
-              extent={{14,-38},{32,-48}},
-              textColor={28,108,200},
+              extent={{12,-38},{30,-48}},
+              textColor={0,0,255},
               textString="3"),
             Text(
-              extent={{38,-38},{56,-48}},
-              textColor={28,108,200},
+              extent={{36,-38},{54,-48}},
+              textColor={0,0,255},
               textString="2"),
             Text(
-              extent={{78,-38},{96,-48}},
-              textColor={28,108,200},
+              extent={{76,-38},{94,-48}},
+              textColor={0,0,255},
               textString="1"),
             Text(
-              extent={{114,-36},{132,-46}},
-              textColor={28,108,200},
+              extent={{112,-36},{130,-46}},
+              textColor={0,0,255},
               textString="22"),
             Text(
-              extent={{8,84},{26,74}},
-              textColor={28,108,200},
+              extent={{6,84},{24,74}},
+              textColor={0,0,255},
               textString="7"),
             Text(
-              extent={{12,122},{30,112}},
-              textColor={28,108,200},
+              extent={{10,122},{28,112}},
+              textColor={0,0,255},
               textString="16"),
             Text(
-              extent={{38,86},{56,76}},
-              textColor={28,108,200},
+              extent={{36,86},{54,76}},
+              textColor={0,0,255},
               textString="8"),
             Text(
-              extent={{116,86},{134,76}},
-              textColor={28,108,200},
+              extent={{114,86},{132,76}},
+              textColor={0,0,255},
               textString="21"),
             Text(
-              extent={{78,86},{96,76}},
-              textColor={28,108,200},
+              extent={{76,86},{94,76}},
+              textColor={0,0,255},
               textString="9")}),
         Icon(coordinateSystem(extent={{-240,-100},{180,140}}), graphics={
             Ellipse(lineColor = {75,138,73},
@@ -5933,11 +8106,11 @@
 <p>The main purpose of this scheme is to show and teach the students the main ways to increase the degree of dynamic stability, which can be expressed in limit short circuit time. </p>
 <p>Specifically in this scheme the scenario is as follows:</p>
 <p><b>0 s</b>: start;</p>
-<p><b>50 s</b>: 3-phase short circuit in node_7;</p>
-<p><b>50.2 s</b>: end of short circuit, disconnection of L1;</p>
+<p><b>50 s</b>: three-phase short-circuit in node_7;</p>
+<p><b>50.2 s</b>: end of short-circuit, disconnection of L1;</p>
 <p><b>50.4 s</b>: reduction of the G1 power plant active power generation;</p>
 <p><b>50.5 s</b>: automatic reclosing of L1;</p>
-<p><b>65 s</b>: 3-phase short circuit in node_2;</p>
+<p><b>65 s</b>: three-phase short-circuit in node_2;</p>
 <p><b>65.1 s: </b>start of fast G2&nbsp;turbine&nbsp;valving&nbsp;control;</p>
 <p><b>65.15 s: </b>end of short circuit;</p>
 <p><b>65.3 s</b>: end of G2 fast turbine valving control</p>
@@ -5946,7 +8119,7 @@
     end three_maschine_scheme;
 
     model Simple_model
-      Real delta_G1_G2(start=0.5534006953239441);
+      Real delta_G1_G2(start=0.5534006953239441) "Mutual angle";
 
       LEPSE.Basic.Gen_with_ARV_control G1(G(
           Pg=0.85,
@@ -5960,7 +8133,7 @@
           SimpleExciter(x(start={-0.05362093076109886})),
           VoltageDerivative(x(start={0.0026810464914888144})),
           VoltageDeviation(x(start={0.0026810464914888144}))))
-        annotation (Placement(transformation(extent={{-64,-2},{-28,32}})));
+        annotation (Placement(transformation(extent={{-68,0},{-32,34}})));
       LEPSE.Basic.HVline Line_1(TLineOff=30.1, dTLineOff=5)
         annotation (Placement(transformation(extent={{-14,2},{6,22}})));
       LEPSE.Basic.Gen_with_ARV_control G2(AVR(
@@ -5989,7 +8162,7 @@
           Xs_p=0.01)) "infinite bus"        annotation (Placement(transformation(
             extent={{-18,-18},{18,18}},
             rotation=180,
-            origin={40,18})));
+            origin={42,16})));
       Basic.Constant_Conductivity_Load constant_Conductivity_Load(Gn=2.81, Bn=
             0.7) annotation (Placement(transformation(extent={{4,-18},{24,2}})));
       Basic.ShortCircuitShunt shortCircuitShunt(
@@ -5997,40 +8170,41 @@
         Gn=-100000,
         TkzOn=30,
         dTkzOn=0.1)
-        annotation (Placement(transformation(extent={{-32,-16},{-12,4}})));
-      Basic.Node node_1 annotation (Placement(transformation(extent={{-24,14},{
-                -18,20}}), iconTransformation(extent={{-138,-48},{-118,-28}})));
-      Basic.Node node_2 annotation (Placement(transformation(extent={{10,14},{
-                16,20}}), iconTransformation(extent={{-136,-48},{-116,-28}})));
+        annotation (Placement(transformation(extent={{-32,-20},{-12,0}})));
+      Interfaces.Node node_1 annotation (Placement(transformation(extent={{-24,
+                14},{-18,20}}), iconTransformation(extent={{-138,-48},{-118,-28}})));
+      Interfaces.Node node_2 annotation (Placement(transformation(extent={{10,
+                14},{16,20}}), iconTransformation(extent={{-136,-48},{-116,-28}})));
     equation
+      // the formula of the derivative of the angle
+      der(delta_G1_G2) = G2.G.Wc*(G2.G.s - G1.G.s);
 
-      der(delta_G1_G2) =G2.G.Wc*(G2.G.s - G1.G.s);
-
+      // the equations of the relation of power and mutual angles
       G2.G.DeltaIJ = 0;
       G1.G.DeltaIJ = delta_G1_G2;
 
+      // equating of basis slip to G2 generator's slip
       G1.G.Ssys = G2.G.s;
-      G2.G.Ssys =G2.G.s;
+      G2.G.Ssys = G2.G.s;
 
       connect(node_1,Line_1. inp)
-        annotation (Line(points={{-21,17},{-11.6,17}}, color={28,108,200}));
-      connect(Line_1.out, node_2) annotation (Line(points={{3.8,17.2},{3.8,17},
-              {13,17}}, color={28,108,200}));
-      connect(node_2,G2. inp) annotation (Line(points={{13,17},{13,16.92},{
-              24.16,16.92}},
+        annotation (Line(points={{-21,17},{-18,17},{-18,16},{-13.8,16}},
+                                                       color={28,108,200}));
+      connect(Line_1.out, node_2) annotation (Line(points={{6,16},{6,17},{13,17}},
+                        color={28,108,200}));
+      connect(node_2,G2. inp) annotation (Line(points={{13,17},{13,16},{24,16}},
                        color={28,108,200}));
-      connect(node_2, constant_Conductivity_Load.inp) annotation (Line(points={
-              {13,17},{14,17},{14,0.6}}, color={28,108,200}));
-      connect(node_1, G1.inp) annotation (Line(points={{-21,17},{-24,17},{-24,
-              16.02},{-30.16,16.02}},
+      connect(node_2, constant_Conductivity_Load.inp) annotation (Line(points={{13,17},
+              {14,17},{14,1.8}},         color={28,108,200}));
+      connect(node_1, G1.inp) annotation (Line(points={{-21,17},{-32,17}},
                                color={28,108,200}));
       connect(node_1, shortCircuitShunt.inp) annotation (Line(points={{-21,17},
-              {-22,17},{-22,-1.2}}, color={28,108,200}));
+              {-22,17},{-22,-0.2}}, color={28,108,200}));
       annotation (Documentation(info="<html>
 <p>Calssical model of the simpliest power energy system, which is used to study the basics of transient processes. </p>
 <p><b>0 s</b>: start;</p>
-<p><b>30 s</b>: 3-phase short circuit in node_1;</p>
-<p><b>30.1 s</b>: end of short circuit, disconnection one of the two circuits of the Line_1;</p>
+<p><b>30 s</b>: three-phase short-circuit in node_1;</p>
+<p><b>30.1 s</b>: end of short-circuit, disconnection one of the two circuits of the Line_1;</p>
 <p><b>35.1 s</b>: automatic reclosing of the Line_1 circuit ;</p>
 <p><b>50 s</b>: end. </p>
 </html>"), experiment(
@@ -6050,10 +8224,10 @@
                     points={{-22,56},{60,0},{-22,-52},{-22,56}})}),
         Diagram(graphics={Text(
               extent={{-30,34},{-16,24}},
-              textColor={28,108,200},
+              textColor={0,0,255},
               textString="1"), Text(
               extent={{6,34},{20,24}},
-              textColor={28,108,200},
+              textColor={0,0,255},
               textString="2")}));
     end Simple_model;
 
@@ -6084,2427 +8258,6 @@
             points={{-58.0,46.0},{42.0,-14.0},{-58.0,-74.0},{-58.0,46.0}})}));
   end Examples;
 
-  package Basic
-    model HVline
-      parameter Real Rline=0.01 "Active resistance of Pi-model";
-      parameter Real Xline=0.1 "Reactance of Pi-model";
-      parameter Real Bline1=0 "Reactive conductivity of Pi-model beginning";
-      parameter Real Bline2=0 "Reactive conductivity of Pi-model end";
-      //---------------------------------------------
-      parameter Real TLineOff=1000 "Time of line disconnection";
-      parameter Real dTLineOff=10 "Duration of line disconnection";
-      parameter Real Koff=2 "Degree of line disconnection";
-      parameter Real TLineOff_1=2000 "Time of line second disconnection";
-      parameter Real dTLineOff_1=20 "Duration of line second disconnection";
-      parameter Real Koff_1=4 "Degree of line second disconnection";
-      //---------------------------------------------
-      Real U1d;
-      Real U1q;
-      Real U2d;
-      Real U2q;
-      Real I12d;
-      Real I12q;
-      Real I12m;
-      Real U1m;
-      Real U2m;
-      flow Real I1d;
-      flow Real I1q;
-      flow Real I2d;
-      flow Real I2q;
-      Real Idc1;
-      Real Iqc1;
-      Real Idc2;
-      Real Iqc2;
-      Real DU1;
-      Real DU2;
-      Real P1;
-      Real Q1;
-      Real P2;
-      Real Q2;
-      Real RL;
-      Real XL;
-      Real BL1;
-      Real BL2;
-      LEPSE.Basic.Pin_v2 inp annotation (extent=[-86,40; -66,60], Placement(
-            transformation(extent={{-86,40},{-66,60}}, rotation=0)));
-      LEPSE.Basic.Pin_v2 out annotation (extent=[68,42; 88,62], Placement(
-            transformation(extent={{68,42},{88,62}}, rotation=0)));
-    equation
-      // the algorithm of triping transmission line
-      RL = if (time >= TLineOff and time < TLineOff + dTLineOff) then (Koff*Rline)
-        else (if (time >= TLineOff_1 and time < TLineOff_1 + dTLineOff_1) then (Koff_1*Rline) else (Rline));
-      XL = if (time >= TLineOff and time < TLineOff + dTLineOff) then (Koff*Xline)
-        else (if (time >= TLineOff_1 and time < TLineOff_1 + dTLineOff_1) then (Koff_1*Xline) else (Xline));
-      BL1 = if (time >= TLineOff and time < TLineOff + dTLineOff) then (Bline1/Koff)
-        else (if (time >= TLineOff_1 and time < TLineOff_1 + dTLineOff_1) then (Bline1/Koff_1) else (Bline1));
-      BL2 = if (time >= TLineOff and time < TLineOff + dTLineOff) then (Bline2/Koff)
-        else (if (time >= TLineOff_1 and time < TLineOff_1 + dTLineOff_1) then (Bline2/Koff_1) else (Bline2));
-      // series impedance between nodes
-      U1q = U2q + RL*I12q - XL*I12d;
-      U1d = U2d + RL*I12d + XL*I12q;
-      // line capacitances
-      Idc1 = U1q*BL1;
-      Iqc1 = -U1d*BL1;
-      Idc2 = U2q*BL2;
-      Iqc2 = -U2d*BL2;
-      // balance of current
-      I1d = Idc1 + I12d;
-      I1q = Iqc1 + I12q;
-      I12d = Idc2 + I2d;
-      I12q = Iqc2 + I2q;
-      // measurements
-      I12m = sqrt(I12d^2 + I12q^2);
-      U1m = sqrt(U1d^2 + U1q^2);
-      U2m = sqrt(U2d^2 + U2q^2);
-      DU1 = atan2(U1d, U1q);
-      DU2 = atan2(U2d, U2q);
-      // powers
-      P1 = U1q*I1q + U1d*I1d;
-      Q1 = -U1q*I1d + U1d*I1q;
-      P2 = U2q*I2q + U2d*I2d;
-      Q2 = -U2q*I2d + U2d*I2q;
-      //---connector1---
-      inp.Vd = U1d;
-      inp.Vq = U1q;
-      inp.Id = -I1d;
-      inp.Iq = -I1q;
-      //connect(inp.Vd, U1d);
-      //connect(inp.Vq, U1q);
-      //connect(inp.Id, I1d);
-      //connect(inp.Iq, I1q);
-      ////---connector2---
-      out.Vd = U2d;
-      out.Vq = U2q;
-      out.Id = I2d;
-      out.Iq = I2q;
-      //connect(out.Vd, U2d);
-      //connect(out.Vq, U2q);
-      //connect(out.Id, I2d);
-      //connect(out.Iq, I2q);
-      annotation (
-        Coordsys(
-          extent=[-100, -100; 100, 100],
-          grid=[2, 2],
-          component=[20, 20]),
-        Window(
-          x=0.13,
-          y=0.17,
-          width=0.6,
-          height=0.6),
-        Diagram(coordinateSystem(
-            preserveAspectRatio=false,
-            preserveOrientation=false,
-            extent={{-100,-100},{100,100}},
-            grid={2,2},
-            initialScale=0), graphics),
-        Icon(
-          coordinateSystem(
-            preserveAspectRatio=false,
-            preserveOrientation=false,
-            extent={{-100,-100},{100,100}},
-            grid={2,2},
-            initialScale=0),
-          graphics={
-            Rectangle(
-              extent={{-30,60},{30,40}},
-              lineColor={28,108,200},
-              lineThickness=1.0),
-            Rectangle(
-              extent={{-60,20},{-40,-20}},
-              lineColor={28,108,200},
-              lineThickness=1.0),
-            Rectangle(
-              extent={{40,20},{60,-20}},
-              lineColor={28,108,200},
-              lineThickness=1.0),
-            Line(
-              points={{-50,-20},{-50,-40}},
-              color={28,108,200},
-              thickness=1.0),
-            Line(
-              points={{-60,-40},{-40,-40}},
-              color={28,108,200},
-              thickness=1.0),
-            Line(
-              points={{50,-20},{50,-40}},
-              color={28,108,200},
-              thickness=1.0),
-            Line(
-              points={{40,-40},{60,-40}},
-              color={28,108,200},
-              thickness=1.0),
-            Line(
-              points={{-50,20},{-50,50}},
-              color={28,108,200},
-              thickness=1.0),
-            Line(
-              points={{-30,50},{-70,50}},
-              color={28,108,200},
-              thickness=1.0),
-            Line(
-              points={{50,20},{50,52}},
-              color={28,108,200},
-              thickness=1.0),
-            Line(
-              points={{70,52},{30,52}},
-              color={28,108,200},
-              thickness=1.0),
-            Text(extent={{-64,-48},{64,-80}}, textString=
-                                                  "%name")},
-          Rectangle(extent=[-30, 60; 30, 40], style(thickness=2)),
-          Rectangle(extent=[-60, 20; -40, -20], style(thickness=2)),
-          Rectangle(extent=[40, 20; 60, -20], style(thickness=2)),
-          Line(points=[-50, -20; -50, -40], style(thickness=2)),
-          Line(points=[-60, -40; -40, -40], style(thickness=2)),
-          Line(points=[50, -20; 50, -40], style(thickness=2)),
-          Line(points=[40, -40; 60, -40], style(thickness=2)),
-          Line(points=[-50, 20; -50, 50], style(thickness=2)),
-          Line(points=[-30, 50; -70, 50], style(thickness=2)),
-          Line(points=[50, 20; 50, 52], style(thickness=2)),
-          Line(points=[70, 52; 30, 52], style(thickness=2)),
-          Text(extent=[-64, -48; 64, -80], string="%name")),
-        Documentation(info="<html>
-<p><span style=\"background-color: #ffffff;\">The simplest model of a high voltage power transmission line</span></p>
-</html>"));
-    end HVline;
-
-    model Transformer
-      parameter Real Rline=0.001 "Active resistance of T-model";
-      parameter Real Xline=0.01 "Reactance of T-model";
-      //---------------------------------------------
-      parameter Real TtOff=1000 "Time of transformer disconnection";
-      parameter Real dTtOff=10 "Duration of transformer disconnection";
-      parameter Real Koff=100000 "Degree of transformer disconnection";
-      //---------------------------------------------
-      Real U1d;
-      Real U1q;
-      Real U2d;
-      Real U2q;
-      Real I12d;
-      Real I12q;
-      Real I12m;
-      Real U1m;
-      Real U2m;
-      Real P1;
-      Real Q1;
-      Real P2;
-      Real Q2;
-      Real RL;
-      Real XL;
-      LEPSE.Basic.Pin_v2 inp annotation (
-        extent=[-88,0; -68,20],
-        layer="icon",
-        Placement(transformation(extent={{-88,0},{-68,20}}, rotation=0)));
-      LEPSE.Basic.Pin_v2 out annotation (
-        extent=[70,0; 90,20],
-        layer="icon",
-        Placement(transformation(extent={{70,0},{90,20}}, rotation=0)));
-    equation
-      // the algorithm of triping transmission line
-      RL = if time >= TtOff and time < TtOff + dTtOff then Koff*Rline else Rline;
-      XL = if time >= TtOff and time < TtOff + dTtOff then Koff*Xline else Xline;
-      // series impedance between nodes
-      U1q = U2q + RL*I12q - XL*I12d;
-      U1d = U2d + RL*I12d + XL*I12q;
-      // measurements
-      I12m = sqrt(I12d^2 + I12q^2);
-      U1m = sqrt(U1d^2 + U1q^2);
-      U2m = sqrt(U2d^2 + U2q^2);
-      // powers
-      P1 = U1q*I12q + U1d*I12d;
-      Q1 = -U1q*I12d + U1d*I12q;
-      P2 = U2q*I12q + U2d*I12d;
-      Q2 = -U2q*I12d + U2d*I12q;
-      //------connectors-----
-      inp.Vd = U1d;
-      inp.Vq = U1q;
-
-      out.Vd = U2d;
-      out.Vq = U2q;
-
-      inp.Id = -I12d;
-      inp.Iq = -I12q;
-
-      out.Id = I12d;
-      out.Iq = I12q;
-      annotation (
-        Coordsys(
-          extent=[-100, -100; 100, 100],
-          grid=[2, 2],
-          component=[20, 20]),
-        Window(
-          x=0.31,
-          y=0.28,
-          width=0.5,
-          height=0.6),
-        Icon(
-          coordinateSystem(
-            preserveAspectRatio=false,
-            preserveOrientation=false,
-            extent={{-100,-100},{100,100}},
-            grid={2,2},
-            initialScale=0),
-          graphics={
-            Line(
-              points={{0,60},{0,-40}},
-              color={0,0,0},
-              thickness=1.5),
-            Rectangle(
-              extent={{-50,70},{50,-50}},
-              lineColor={0,0,255},
-              lineThickness=1.0),
-            Line(
-              points={{-20,10},{-70,10}},
-              color={0,0,0},
-              thickness=1.5),
-            Line(
-              points={{72,10},{22,10}},
-              color={0,0,0},
-              thickness=1.0),
-            Text(extent={{-64,-54},{66,-82}}, textString=
-                                                  "%name"),
-            Line(
-              points={{-20,34},{-8,38},{-4,46},{-8,54},{-20,58}},
-              color={0,0,0},
-              thickness=1.0),
-            Line(
-              points={{22,10},{10,14},{6,22},{10,30},{20,32}},
-              color={0,0,0},
-              thickness=1.0),
-            Line(
-              points={{22,32},{10,36},{6,44},{10,52},{22,56}},
-              color={0,0,0},
-              thickness=1.0),
-            Line(
-              points={{-20,10},{-8,14},{-4,22},{-8,30},{-20,34}},
-              color={0,0,0},
-              thickness=1.0),
-            Line(
-              points={{-20,-14},{-8,-10},{-4,-2},{-8,6},{-20,10}},
-              color={0,0,0},
-              thickness=1.0),
-            Line(
-              points={{-20,-38},{-8,-34},{-4,-26},{-8,-18},{-20,-14}},
-              color={0,0,0},
-              thickness=1.0),
-            Line(
-              points={{22,-12},{10,-8},{6,0},{10,8},{20,10}},
-              color={0,0,0},
-              thickness=1.0),
-            Line(
-              points={{22,-34},{10,-30},{6,-22},{10,-14},{20,-12}},
-              color={0,0,0},
-              thickness=1.0)},
-          Line(points=[0, 60; 0, -40], style(color=0, thickness=4)),
-          Rectangle(extent=[-50, 70; 50, -50], style(color=73, thickness=2)),
-          Line(points=[-20, 10; -70, 10], style(color=0, thickness=2)),
-          Line(points=[72, 10; 22, 10], style(color=0, thickness=2)),
-          Text(extent=[-64, -54; 66, -82], string="%name"),
-          Line(points=[-20, 34; -8, 38; -4, 46; -8, 54; -20, 58], style(color=0,
-                  thickness=2)),
-          Line(points=[22, 10; 10, 14; 6, 22; 10, 30; 20, 32], style(color=0,
-                thickness=2)),
-          Line(points=[22, 32; 10, 36; 6, 44; 10, 52; 22, 56], style(color=0,
-                thickness=2)),
-          Line(points=[-20, 10; -8, 14; -4, 22; -8, 30; -20, 34], style(color=0,
-                  thickness=2)),
-          Line(points=[-20, -14; -8, -10; -4, -2; -8, 6; -20, 10], style(color=0,
-                  thickness=2)),
-          Line(points=[-20, -38; -8, -34; -4, -26; -8, -18; -20, -14], style(
-                color=0, thickness=2)),
-          Line(points=[22, -12; 10, -8; 6, 0; 10, 8; 20, 10], style(color=0,
-                thickness=2)),
-          Line(points=[22, -34; 10, -30; 6, -22; 10, -14; 20, -12], style(color=
-                  0, thickness=2))),
-        Documentation(info="<html>
-<p>The model of a two-winding transformer</p>
-</html>"));
-    end Transformer;
-
-    model Constant_Conductivity_Load
-      parameter Real Gn=0.7 "Active load";
-      parameter Real Bn=-0.35 "Reactive load";
-      //-------------------------------------------------------------
-      parameter Real TloadOff=1000 "Time of load disconnection";
-      parameter Real dTloadOff=10 "Duration of load disconnection";
-      parameter Real Koff=0.7 "Degree of load disconnection";
-      //-------------------------------------------------------------
-      Real Udn;
-      Real Uqn;
-      Real Iqn;
-      Real Idn;
-      Real Pn;
-      Real Qn;
-      LEPSE.Basic.Pin_v2 inp annotation (
-        extent=[-10,76; 10,96],
-        layer="icon",
-        Placement(transformation(extent={{-10,76},{10,96}}, rotation=0)));
-    equation
-      Pn = Uqn*Iqn + Udn*Idn;
-      Qn = -Uqn*Idn + Udn*Iqn;
-      Idn = if time >= TloadOff and time < TloadOff + dTloadOff then Koff*(Udn*
-        Gn + Uqn*Bn) else Udn*Gn + Uqn*Bn;
-      Iqn = if time >= TloadOff and time < TloadOff + dTloadOff then Koff*(Uqn*
-        Gn - Udn*Bn) else Uqn*Gn - Udn*Bn;
-      //-----connector-----
-      inp.Vd = Udn;
-      inp.Vq = Uqn;
-
-      inp.Id = -Idn;
-      inp.Iq = -Iqn;
-      annotation (
-        Coordsys(
-          extent=[-100, -100; 100, 100],
-          grid=[2, 2],
-          component=[20, 20]),
-        Window(
-          x=0.31,
-          y=0.4,
-          width=0.6,
-          height=0.6),
-        Icon(
-          coordinateSystem(
-            preserveAspectRatio=false,
-            preserveOrientation=false,
-            extent={{-100,-100},{100,100}},
-            grid={2,2},
-            initialScale=0),
-          graphics={
-            Rectangle(
-              extent={{-20,60},{20,-40}},
-              lineColor={28,108,200},
-              lineThickness=1.0),
-            Line(
-              points={{0,-40},{0,-60}},
-              color={28,108,200},
-              thickness=1.0),
-            Line(
-              points={{-20,-60},{20,-60}},
-              color={28,108,200},
-              thickness=1.0),
-            Line(
-              points={{0,80},{0,60}},
-              color={28,108,200},
-              thickness=1.0),
-            Text(extent={{-100,-64},{100,-100}}, textString=
-                                                     "%name")},
-          Rectangle(extent=[-20, 60; 20, -40], style(thickness=2)),
-          Line(points=[0, -40; 0, -60], style(thickness=2)),
-          Line(points=[-20, -60; 20, -60], style(thickness=2)),
-          Line(points=[0, 80; 0, 60], style(thickness=2)),
-          Text(extent=[-100, -64; 100, -100], string="%name")),
-        Documentation(info="<html>
-<p><span style=\"background-color: #ffffff;\">A load model defined as a constant conductivity</span></p>
-</html>"));
-    end Constant_Conductivity_Load;
-
-    model ShortCircuitShunt
-      parameter Real Bn=-100000 "Reactive conductivity of short sircuit";
-      parameter Real Gn=-100000 "Active conductivity of short sircuit";
-      parameter Real Yn = sqrt( Bn^(2) + Gn^(2)) "Total conductivity of short sircuit";
-      //-----------------------------------
-      parameter Real TkzOn=1000 "Time of short sircuit";
-      parameter Real dTkzOn=0.12 "Duration of short sircuit";
-      //-----------------------------------
-      Real id;
-      Real iq;
-      Real Ud;
-      Real Uq;
-      LEPSE.Basic.Pin_v2 inp annotation (
-        extent=[-10,38; 10,58],
-        layer="icon",
-        Placement(transformation(extent={{-10,38},{10,58}}, rotation=0)));
-    equation
-      id = if time >= TkzOn and time < TkzOn + dTkzOn then Bn*Uq + Gn*Ud else 0;
-      iq = if time >= TkzOn and time < TkzOn + dTkzOn then -Bn*Ud + Gn*Uq else 0;
-      //-----connector-----
-      inp.Vd = Ud;
-      inp.Vq = Uq;
-
-      inp.Id = -id;
-      inp.Iq = -iq;
-      annotation (
-        Coordsys(
-          extent=[-100, -100; 100, 100],
-          grid=[2, 2],
-          component=[20, 20]),
-        Window(
-          x=0.29,
-          y=0.11,
-          width=0.6,
-          height=0.6),
-        Icon(
-          coordinateSystem(
-            preserveAspectRatio=false,
-            preserveOrientation=false,
-            extent={{-100,-100},{100,100}},
-            grid={2,2},
-            initialScale=0),
-          graphics={
-            Line(
-              points={{-20,-60},{20,-60}},
-              color={28,108,200},
-              thickness=1),
-            Line(
-              points={{0,-60},{0,40}},
-              color={28,108,200},
-              thickness=1),
-            Line(
-              points={{34,4},{6,-26},{30,-26},{0,-60}},
-              color={255,0,0},
-              thickness=1,
-              arrow={Arrow.None,Arrow.Filled}),
-            Text(extent={{-54,-64},{60,-92}}, textString=
-                                                  "%name")},
-          Line(points=[-20, -60; 20, -60], style(thickness=4)),
-          Line(points=[0, -60; 0, 40], style(thickness=4)),
-          Line(points=[34, 4; 6, -26; 30, -26; 0, -60], style(
-              color=41,
-              thickness=4,
-              arrow=1)),
-          Text(extent=[-54, -64; 60, -92], string="%name")),
-        Documentation(info="<html>
-<p><span style=\"background-color: #ffffff;\">Short Circuit Shunt Model</span></p>
-</html>"));
-    end ShortCircuitShunt;
-
-    model Electrical_Braking_Parallel
-      parameter Real Rline=0.2 "Active resistance of electrical breaking device";
-      //---------------------------------------------
-      parameter Real TLineOff=1000 "Time of electrical breaking";
-      parameter Real dTLineOff=10 "Duration of electrical breaking";
-      //---------------------------------------------
-      Real Ud;
-      Real Uq;
-      Real I12d;
-      Real I12q;
-      Real I12m;
-      Real Um;
-      LEPSE.Basic.Pin_v2 inp annotation (
-        extent=[-10,78; 10,98],
-        layer="icon",
-        Placement(transformation(extent={{-10,78},{10,98}}, rotation=0)));
-    equation
-      //--------------------------------------------------------------------------
-      I12d = if time >= TLineOff and time < TLineOff + dTLineOff then Ud/Rline
-         else 0;
-      I12q = if time >= TLineOff and time < TLineOff + dTLineOff then Uq/Rline
-         else 0;
-      //---------measurements-----------------------------------------------------
-      I12m = sqrt(I12d^2 + I12q^2);
-      Um = sqrt(Ud^2 + Uq^2);
-      //-----connector-----
-      inp.Vd = Ud;
-      inp.Vq = Uq;
-
-      inp.Id = -I12d;
-      inp.Iq = -I12q;
-      annotation (
-        Coordsys(
-          extent=[-100, -100; 100, 100],
-          grid=[2, 2],
-          component=[20, 20]),
-        Window(
-          x=0.25,
-          y=0.18,
-          width=0.6,
-          height=0.6),
-        Icon(
-          coordinateSystem(
-            preserveAspectRatio=false,
-            preserveOrientation=false,
-            extent={{-100,-100},{100,100}},
-            grid={2,2},
-            initialScale=0),
-          graphics={
-            Rectangle(
-              extent={{-20,40},{20,-40}},
-              lineColor={28,108,200},
-              lineThickness=1.0,
-              fillColor={192,192,192},
-              fillPattern=FillPattern.Solid),
-            Line(
-              points={{-20,-60},{20,-60}},
-              color={28,108,200},
-              thickness=1.0),
-            Line(
-              points={{0,-60},{0,-40}},
-              color={28,108,200},
-              thickness=1.0),
-            Rectangle(
-              extent={{-10,70},{10,50}},
-              lineColor={28,108,200},
-              lineThickness=1.0,
-              fillColor={192,192,192},
-              fillPattern=FillPattern.Solid),
-            Line(
-              points={{0,40},{0,50}},
-              color={28,108,200},
-              thickness=1.0),
-            Line(
-              points={{0,70},{0,80}},
-              color={28,108,200},
-              thickness=1.0),
-            Text(extent={{-100,-62},{100,-100}}, textString=
-                                                     "%name")},
-          Rectangle(extent=[-20, 40; 20, -40], style(thickness=2, fillColor=8)),
-          Line(points=[-20, -60; 20, -60], style(thickness=2)),
-          Line(points=[0, -60; 0, -40], style(thickness=2)),
-          Rectangle(extent=[-10, 70; 10, 50], style(thickness=2, fillColor=8)),
-          Line(points=[0, 40; 0, 50], style(thickness=2)),
-          Line(points=[0, 70; 0, 80], style(thickness=2)),
-          Text(extent=[-100, -62; 100, -100], string="%name")),
-        Documentation(info="<html>
-<p><span style=\"background-color: #ffffff;\">Model of parallel electric braking device</span></p>
-</html>"));
-    end Electrical_Braking_Parallel;
-
-    model Electrical_Braking
-      parameter Real Rline=0.2 "Active resistance of electrical breaking device";
-      //---------------------------------------------
-      parameter Real TLineOff=1000 "Time of electrical breaking";
-      parameter Real dTLineOff=10 "Duration of electrical breaking";
-      //---------------------------------------------
-      Real U1d;
-      Real U1q;
-      Real U2d;
-      Real U2q;
-      Real I12d;
-      Real I12q;
-      Real I12m;
-      Real U1m;
-      Real U2m;
-      Real RL;
-      LEPSE.Basic.Pin_v2 inp annotation (extent=[-98,0; -78,20], Placement(
-            transformation(extent={{-98,0},{-78,20}}, rotation=0)));
-      LEPSE.Basic.Pin_v2 out annotation (extent=[78,0; 98,20], Placement(
-            transformation(extent={{78,0},{98,20}}, rotation=0)));
-    equation
-      //---------the algorithm of triping transmission line--------
-      RL = if time >= TLineOff and time < TLineOff + dTLineOff then Rline else 0;
-      //---------series impedance between nodes--------------------
-      U1q = U2q + RL*I12q;
-      U1d = U2d + RL*I12d;
-      //---------measurements--------------------------------------
-      I12m = sqrt(I12d^2 + I12q^2);
-      U1m = sqrt(U1d^2 + U1q^2);
-      U2m = sqrt(U2d^2 + U2q^2);
-      //-----connectors------
-      inp.Vd = U1d;
-      inp.Vq = U1q;
-
-      out.Vd = U2d;
-      out.Vq = U2q;
-
-      inp.Id = -I12d;
-      inp.Iq = -I12q;
-
-      out.Id = I12d;
-      out.Iq = I12q;
-      annotation (
-        Coordsys(
-          extent=[-100, -100; 100, 100],
-          grid=[2, 2],
-          component=[20, 20]),
-        Window(
-          x=0.28,
-          y=0.09,
-          width=0.6,
-          height=0.6),
-        Diagram(coordinateSystem(
-            preserveAspectRatio=false,
-            preserveOrientation=false,
-            extent={{-100,-100},{100,100}},
-            grid={2,2},
-            initialScale=0), graphics),
-        Icon(
-          coordinateSystem(
-            preserveAspectRatio=false,
-            preserveOrientation=false,
-            extent={{-100,-100},{100,100}},
-            grid={2,2},
-            initialScale=0),
-          graphics={
-            Rectangle(
-              extent={{-40,20},{40,0}},
-              lineColor={28,108,200},
-              lineThickness=1.0,
-              fillColor={192,192,192},
-              fillPattern=FillPattern.Solid),
-            Line(
-              points={{-40,10},{-80,10}},
-              color={28,108,200},
-              thickness=1.0),
-            Line(
-              points={{80,10},{40,10}},
-              color={28,108,200},
-              thickness=1.0),
-            Line(
-              points={{-60,10},{-60,40},{-20,40}},
-              color={28,108,200},
-              thickness=1.0),
-            Line(
-              points={{20,40},{60,40},{60,10}},
-              color={28,108,200},
-              thickness=1.0),
-            Rectangle(
-              extent={{-20,48},{20,46}},
-              lineColor={28,108,200},
-              fillColor={0,0,0},
-              fillPattern=FillPattern.Solid),
-            Ellipse(
-              extent={{22,38},{18,42}},
-              lineColor={28,108,200},
-              fillColor={0,0,0},
-              fillPattern=FillPattern.Solid),
-            Ellipse(
-              extent={{-18,38},{-22,42}},
-              lineColor={28,108,200},
-              fillColor={0,0,0},
-              fillPattern=FillPattern.Solid),
-            Text(extent={{-100,-8},{100,-48}}, textString=
-                                                   "%name")},
-          Rectangle(extent=[-40, 20; 40, 0], style(thickness=2, fillColor=8)),
-          Line(points=[-40, 10; -80, 10], style(thickness=2)),
-          Line(points=[80, 10; 40, 10], style(thickness=2)),
-          Line(points=[-60, 10; -60, 40; -20, 40], style(thickness=2)),
-          Line(points=[20, 40; 60, 40; 60, 10], style(thickness=2)),
-          Rectangle(extent=[-20, 48; 20, 46], style(fillColor=0)),
-          Ellipse(extent=[22, 38; 18, 42], style(fillColor=0)),
-          Ellipse(extent=[-18, 38; -22, 42], style(fillColor=0)),
-          Text(extent=[-100, -8; 100, -48], string="%name")),
-        Documentation(info="<html>
-<p><span style=\"background-color: #ffffff;\">Model of series electric braking device</span></p>
-</html>"));
-    end Electrical_Braking;
-
-    connector Pin_v2
-      Real Vd "Potential Vd";
-      Real Vq "Potential Vq";
-      flow Real Id "Current Id";
-      flow Real Iq "Current Iq";
-      annotation (
-        Coordsys(
-          extent=[-100, -100; 100, 100],
-          grid=[2, 2],
-          component=[20, 20]),
-        Window(
-          x=0.26,
-          y=0.25,
-          width=0.6,
-          height=0.6),
-        Icon(
-          coordinateSystem(
-            preserveAspectRatio=false,
-            preserveOrientation=false,
-            extent={{-100,-100},{100,100}},
-            grid={2,2},
-            initialScale=0),
-          graphics={Rectangle(
-              extent={{-80,80},{80,-80}},
-              lineColor={28,108,200},
-              fillColor={0,0,0},
-              fillPattern=FillPattern.Solid)},
-             Rectangle(extent=[-80, 80; 80, -80], style(fillColor=0))),
-        Documentation(info="<html>
-<p>The model of the basic connector for power signals</p>
-</html>"));
-    end Pin_v2;
-
-    model Transfer_Function
-      parameter Real b[:]={1} "Numerator coefficients of transfer function.";
-      parameter Real a[:]={1,1} "Denominator coefficients of transfer function.";
-      output Real x[size(a, 1) - 1]
-        "State of transfer function from controller canonical form";
-    protected
-      parameter Integer na=size(a, 1)
-        "Size of Denominator of transfer function.";
-      parameter Integer nb(max=na) = size(b, 1)
-        "Size of Numerator of transfer function.";
-      parameter Integer nx=size(a, 1) - 1;
-      Real x1dot "Derivative of first state of TransferFcn";
-      Real xn "Highest order state of TransferFcn";
-      Real u;
-      Real y;
-    public
-      LEPSE.Basic.Single_Pin inp annotation (
-        extent=[-92,-10; -72,10],
-        layer="icon",
-        Placement(transformation(extent={{-92,-10},{-72,10}}, rotation=0)));
-      LEPSE.Basic.Single_Pin out annotation (
-        extent=[70,-10; 90,10],
-        layer="icon",
-        Placement(transformation(extent={{70,-10},{90,10}}, rotation=0)));
-    equation
-      [der(x); xn] = [x1dot; x];
-      [u] = transpose([a])*[x1dot; x];
-      [y] = transpose([zeros(na - nb, 1); b])*[x1dot; x];
-      //-----connector-----
-      inp.Signal = u;
-      out.Signal = y;
-      annotation (
-        Coordsys(
-          extent=[-100, -100; 100, 100],
-          grid=[2, 2],
-          component=[20, 20]),
-        Icon(
-          coordinateSystem(
-            preserveAspectRatio=false,
-            preserveOrientation=false,
-            extent={{-100,-100},{100,100}},
-            grid={2,2},
-            initialScale=0),
-          graphics={
-            Rectangle(
-              extent={{-60,30},{58,-28}},
-              lineColor={0,0,0},
-              lineThickness=0.5),
-            Text(extent={{-40,28},{40,2}}, textString=
-                                               "Transfer"),
-            Text(extent={{-38,4},{42,-22}}, textString=
-                                                "function"),
-            Text(extent={{-100,-28},{100,-52}},
-                                              textString=
-                                                  "%name"),
-            Line(
-              points={{-60,0},{-74,0}},
-              color={0,0,0},
-              thickness=0.5),
-            Line(
-              points={{74,0},{58,0}},
-              color={0,0,0},
-              thickness=0.5)},
-          Rectangle(extent=[-60, 30; 58, -28], style(color=0, thickness=2)),
-          Text(extent=[-40, 28; 40, 2], string="Transfer"),
-          Text(extent=[-38, 4; 42, -22], string="function"),
-          Text(extent=[-60, -28; 58, -52], string="%name"),
-          Line(points=[-60, 0; -74, 0], style(color=0, thickness=2)),
-          Line(points=[74, 0; 58, 0], style(color=0, thickness=2))),
-        Window(
-          x=0.37,
-          y=0.14,
-          width=0.6,
-          height=0.6),
-        Documentation(info="<html>
-<p>The model of the transfer function</p>
-</html>"));
-    end Transfer_Function;
-
-    model Gen_with_ARV_control
-
-      LEPSE.Basic.Pin_v2 inp annotation (
-        extent=[78,-4; 98,16],
-        layer="icon",
-        Placement(transformation(extent={{78,-4},{98,16}}, rotation=0)));
-      LEPSE.Basic.Excitation_Regulator AVR annotation (extent=[-84,-90; -32,82],
-          Placement(transformation(extent={{-84,-90},{-32,82}}, rotation=0)));
-      LEPSE.Basic.Synch_Machine G annotation (extent=[-28,-72; 70,80],
-          Placement(transformation(extent={{-28,-72},{70,80}}, rotation=0)));
-    equation
-      connect(AVR.out_pin, G.Ef_pin) annotation (points=[-34.34, 6.32; -18.2,
-            5.52], Line(points={{-34.3833,6.32},{-18.2,5.52}}));
-      connect(AVR.dV1_pin, AVR.dV_pin) annotation (points=[-81.66, 30.4; -
-            81.66, 56.2], Line(points={{-82.05,30.4},{-82.05,38},{-82,38},{-82,
-              44},{-82.4833,44},{-82.4833,47.6}}));
-      connect(G.dUtr_pin, AVR.dV_pin) annotation (points=[-3.5, 61.76; -4, 76;
-              -82, 76; -81.66, 56.2], Line(points={{-6.44,61.76},{-6.44,76},{
-              -82.4833,76},{-82.4833,47.6}}));
-      connect(G.dWu_pin, AVR.dfsys_pin) annotation (points=[13.16, 61.76; 14,
-            80; -86, 80; -86, 4; -81.66, 4.6], Line(points={{5.32,61.76},{5.32,80},
-              {-86,80},{-86,4.6},{-82.05,4.6}}));
-      connect(G.dWf_pin, AVR.dfU_pin) annotation (points=[28.84, 61.76; 28, 84;
-              -88, 84; -88, -22; -81.66, -21.2], Line(points={{17.08,61.76},{
-              17.08,84},{-88,84},{-88,-21.2},{-82.05,-21.2}}));
-      connect(G.dIf_pin, AVR.dif1_pin) annotation (points=[45.5, 61.76; 44, 90;
-              -94, 90; -94, -46; -81.66, -47], Line(points={{29.82,61.76},{
-              29.82,90},{-94,90},{-94,-41.84},{-82.05,-41.84}}));
-      connect(G.Stator_pin, inp) annotation (points=[59.22, 5.52; 88, 6], Line(
-            points={{59.22,5.52},{88,6}}));
-      //equation
-      //connect(G.dUtr, AVR.u_u);
-      //connect(G.dUtr, AVR.u_pu);
-      //connect(G.dWu, AVR.u_fsys);
-      //connect(G.dWf, AVR.u_fu);
-      //connect(G.dIf, AVR.u_pIf);
-      //connect(AVR.y_er, G.dEr);
-      //---connector---
-      //-----------------------------------------------------------
-      //inp.Vd = G.UdG;
-      //inp.Vq = G.UqG;
-      //inp.Id = G.IdG;
-      //inp.Iq = G.IqG;
-      connect(G.Ut_pin, AVR.Ut_pin) annotation (Line(points={{41.58,61.76},{
-              41.58,92},{-96,92},{-96,-59.04},{-81.8333,-59.04}},
-                                                          color={0,0,0}));
-      annotation (
-        Coordsys(
-          extent=[-100, -100; 100, 100],
-          grid=[2, 2],
-          component=[20, 20]),
-        Icon(
-          coordinateSystem(
-            preserveAspectRatio=false,
-            preserveOrientation=false,
-            extent={{-100,-100},{100,100}},
-            grid={2,2},
-            initialScale=0),
-          graphics={
-            Ellipse(extent={{-74,72},{72,-58}}),
-            Text(extent={{-44,54},{46,20}}, textString=
-                                                "Gen."),
-            Text(extent={{-50,22},{50,-4}}, textString=
-                                                "with ARV"),
-            Text(extent={{-78,-58},{74,-84}}, textString=
-                                                  "%name"),
-            Line(points={{80,6},{72,6}}),
-            Text(extent={{-50,-4},{50,-30}}, textString=
-                                                 "control")},
-          Ellipse(extent=[-74, 72; 72, -58]),
-          Text(extent=[-44, 54; 46, 20], string="Gen."),
-          Text(extent=[-50, 22; 50, -4], string="with ARV"),
-          Text(extent=[-78, -58; 74, -84], string="%name"),
-          Line(points=[80, 6; 72, 6]),
-          Text(extent=[-50, -4; 50, -30], string="control")),
-        Window(
-          x=0.28,
-          y=0.01,
-          width=0.6,
-          height=0.88),
-        Documentation(info="<html>
-<p>Generator model with automatic excitation control</p>
-</html>"));
-    end Gen_with_ARV_control;
-
-    model Excitation_Regulator
-      parameter Real K0u=-10 "Voltage deviation control coefficient";
-      parameter Real K1u=0 "Voltage derivative control coefficient";
-      parameter Real K0w=0 "Frequency deviation control coefficient";
-      parameter Real K1w=0 "Frequency derivative control coefficient";
-      parameter Real K1if=0 "Rotor current derivative control coefficient";
-      parameter Real Uforc=0.85 "voltage of field forcing input";
-      parameter Real Udeforc=0.9 "voltage of field forcing removing";
-      parameter Real Tforcedelay=0.1 "delay of field forcing removing";
-      parameter Real DL0=0;
-      constant Real Tokp=0.05 "the main channel of regulation time constant";
-      constant Real T0u=0.02 "voltage deviation time constant";
-      constant Real T1u=0.039 "voltage derivative time constant";
-      constant Real Tfb=0.07 "frequency block time constant";
-      constant Real T0w=1.0 "frequency deviation time constant";
-      constant Real T1w=0.026 "frequency derivative time constant";
-      constant Real T1if=0.03 "field current derivative time constant";
-      //Real u_u;
-      //Real u_pu;
-      //Real u_fsys;
-      //Real u_fu;
-      //Real u_pIf;
-      //Real y_er;
-      //Real f_sum;
-      Basic.Transfer_Function VoltageDeviation(b={K0u}, a={T0u,1}) annotation (
-          extent=[-74,57.3333; -27.3333,104], Placement(transformation(extent={
-                {-86,37.3333},{-39.3333,84}}, rotation=0)));
-      Basic.Transfer_Function VoltageDerivative(b={K1u,0}, a={T1u,1})
-        annotation (extent=[-73.3333,17.3333; -26.6667,64], Placement(
-            transformation(extent={{-85.3333,15.3333},{-38.6667,62}}, rotation=
-                0)));
-      Basic.Transfer_Function FrequencyBlockD(b={1}, a={Tfb,1}) annotation (
-          extent=[-82.6667,-22.6667; -48,24], Placement(transformation(extent={
-                {-86.6667,-12.6667},{-52,34}}, rotation=0)));
-      Basic.Transfer_Function FrequencyBlockU(b={1,0}, a={Tfb,1}) annotation (
-          extent=[-82,-63.3333; -48,-16], Placement(transformation(extent={{-86,
-                -43.3333},{-52,4}}, rotation=0)));
-      Basic.Transfer_Function FrequencyDeviation(b={K0w,0}, a={T0w,1})
-        annotation (extent=[-28,-46; 10,2], Placement(transformation(extent={{-32,
-                -44},{6,4}}, rotation=0)));
-      Basic.Transfer_Function FrequencyDerivative(b={K1w,0}, a={T1w,1})
-        annotation (extent=[-24.6667,-19.3333; 10,28], Placement(transformation(
-              extent={{-30.6667,-5.3333},{4,42}}, rotation=0)));
-      Basic.Transfer_Function ExcitationCurrent(b={K1if,0}, a={T1if,1})
-        annotation (extent=[-74,-102; -27.3333,-55.3333], Placement(
-            transformation(extent={{-86,-68},{-39.3333,-21.3333}}, rotation=0)));
-      Basic.Transfer_Function SimpleExciter(b={1}, a={Tokp,1}) annotation (
-          extent=[56,-24; 83.3333,22.6667], Placement(transformation(extent={{
-                90,6},{117.333,52.6667}}, rotation=0)));
-      LEPSE.Basic.Single_Pin dV_pin annotation (
-        extent=[-96,64; -86,76],
-        layer="icon",
-        Placement(transformation(extent={{-98,54},{-88,66}}, rotation=0)));
-      LEPSE.Basic.Single_Pin dV1_pin annotation (
-        extent=[-96,34; -86,46],
-        layer="icon",
-        Placement(transformation(extent={{-96,34},{-86,46}}, rotation=0)));
-      LEPSE.Basic.Single_Pin dfsys_pin annotation (
-        extent=[-96,4; -86,16],
-        layer="icon",
-        Placement(transformation(extent={{-96,4},{-86,16}}, rotation=0)));
-      LEPSE.Basic.Single_Pin dfU_pin annotation (
-        extent=[-96,-26; -86,-14],
-        layer="icon",
-        Placement(transformation(extent={{-96,-26},{-86,-14}}, rotation=0)));
-      LEPSE.Basic.Single_Pin dif1_pin annotation (
-        extent=[-96,-56; -86,-44],
-        layer="icon",
-        Placement(transformation(extent={{-96,-50},{-86,-38}}, rotation=0)));
-      LEPSE.Basic.Single_Pin out_pin annotation (
-        extent=[86,2; 96,22],
-        layer="icon",
-        Placement(transformation(extent={{124,2},{134,22}}, rotation=0)));
-      LEPSE.Basic.Summator Summator1 annotation (extent=[-44,-32; -30,-12],
-          Placement(transformation(extent={{-50,-4},{-36,16}}, rotation=0)));
-      LEPSE.Basic.Summator Summator2 annotation (extent=[12,-18; 26,2],
-          Placement(transformation(extent={{10,-26},{24,-6}}, rotation=0)));
-      LEPSE.Basic.Summator Summator3 annotation (extent=[8,48; 22,68],
-          Placement(transformation(extent={{-12,32},{2,52}}, rotation=0)));
-      LEPSE.Basic.Summator Summator5 annotation (extent=[26,18; 40,38],
-          Placement(transformation(extent={{12,18},{26,38}}, rotation=0)));
-      LEPSE.Basic.Summator Summator6 annotation (extent=[40,-10; 54,10],
-          Placement(transformation(extent={{30,14},{44,34}}, rotation=0)));
-      LEPSE.Basic.Single_Pin Ut_pin annotation (Placement(transformation(extent
-              ={{-96,-70},{-84,-58}}), iconTransformation(extent={{-96,-70},{-84,
-                -58}})));
-      LEPSE.Basic.logical_switch logical_switch1(
-        a1=Uforc,
-        a2=Udeforc,
-        a3=K0u,
-        a4=Tforcedelay)
-        annotation (Placement(transformation(extent={{60,18},{80,38}})));
-    equation
-      connect(dfsys_pin, FrequencyBlockD.inp) annotation (points=[-91, 10; -
-            79.5467, 0.666667], Line(points={{-91,10},{-83.5467,10.6666}}));
-      connect(dfU_pin, FrequencyBlockU.inp) annotation (points=[-91, -20; -
-            78.94, -39.6667], Line(points={{-91,-20},{-90,-19.6667},{-82.94,
-              -19.6667}}));
-      connect(FrequencyBlockD.out, Summator1.inp1) annotation (points=[-
-            51.4667, 0.666667; -42.88, -18], Line(points={{-55.4667,10.6666},{
-              -55.4667,10},{-48.88,10}}));
-      connect(FrequencyBlockU.out, Summator1.inp2) annotation (points=[-51.4,
-            -39.6667; -42.88, -26], Line(points={{-55.4,-19.6667},{-48.88,
-              -19.6667},{-48.88,2}}));
-      connect(dif1_pin, ExcitationCurrent.inp) annotation (points=[-91, -50; -
-            69.8, -78.6667], Line(points={{-91,-44},{-91,-44.6667},{-81.8,
-              -44.6667}}));
-      connect(Summator1.out, FrequencyDeviation.inp) annotation (points=[-
-            31.12, -22; -24.58, -22], Line(points={{-37.12,6},{-32,6},{-32,-20},{
-              -28.58,-20}}));
-      connect(FrequencyDerivative.inp, FrequencyDeviation.inp) annotation (
-          points=[-21.5467, 4.33333; -24.58, -22], Line(points={{-27.5467,
-              18.3333},{-27.5467,18},{-32,18},{-32,-20},{-28.58,-20}}));
-      connect(Summator2.inp2, FrequencyDeviation.out) annotation (points=[
-            13.12, -12; 6.2, -22], Line(points={{11.12,-20},{2.2,-20}}));
-      connect(FrequencyDerivative.out, Summator2.inp1) annotation (points=[
-            6.53333, 4.33333; 13.12, -4], Line(points={{0.53333,18.3333},{6,
-              18.3333},{6,-12},{11.12,-12}}));
-      connect(VoltageDerivative.inp, dV1_pin) annotation (points=[-69.1333,
-            40.6667; -91, 40], Line(points={{-81.1333,38.6666},{-81.1333,40},{
-              -91,40}}));
-      connect(VoltageDeviation.inp, dV_pin) annotation (points=[-69.8, 80.6667;
-              -91, 70], Line(points={{-81.8,60.6667},{-81.8,60},{-93,60}}));
-      connect(VoltageDeviation.out, Summator3.inp1) annotation (points=[-32,
-            80.6667; 9.12, 62], Line(points={{-44,60.6667},{-18,60.6667},{-18,
-              46},{-10.88,46}}));
-      connect(VoltageDerivative.out, Summator3.inp2) annotation (points=[-
-            31.3333, 40.6667; 9.12, 54], Line(points={{-43.3334,38.6666},{
-              -43.3334,38},{-10.88,38}}));
-      connect(Summator5.inp1, Summator3.out) annotation (points=[27.12, 32;
-            20.88, 58], Line(points={{13.12,32},{6,32},{6,42},{0.88,42}}));
-      connect(Summator5.inp2, Summator2.out) annotation (points=[27.12, 24;
-            24.88, -8], Line(points={{13.12,24},{10,24},{10,-4},{26,-4},{26,-16},
-              {22.88,-16}}));
-      connect(Summator6.inp1, Summator5.out) annotation (points=[41.12, 4;
-            38.88, 28], Line(points={{31.12,28},{24.88,28}}));
-      connect(SimpleExciter.out, out_pin) annotation (points=[80.6, -0.666667;
-              91, 12], Line(points={{114.6,29.3333},{129,29.3333},{129,12}}));
-      connect(Summator6.inp2, ExcitationCurrent.out) annotation (points=[41.12,
-              -4; -32, -78.6667], Line(points={{31.12,20},{31.12,-44.6667},{-44,
-              -44.6667}}));
-      when initial() then
-        reinit(FrequencyBlockU.x[1], DL0);
-        //     reinit(FrequencyDeviation.x[1],DL0);
-        //     reinit(FrequencyDerivative.x[1],DL0);
-      end when;
-      //u_u = VoltageDeviation.u;
-      //u_pu = VoltageDerivative.u;
-      //u_fsys = FrequencyBlockD.u;
-      //u_fu = FrequencyBlockU.u;
-      //u_pIf = ExcitationCurrent.u;
-      //f_sum = FrequencyBlockD.y + FrequencyBlockU.y;
-      //-------  connect(FrequencyBlock.y, FrequencyDeviation.u);
-      //-------  connect(FrequencyBlock.y, FrequencyDerivative.u);
-      //FrequencyDeviation.u = f_sum;
-      //FrequencyDerivative.u = f_sum;
-      //VoltageDeviation.y + VoltageDerivative.y + ExcitationCurrent.y +
-      //FrequencyDeviation.y + FrequencyDerivative.y = SimpleExciter.u;
-      //y_er = SimpleExciter.y;
-      connect(logical_switch1.out, SimpleExciter.inp) annotation (Line(points={{78.4,28},
-              {86,28},{86,29.3333},{92.46,29.3333}},                    color={0,
-              0,0}));
-      connect(Ut_pin, logical_switch1.inp2inf) annotation (Line(points={{-90,-64},
-              {56,-64},{56,19.1667},{70,19.1667}}, color={0,0,0}));
-      connect(Summator6.out, logical_switch1.inp2) annotation (Line(points={{42.88,
-              24},{52,24},{52,25.6667},{61.4,25.6667}},       color={0,0,0}));
-      connect(VoltageDeviation.out, logical_switch1.inp1) annotation (Line(points={{-44,
-              60.6667},{-6,60.6667},{-6,60},{54,60},{54,31.3333},{61.4,31.3333}},
-                         color={0,0,0}));
-      connect(VoltageDeviation.inp, logical_switch1.inp1inf) annotation (Line(
-            points={{-81.8,60.6667},{-81.8,74},{70,74},{70,56},{69.9,56},{69.9,
-              36.1667}},                                                  color={
-              0,0,0}));
-      annotation (
-        Coordsys(
-          extent=[-100, -100; 100, 100],
-          grid=[2, 2],
-          component=[20, 20]),
-        Window(
-          x=0.32,
-          y=0.06,
-          width=0.6,
-          height=0.82),
-        Icon(
-          coordinateSystem(
-            preserveAspectRatio=false,
-            preserveOrientation=false,
-            extent={{-100,-100},{140,100}},
-            grid={2,2},
-            initialScale=0),
-          graphics={
-            Rectangle(
-              extent={{-68,92},{104,-74}},
-              lineColor={28,108,200},
-              lineThickness=0.5),
-            Text(extent={{-22,58},{60,-20}}, textString=
-                                                 "Excitation"),
-            Text(extent={{-14,34},{56,-32}}, textString=
-                                                 "regulator"),
-            Line(
-              points={{-68,10},{-88,10}},
-              color={28,108,200},
-              thickness=0.5),
-            Line(
-              points={{-68,-20},{-88,-20}},
-              color={28,108,200},
-              thickness=0.5),
-            Line(
-              points={{-68,-50},{-88,-50}},
-              color={28,108,200},
-              thickness=0.5),
-            Line(
-              points={{-68,40},{-88,40}},
-              color={28,108,200},
-              thickness=0.5),
-            Line(
-              points={{-68,70},{-88,70}},
-              color={28,108,200},
-              thickness=0.5),
-            Text(extent={{-58,-70},{102,-102}},
-                                              textString=
-                                                  "%name"),
-            Line(
-              points={{128,12},{104,12}},
-              color={28,108,200},
-              thickness=0.5)},
-          Rectangle(extent=[-68, 80; 66, -60], style(thickness=2)),
-          Text(extent=[-42, 60; 40, -18], string="Excitation"),
-          Text(extent=[-36, 34; 34, -32], string="regulator"),
-          Line(points=[-68, 10; -88, 10], style(thickness=2)),
-          Line(points=[-68, -20; -88, -20], style(thickness=2)),
-          Line(points=[-68, -50; -88, -50], style(thickness=2)),
-          Line(points=[-68, 40; -88, 40], style(thickness=2)),
-          Line(points=[-68, 70; -88, 70], style(thickness=2)),
-          Text(extent=[-84, -62; 76, -94], string="%name"),
-          Line(points=[86, 12; 66, 12], style(thickness=2))),
-        Diagram(coordinateSystem(extent={{-100,-100},{140,100}}), graphics={
-            Text(
-              extent={{-36,70},{-26,60}},
-              textColor={0,0,0},
-              textString="ΔU"),
-            Text(
-              extent={{-38,50},{-26,38}},
-              textColor={0,0,0},
-              textString="ΔU'"),
-            Text(
-              extent={{6,-26},{18,-36}},
-              textColor={0,0,0},
-              textString="ΔF"),
-            Text(
-              extent={{-12,8},{0,-2}},
-              textColor={0,0,0},
-              textString="ΔF'"),
-            Text(
-              extent={{-42,-32},{-30,-42}},
-              textColor={0,0,0},
-              textString="ΔIf'")}),
-        Documentation(info="<html>
-<p>The classical model of the Automatic Voltage Regulator (AVR)</p>
-</html>"));
-    end Excitation_Regulator;
-
-    model Synch_Machine
-      parameter Real TgenOff=1000 "Time of generator's disconnection";
-      parameter Real dTgenOff=10 "Duration of generator's disconnection";
-
-      //------------------------------------------------------------------------------------
-      parameter Real Pg=0.85 "Active power";
-      parameter Real Qg=0.527 "Reactive power";
-      parameter Real Ut=1 "ARV voltage reference value";
-
-      //------------------------------------------------------------------------------------
-      parameter Real Xd_p=1.869 "d-axis synchronous reactance";
-      parameter Real Xq_p=1.869 "q-axis synchronous reactance";
-      parameter Real Xs_p=0.194 "leakage reactance";
-      parameter Real X1d_p=0.3016 "d-axis transient reactance";
-      parameter Real X2d_p=0.2337 "d-axis subtransient reactance";
-      parameter Real X2q_p=0.2337 "q-axis subtransient reactance";
-      parameter Real Rf_p=904e-6 "active resistance of field winding";
-      parameter Real R1d_p=3.688e-3 "active resistance of d-axis damper winding";
-      parameter Real R1q_p=2.77e-3 "active resistance of q-axis damper winding";
-      parameter Real Tj_p=7 "inertia coefficient Tj";
-
-      parameter Real Sigma=0.0475 "turbine statism coefficient";
-      parameter Real TauC_up=0.8 "time constant of servo motor";
-      parameter Real TregOff=50 "turbine speed regulator off-time";
-
-      parameter Real TregOn=1000 "turbine speed regulator on-time";
-      parameter Real Mtmax=1.1 "turbine overloading coefficient";
-      parameter Real Mtmin=0 "turbine minimum-loading coefficient";
-
-      parameter Real Aimp=1 "fast turbine valving control amplitude";
-      parameter Real Timp=1000 "fast turbine valving control on-time";
-      parameter Real dTimp=0.2 "fast turbine valving control duration";
-      parameter Real TauC_down=5 "time constant of servo";
-
-      parameter Real TkzOn=1000 "HPP generators dropping on-time";
-      parameter Real Pg_new=0.85 "new power of HPP";
-      parameter Real Kemax=2.0 "multiplicity of forcing on";
-      parameter Real Kemin=-0.6 "multiplicity of forcing off";
-
-      //------------------------------------------------------------------------------------
-      Real dUtr;
-      Real dWu;
-      Real dIf;
-      Real dEr;
-      Real dWf;
-      constant Real PI=4*atan(1);
-      constant Real Wc=100*PI;
-      constant Real Xt=0;
-      // Parameters of power system elements
-      constant Real Ra=0;
-      constant Real Rt=0;
-      Real EQ;
-      Real Dg;
-      Real Uq;
-      Real Ud;
-      Real Id;
-      Real Iq;
-      Real Mt;
-      Real Eiq;
-      Real Ir;
-      Real Uf;
-      Real Eq;
-      Real Er0;
-      Real PsiR;
-      Real PsiRD;
-      Real PsiRQ;
-      Real Er_max;
-      Real Er_min;
-      Real Uf_full;
-      // Uc, Dl, Ug, Dt, Pt, Qt, , X2ds, X2qs, Udgen, Uqgen, Ugen0,
-      Real Xad;
-      Real Xaq;
-      Real X2dt;
-      Real X2qt;
-      Real Rs;
-      Real Xsf;
-      Real Xs1d;
-      Real Xs1q;
-      Real X1;
-      Real X2;
-      Real X3;
-      Real Ugen;
-      // Ut, Pg, Qg,
-      Real Mu0;
-      Real Ro;
-      Real Mu;
-      Real Mt_pp;
-      Real Pgen;
-      Real Qgen;
-      Real UdG;
-      Real UqG;
-      Real IdG;
-      Real IqG;
-      Real DeltaIJ;
-      Real Ssys;
-      //------------------------------------------------------------------
-      // Integrated Variables
-      Real Yr;
-      Real Yrd;
-      Real Yrq;
-      Real s;
-      Real DGi;
-      Real Me;
-      Real Yad;
-      Real Yaq;
-      Real iq;
-      Real id;
-      Real ir;
-      Real ird;
-      Real irq;
-      Real ud;
-      Real uq;
-      Real E11d;
-      Real E11q;
-      Real TauC;
-      Real MT_MAX;
-      Real MT_MIN;
-      Real Xd;
-      Real Xq;
-      Real Xs;
-      Real X1d;
-      Real X2d;
-      Real X2q;
-      Real Rf;
-      Real R1d;
-      Real R1q;
-      Real Tj;
-      Real f;
-      LEPSE.Basic.Pin_v2 Stator_pin annotation (extent=[68,-8; 88,12],
-          Placement(transformation(extent={{68,-8},{88,12}}, rotation=0)));
-      LEPSE.Basic.Single_Pin Ef_pin annotation (extent=[-90,-8; -70,12],
-          Placement(transformation(extent={{-90,-8},{-70,12}}, rotation=0)));
-      LEPSE.Basic.Single_Pin dUtr_pin annotation (
-        extent=[-60,66; -40,86],
-        layer="icon",
-        Placement(transformation(extent={{-66,66},{-46,86}}, rotation=0)));
-      LEPSE.Basic.Single_Pin dWu_pin annotation (
-        extent=[-26,66; -6,86],
-        layer="icon",
-        Placement(transformation(extent={{-42,66},{-22,86}}, rotation=0)));
-      LEPSE.Basic.Single_Pin dWf_pin annotation (
-        extent=[6,66; 26,86],
-        layer="icon",
-        Placement(transformation(extent={{-18,66},{2,86}}, rotation=0)));
-      LEPSE.Basic.Single_Pin dIf_pin annotation (
-        extent=[40,66; 60,86],
-        layer="icon",
-        Placement(transformation(extent={{8,66},{28,86}}, rotation=0)));
-      LEPSE.Basic.Single_Pin Ut_pin
-        annotation (Placement(transformation(extent={{32,66},{52,86}})));
-    equation
-
-      //------------------------------------------------------------------------------------
-      // Parameters of power system elements
-      // Uc, Dl, Ug, Dt, Pt, Qt, , X2ds, X2qs, Udgen, Uqgen, Ugen0,
-      // Ut, Pg, Qg,
-      //------------------------------------------------------------------
-      // Integrated Variables
-      //------------------------------------------------------------------------------------
-      // Parameters of power system elements
-      // Uc, Dl, Ug, Dt, Pt, Qt, , X2ds, X2qs, Udgen, Uqgen, Ugen0,
-      // Ut, Pg, Qg,
-      //------------------------------------------------------------------
-      // Integrated Variables
-      //------------------------------------------------------------------------------------
-      // Parameters of power system elements
-      // Uc, Dl, Ug, Dt, Pt, Qt, , X2ds, X2qs, Udgen, Uqgen, Ugen0,
-      // Ut, Pg, Qg,
-      //------------------------------------------------------------------
-      // Integrated Variables
-      //------------------------------------------------------------------------------------
-      // Parameters of power system elements
-      // Uc, Dl, Ug, Dt, Pt, Qt, , X2ds, X2qs, Udgen, Uqgen, Ugen0,
-      // Ut, Pg, Qg,
-      //------------------------------------------------------------------
-      // Integrated Variables
-      //------------------------------------------------------------------------------------
-      //------------------------------------------------------------------------------------
-      // Parameters of power system elements
-      // Uc, Dl, Ug, Dt, Pt, Qt, , X2ds, X2qs, Udgen, Uqgen, Ugen0,
-      // Ut, Pg, Qg,
-      //------------------------------------------------------------------
-      // Integrated Variables
-      //------------------------------------------------------------------------------------
-      //------------------------------------------------------------------------------------
-      // Parameters of power system elements
-      // Uc, Dl, Ug, Dt, Pt, Qt, , X2ds, X2qs, Udgen, Uqgen, Ugen0,
-      // Ut, Pg, Qg,
-      //------------------------------------------------------------------
-      // Integrated Variables
-      //------------------------------------------------------------------------------------
-      //------------------------------------------------------------------------------------
-      // Parameters of power system elements
-      // Uc, Dl, Ug, Dt, Pt, Qt, , X2ds, X2qs, Udgen, Uqgen, Ugen0,
-      // Ut, Pg, Qg,
-      //------------------------------------------------------------------
-      // Integrated Variables
-      when initial() then
-
-        EQ = sqrt((Ut + ((Ra + Rt)*Pg + (Xq + Xt)*Qg)/Ut)^2 + (((Xq + Xt)*Pg - (
-          Ra + Rt)*Qg)/Ut)^2);
-        Dg = atan((((Xq + Xt)*Pg - (Ra + Rt)*Qg)/Ut)/(Ut + ((Ra + Rt)*Pg + (Xq
-           + Xt)*Qg)/Ut));
-        //----------------------
-        Uq = Ut*cos(Dg);
-        Ud = -Ut*sin(Dg);
-        //----------------------
-        Id = ((Uq - EQ)*(Xq + Xt) - (Ra + Rt)*Ud)/((Ra + Rt)^2 + (Xq + Xt)^2);
-        Iq = (-Ud - (Ra + Rt)*Id)/(Xq + Xt);
-        Mt = EQ*Iq;
-        Mu0 = Mt;
-        Eiq = Uq - Id*(Xs + Xt) + (Ra + Rt)*Iq;
-        Ir = -Id + Eiq/Xad;
-        Uf = Ir*Rf;
-        Eq = Ir*Xad;
-        Er0 = Eq;
-        PsiR = Eiq + Xsf*Ir;
-        PsiRQ = -Ud - Iq*(Xs + Xt) - Id*(Ra + Rt);
-        PsiRD = Eiq;
-        Er_max = Kemax*Er0;
-        Er_min = Kemin*Er0;
-        //-------Initialization State Variables------------------
-        reinit(DGi, Dg);
-        reinit(s, 0);
-        reinit(Yr, PsiR);
-        reinit(Yrd, PsiRD);
-        reinit(Yrq, PsiRQ);
-        reinit(Mu, Mu0);
-      end when;
-      //-------------Calculated parameters of system----------------
-      Xad = Xd - Xs;
-      Xaq = Xq - Xs;
-      X2dt = X2d + Xt;
-      X2qt = X2q + Xt;
-      Rs = Ra + Rt;
-      Xsf = 1/(1/(X1d - Xs) - 1/Xad);
-      Xs1d = 1/(1/(X2d - Xs) - 1/Xad - 1/Xsf);
-      Xs1q = 1/(1/(X2q - Xs) - 1/Xaq);
-      X1 = (X2d - Xs)/Xsf;
-      X2 = (X2d - Xs)/Xs1d;
-      X3 = (X2q - Xs)/Xs1q;
-      //--------------------------------------------------------------------------------
-      //  Kzag1 = abs((Mt_min1+Mt_max1)/2);
-      //  Kzag2 = abs((Mt_min2+Mt_max2)/2);
-      Tj = if time < TkzOn then Tj_p else Tj_p*Pg_new/Pg;
-
-      Xd = if time < TkzOn then Xd_p else Xd_p*Pg/Pg_new;
-      Xq = if time < TkzOn then Xq_p else Xq_p*Pg/Pg_new;
-      Xs = if time < TkzOn then Xs_p else Xs_p*Pg/Pg_new;
-      X1d = if time < TkzOn then X1d_p else X1d_p*Pg/Pg_new;
-      X2d = if time < TkzOn then X2d_p else X2d_p*Pg/Pg_new;
-      X2q = if time < TkzOn then X2q_p else X2q_p*Pg/Pg_new;
-
-      Rf = if time < TkzOn then Rf_p else Rf_p*Pg/Pg_new;
-      R1d = if time < TkzOn then R1d_p else R1d_p*Pg/Pg_new;
-      R1q = if time < TkzOn then R1q_p else R1q_p*Pg/Pg_new;
-      //--------------------------------------------------------------------------------
-      der(DGi) = Wc*s;
-
-      Uf_full = if (Uf*Xad/Rf + dEr) > Er_max then Er_max*Rf/Xad else if (Uf*Xad
-        /Rf + dEr) < Er_min then Er_min*Rf/Xad else Uf + Rf*dEr/Xad;
-
-      der(Yr) = Wc*(Uf_full - Rf*ir);
-      der(Yrd) = -Wc*R1d*ird;
-      der(Yrq) = -Wc*R1q*irq;
-      der(s) = (Mt_pp - Me)/Tj;
-
-      Ro = if time >= Timp and time < Timp + dTimp then -Aimp else -Mu + Mu0 - s
-        /Sigma;
-
-      TauC = if time < Timp + dTimp then TauC_up else TauC_down;
-      //  Ro = -Mu + Mu0 - s/Sigma;
-      der(Mu) = if time >= TregOff and time < TregOn then Ro/10e6 else Ro/TauC;
-      //--------------------------------------------------------------------------------
-      MT_MIN = if time < TkzOn then Mtmin*Pg else Pg_new - 0.01;
-      MT_MAX = if time < TkzOn then Mtmax*Pg else Pg_new + 0.01;
-
-      Mt_pp = if Mu >= MT_MIN and Mu <= MT_MAX then Mu else if Mu > MT_MAX then
-        MT_MAX else MT_MIN;
-      //--------------------------------------------------------------------------------
-      //  Mt_pp = if Mu>=Mtmin*Pg and Mu  < Mtmax*Pg then Mu
-      //                      else if Mu >= Mtmax*Pg then Mtmax*Pg
-      //                                             else Mtmin;
-      //--------------------------------------------------------------------------------
-      Me = Yad*iq - Yaq*id;
-      ir = (Yr - Yad)/Xsf;
-      ird = (Yrd - Yad)/Xs1d;
-      irq = (Yrq - Yaq)/Xs1q;
-      id = if time >= TgenOff and time < TgenOff + dTgenOff then 0 else ((uq -
-        E11q)*X2qt - Rs*(ud + E11d))/(X2dt*X2qt + Rs^2);
-      iq = if time >= TgenOff and time < TgenOff + dTgenOff then 0 else (-ud -
-        E11d - Rs*id)/X2qt;
-      E11d = X3*Yrq;
-      E11q = X1*Yr + X2*Yrd;
-      Yad = E11q + id*(X2d - Xs);
-      Yaq = E11d + iq*(X2q - Xs);
-      Ugen = sqrt(ud^2 + uq^2);
-      dUtr = sqrt(ud^2 + uq^2) - Ut;
-      dWu = Wc*Ssys;
-      dWf = if UqG <> 0 then atan2(UdG, UqG) else atan2(UdG, 0.001);
-      dIf = ir - Ir;
-      //----------------------------------------
-      Pgen = uq*iq + ud*id;
-      Qgen = -uq*id + ud*iq;
-      //-----------------------------------------------------------
-      uq = UqG*cos(DeltaIJ) - UdG*sin(DeltaIJ);
-      ud = UqG*sin(DeltaIJ) + UdG*cos(DeltaIJ);
-      //-----------------------------------------------------------
-      IqG = iq*cos(DeltaIJ) + id*sin(DeltaIJ);
-      IdG = id*cos(DeltaIJ) - iq*sin(DeltaIJ);
-      //-----------------------------------------------------------
-      f = Wc*(1-s)/2/PI;
-      //------connectors------
-      //--Stator--
-      Stator_pin.Vd = UdG;
-      Stator_pin.Vq = UqG;
-
-      Stator_pin.Id = IdG;
-      Stator_pin.Iq = IqG;
-      //---input-rotor--field--voltage---
-      Ef_pin.Signal = dEr;
-      //----to--excitation--system---
-      dUtr_pin.Signal = dUtr;
-      dWu_pin.Signal = dWu;
-      dWf_pin.Signal = dWf;
-      dIf_pin.Signal = dIf;
-      Ut_pin.Signal = Ut
-      annotation (
-        Coordsys(
-          extent=[-100, -100; 100, 100],
-          grid=[2, 2],
-          component=[20, 20]),
-        Window(
-          x=0.06,
-          y=0.07,
-          width=0.6,
-          height=0.77),
-        Diagram(coordinateSystem(
-            preserveAspectRatio=false,
-            preserveOrientation=false,
-            extent={{-100,-100},{100,100}},
-            grid={2,2},
-            initialScale=0), graphics),
-        Icon(
-          coordinateSystem(
-            preserveAspectRatio=false,
-            preserveOrientation=false,
-            extent={{-100,-100},{100,100}},
-            grid={2,2},
-            initialScale=0),
-          graphics={
-            Ellipse(
-              extent={{-60,62},{60,-58}},
-              lineColor={28,108,200},
-              lineThickness=0.5),
-            Text(extent={{-38,38}, {38,-36}}, textString=
-                                                   "SM"),
-            Text(extent={{-80,-58},{80,-100}}, textString=
-                                                   "%name"),
-            Line(
-              points={{-60,2},{-72,2}},
-              color={28,108,200},
-              thickness=0.5),
-            Line(
-              points={{70,2},{60,2}},
-              color={28,108,200},
-              thickness=0.5)},
-          Ellipse(extent=[-60, 62; 60, -58], style(thickness=2)),
-          Text(extent=[-38, 38; 38, -36], string="SM"),
-          Text(extent=[-80, -58; 80, -100], string="%name"),
-          Line(points=[-60, 2; -72, 2], style(thickness=2)),
-          Line(points=[70, 2; 60, 2], style(thickness=2))));
-      connect(dUtr_pin, dUtr_pin) annotation (Line(
-          points={{-56,76},{-56,76}},
-          color={255,255,0},
-          thickness=0.5));
-      annotation (__Dymola_Commands(editCall=plot(
-                {"L0709_1.P1","L0709_1.U1m"},
-                legends={"Calibration L0709_1.P1","Calibration L0709_1.U1m"},
-                colors={{255,0,0},{255,0,0}}) "Calibration_U"), Documentation(
-            info="<html>
-<p>Synchronous generator model</p>
-</html>"));
-    end Synch_Machine;
-
-    connector Single_Pin
-      Real Signal "Connector's signal";
-      annotation (
-        Coordsys(
-          extent=[-100, -100; 100, 100],
-          grid=[2, 2],
-          component=[20, 20]),
-        Icon(
-          coordinateSystem(
-            preserveAspectRatio=false,
-            preserveOrientation=false,
-            extent={{-100,-100},{100,100}},
-            grid={2,2},
-            initialScale=0),
-          graphics={Rectangle(
-              extent={{-80,80},{80,-80}},
-              lineColor={255,255,0},
-              lineThickness=0.5,
-              fillColor={255,127,0},
-              fillPattern=FillPattern.CrossDiag)},
-             Rectangle(extent=[-80, 80; 80, -80], style(
-              color=49,
-              thickness=2,
-              fillColor=45,
-              fillPattern=10))),
-        Window(
-          x=0.3,
-          y=0.2,
-          width=0.6,
-          height=0.6),
-        Documentation(info="<html>
-<p>The model of the basic connector for measuring signals</p>
-</html>"));
-    end Single_Pin;
-
-    model Summator
-      LEPSE.Basic.Single_Pin inp1 annotation (
-        extent=[-94,14; -74,66],
-        layer="icon",
-        Placement(transformation(extent={{-94,14},{-74,66}}, rotation=0)));
-      LEPSE.Basic.Single_Pin inp2 annotation (
-        extent=[-94,-66; -74,-14],
-        layer="icon",
-        Placement(transformation(extent={{-94,-66},{-74,-14}}, rotation=0)));
-      LEPSE.Basic.Single_Pin out annotation (
-        extent=[74,-26; 94,26],
-        layer="icon",
-        Placement(transformation(extent={{74,-26},{94,26}}, rotation=0)));
-    equation
-      out.Signal = inp1.Signal + inp2.Signal;
-      annotation (
-        Coordsys(
-          extent=[-100, -100; 100, 100],
-          grid=[2, 2],
-          component=[20, 20]),
-        Icon(
-          coordinateSystem(
-            preserveAspectRatio=false,
-            preserveOrientation=false,
-            extent={{-100,-100},{100,100}},
-            grid={2,2},
-            initialScale=0),
-          graphics={
-            Rectangle(
-              extent={{-60,80},{60,-80}},
-              lineColor={0,0,255},
-              lineThickness=0.5,
-              fillColor={255,255,255},
-              fillPattern=FillPattern.Forward),
-            Line(
-              points={{-60,40},{-76,40}},
-              color={28,108,200},
-              thickness=0.5),
-            Line(
-              points={{-60,-40},{-76,-40}},
-              color={28,108,200},
-              thickness=0.5),
-            Line(
-              points={{76,0},{60,0}},
-              color={28,108,200},
-              thickness=0.5),
-            Rectangle(
-              extent={{-50,42},{-14,38}},
-              lineColor={28,108,200},
-              fillColor={0,0,0},
-              fillPattern=FillPattern.Solid),
-            Rectangle(
-              extent={{-34,60},{-30,20}},
-              lineColor={28,108,200},
-              fillColor={0,0,0},
-              fillPattern=FillPattern.Solid),
-            Rectangle(
-              extent={{-34,-20},{-30,-60}},
-              lineColor={28,108,200},
-              fillColor={0,0,0},
-              fillPattern=FillPattern.Solid),
-            Rectangle(
-              extent={{-50,-38},{-14,-42}},
-              lineColor={28,108,200},
-              fillColor={0,0,0},
-              fillPattern=FillPattern.Solid)},
-          Rectangle(extent=[-60, 80; 60, -80], style(
-              color=73,
-              thickness=2,
-              fillColor=7,
-              fillPattern=7)),
-          Line(points=[-60, 40; -76, 40], style(thickness=2)),
-          Line(points=[-60, -40; -76, -40], style(thickness=2)),
-          Line(points=[76, 0; 60, 0], style(thickness=2)),
-          Rectangle(extent=[-50, 42; -14, 38], style(fillColor=0)),
-          Rectangle(extent=[-34, 60; -30, 20], style(fillColor=0)),
-          Rectangle(extent=[-34, -20; -30, -60], style(fillColor=0)),
-          Rectangle(extent=[-50, -38; -14, -42], style(fillColor=0))),
-        Window(
-          x=0.29,
-          y=0.02,
-          width=0.6,
-          height=0.6),
-        Documentation(info="<html>
-<p>The adder model</p>
-</html>"));
-    end Summator;
-
-    connector Node
-      Real Vd "Potential Vd";
-      Real Vq "Potential Vq";
-      flow Real Id "Current Id";
-      flow Real Iq "Current Iq";
-      annotation (
-        Coordsys(
-          extent=[-30, -30; 30, 30],
-          grid=[2, 2],
-          component=[20, 20]),
-        Window(
-          x=0.26,
-          y=0.25,
-          width=0.6,
-          height=0.6),
-        Icon(
-          coordinateSystem(
-            preserveAspectRatio=false,
-            preserveOrientation=false,
-            extent={{-100,-100},{100,100}},
-            grid={2,2},
-            initialScale=0),
-          graphics={Ellipse(
-              extent={{-20,20},{20,-20}},
-              lineColor={28,108,200},
-              fillColor={0,0,0},
-              fillPattern=FillPattern.Solid)},
-             Rectangle(extent=[-30, 30; 30, -30], style(fillColor=0))),
-        Documentation(info="<html>
-<p>Node Model</p>
-</html>"));
-    end Node;
-
-    model logical_switch
-      parameter Real a1;
-      parameter Real a2;
-      parameter Real a3;
-      parameter Real a4;
-      Real T_force_off;
-
-      LEPSE.Basic.Single_Pin inp1 annotation (
-        extent=[-94,14; -74,66],
-        layer="icon",
-        Placement(transformation(extent={{-96,14},{-76,66}}, rotation=0),
-            iconTransformation(extent={{-96,14},{-76,66}})));
-      LEPSE.Basic.Single_Pin inp2 annotation (
-        extent=[-94,-66; -74,-14],
-        layer="icon",
-        Placement(transformation(extent={{-96,-54},{-76,-2}}, rotation=0),
-            iconTransformation(extent={{-96,-54},{-76,-2}})));
-      LEPSE.Basic.Single_Pin inp2inf annotation (
-        extent=[-94,-66; -74,-14],
-        layer="icon",
-        Placement(transformation(
-            extent={{-10,-26},{10,26}},
-            rotation=90,
-            origin={0,-106}), iconTransformation(
-            extent={{-10,-26},{10,26}},
-            rotation=90,
-            origin={0,-106})));
-      LEPSE.Basic.Single_Pin out annotation (
-        extent=[74,-26; 94,26],
-        layer="icon",
-        Placement(transformation(extent={{74,-26},{94,26}}, rotation=0)));
-      Basic.Single_Pin inp1inf annotation (Placement(transformation(extent={{-26,
-                88},{24,108}}), iconTransformation(extent={{-26,88},{24,108}})));
-    initial equation
-      pre(T_force_off) = 0;
-    equation
-      when abs(inp1inf.Signal) < (inp2inf.Signal - a2) then
-        T_force_off = time;
-      end when;
-      out.Signal =if (abs(inp1inf.Signal) > (inp2inf.Signal - a1)) then (inp1.Signal)
-         else (if (abs(inp1inf.Signal) > (inp2inf.Signal - a2)) then (inp1.Signal)
-         else (if (time < T_force_off + a4) then (inp1.Signal) else (inp2.Signal)));
-      annotation (
-        Coordsys(
-          extent=[-100, -100; 100, 100],
-          grid=[2, 2],
-          component=[20, 20]),
-        Icon(
-          coordinateSystem(
-            preserveAspectRatio=false,
-            preserveOrientation=false,
-            extent={{-100,-120},{100,120}},
-            grid={2,2},
-            initialScale=0),
-          graphics={
-            Rectangle(
-              extent={{-60,80},{60,-80}},
-              lineColor={0,0,255},
-              lineThickness=0.5,
-              fillPattern=FillPattern.Solid,
-              fillColor={244,125,35}),
-            Line(
-              points={{-52,40},{-80,40}},
-              color={28,108,200},
-              thickness=0.5),
-            Line(
-              points={{-50,-28},{-78,-28}},
-              color={28,108,200},
-              thickness=0.5),
-            Line(
-              points={{76,0},{42,0}},
-              color={28,108,200},
-              thickness=0.5),
-            Line(
-              points={{-162,80}},
-              color={162,29,33},
-              thickness=1,
-              smooth=Smooth.Bezier),
-            Line(
-              points={{-8,0},{-48,40}},
-              color={0,0,255},
-              thickness=0.5),
-            Line(
-              points={{14,0},{-8,0}},
-              color={28,108,200},
-              thickness=0.5),
-            Line(
-              points={{48,0},{14,0}},
-              color={28,108,200},
-              thickness=0.5),
-            Text(extent={{-158,-112},{162,-152}},
-                                              textString=
-                                                  "%name"),
-            Line(
-              points={{10,6},{-8,6}},
-              color={28,108,200},
-              thickness=0.5,
-              origin={6,-90},
-              rotation=90),
-            Line(
-              points={{0,90},{0,80}},
-              color={28,108,200},
-              thickness=0.5)},
-          Rectangle(extent=[-60, 80; 60, -80], style(
-              color=73,
-              thickness=2,
-              fillColor=7,
-              fillPattern=7)),
-          Line(points=[-60, 40; -76, 40], style(thickness=2)),
-          Line(points=[-60, -40; -76, -40], style(thickness=2)),
-          Line(points=[76, 0; 60, 0], style(thickness=2)),
-          Rectangle(extent=[-50, 42; -14, 38], style(fillColor=0)),
-          Rectangle(extent=[-34, 60; -30, 20], style(fillColor=0)),
-          Rectangle(extent=[-34, -20; -30, -60], style(fillColor=0)),
-          Rectangle(extent=[-50, -38; -14, -42], style(fillColor=0))),
-        Window(
-          x=0.29,
-          y=0.02,
-          width=0.6,
-          height=0.6),
-        Diagram(coordinateSystem(extent={{-100,-120},{100,120}})),
-        Documentation(info="<html>
-<p>The model of the logic key of the automatic excitation regulator</p>
-</html>"));
-    end logical_switch;
-    annotation (__Dymola_UserMetaData(MetaData(category="User Meta Data 1",
-            value={ERROR})), Icon(graphics={Bitmap(extent={{-108,-96},{108,96}},
-              fileName=
-                "F:/Политех/Аспирандура/Modelica assotiation/LEPSE/Images/PTL.png")}));
-  end Basic;
-
-  package UsersGuide
-    partial class Users_Guide "Icon for general information packages"
-
-      annotation (Icon(coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},{100,100}}), graphics={
-            Ellipse(
-              lineColor={75,138,73},
-              fillColor={75,138,73},
-              pattern=LinePattern.None,
-              fillPattern=FillPattern.Solid,
-              extent={{-100.0,-100.0},{100.0,100.0}}),
-            Polygon(origin={-4.167,-15.0},
-              fillColor={255,255,255},
-              pattern=LinePattern.None,
-              fillPattern=FillPattern.Solid,
-              points={{-15.833,20.0},{-15.833,30.0},{14.167,40.0},{24.167,20.0},{4.167,-30.0},{14.167,-30.0},{24.167,-30.0},{24.167,-40.0},{-5.833,-50.0},{-15.833,-30.0},{4.167,20.0},{-5.833,20.0}},
-              smooth=Smooth.Bezier),
-            Ellipse(origin={7.5,56.5},
-              fillColor={255,255,255},
-              pattern=LinePattern.None,
-              fillPattern=FillPattern.Solid,
-              extent={{-12.5,-12.5},{12.5,12.5}})}),
-                                Documentation(info="<html>
-<p><b><span style=\"font-size: 14pt;\">I</span></b> To start working with LEPSE, firstly you need to determine the values of model element&apos;s parameters. All variables are presented in <u>basic per-units (p.u.b.)</u> of measurement - so you need to choose 2 basic values: <u>basic power</u> <img src=\"modelica://LEPSE/Resources/Images/equations/equation-PrsJL2Eb.png\" alt=\"S_b\"/> and <u>basic voltage</u> <img src=\"modelica://LEPSE/Resources/Images/equations/equation-YQf8pjYy.png\" alt=\"V_b\"/>, for example: 1000 MVA and 340 kV. </p>
-<p>The next stage is to calculate values of parameters in p.u.b. with the use of well known formulas. Here are examples of some parameter&apos;s conversion from per-units or named units (Om, MVA, MW etc) to basic per-units. An example for all parameter&apos;s calculations is presented in Excel-file <u>&quot;Conversion&quot;</u>. </p>
-<p><img src=\"modelica://LEPSE/Resources/Images/equations/equation-G77aWhOJ.png\" alt=\"x_gi*(p.u.b) = x_gi*(p.u)*(S_b/S_gnom)\"/> - reactivity of <a href=\"LEPSE.Basic.Synch_Machine\">synchronous generator</a> (xd, xq, x&apos;d, etc);</p>
-<p><img src=\"modelica://LEPSE/Resources/Images/equations/equation-aRZsRqqI.png\" alt=\"x_t*(p.u.b) = U_k/100*(S_b/S_tnom)\"/> - reactivity of <a href=\"LEPSE.Basic.Transformer\">transformer</a>;</p>
-<p><img src=\"modelica://LEPSE/Resources/Images/equations/equation-pmzJFbUx.png\" alt=\"x_l*(p.u.b) = x_l*(Om/km)*(S_b/U_l^(2))\"/> - reactivity of<a href=\"LEPSE.Basic.HVline\"> power transmission line</a>;</p>
-<p><img src=\"modelica://LEPSE/Resources/Images/equations/equation-8MjMLU70.png\" alt=\"x_s*(p.u.b) = S_b/S_sc\"/> - reactivity of external power system;</p>
-<p><img src=\"modelica://LEPSE/Resources/Images/equations/equation-KAJhiQdE.png\" alt=\"x_r*(p.u.b) = U_l/(sqrt(3)*I_n)\"/> - reactivity of shunt reactor;</p>
-<p><img src=\"modelica://LEPSE/Resources/Images/equations/equation-5wz03LRO.png\" alt=\"b_l*(p.u.b) = S_nom*cosfi_nom/U_nom^(2)\"/> - reactive conductivity of <a href=\"LEPSE.Basic.Constant_Conductivity_Load\">load</a>. </p>
-<p>All the active resistances in basic per-units can be calculated in th same way, except resistances of field and damper windings, which can be calculeted dy the formulas below. </p>
-<p><img src=\"modelica://LEPSE/Resources/Images/equations/equation-oHzzt3u8.png\" alt=\"r_f*(p.u.b) = x_f/(w*T_f)\"/></p>
-<p>It should be noted that in most cases there is a necessity to equivalent power system grid to simplify dynamic model. In these case several power transmission lines, transformers, generators and loads can be equivalented into one. It is taken into account in &quot;Conversion&quot; file. </p>
-<p><br><b><span style=\"font-size: 14pt;\">II </span></b>Every scheme needs<u> infinite bus</u> - &quot;big&quot; equivalent generator. It&apos;s parameters can be easily calculated using the same method as for a conventional generator. The defining initial parameter for this calculation is the <u>total short-circuit power </u><img src=\"modelica://LEPSE/Resources/Images/equations/equation-Sw2CTeCa.png\" alt=\"S_sc\"/>, which defines the total power of external system and is determined by the following formula:</p>
-<p><img src=\"modelica://LEPSE/Resources/Images/equations/equation-mmYBPAS9.png\" alt=\"S_sc = sqrt(3)*I_sc * U_line\"/>, </p>
-<p>where I<span style=\"font-size: 6pt;\">sc </span>- nominal short-circuit cut-off current; U<span style=\"font-size: 6pt;\">line</span> - nominal phase-to-phase voltage of the line. If there are several lines of communication with the external power system, the short-circuit power is determined by summing the calculated S<span style=\"font-size: 6pt;\">sc</span> value for each line. </p>
-<p>Then the infinite bus is equivalent to the number of generators required to provide the total short-circuit power. It is normal, for example, if infinite bus is equivalent to 50 generators of 500 MVA nominal power. </p>
-<p>To get quasi-steady-state condition, you need to manually set a dummy load at the infinite power bus connection point so that the power system maintains a <u>balance between generation and consumption</u>. This balance can be easily monitored by the <u>slip value s</u> of the equivalent generator of the external power system - ideally, it must be near zero. </p>
-<p><br><b><span style=\"font-size: 14pt;\">III </span></b>To investigate transient processes, certain emergency events are needed. Simple switching off (on) is specified by three parameters - <u>time of the element&apos;s shutdown</u> (<span style=\"font-family: Courier New;\">TLineOff, TtOff etc</span>), <u>duration of shutdown</u> (dTLineOff, dTtOff etc) and the <u>degree of its shutdown</u> (<span style=\"font-family: Courier New;\">Koff</span>) . The latter means either the shutdown of a part of the generation/load, or the shutdown of one circuit or one transformer of the equivalent power line and equivalent transformer, respectively. In real power energy systems the main reason of emergency shutdown is <u>short circui</u>t, which is simulated by <a href=\"LEPSE.Basic.ShortCircuitShunt\">ShortCircuitShunt</a> switching on. There are 4 main parameters of ShortCircuitShunt: reactive, active conductivity of short sircuit, time of its start and duration. The fifth parameter, total conductvity of short circuit, is useful, when you need to save the same degree of voltage drop duiring short circuit, varying the ratio between its active and reactive components. To simulate repeated short circuit, you need another ShortCircuitShunt model. The second power transmission line shutdown after its automatic reclosing can be simulated with the help of <span style=\"font-family: Courier New;\">TLineOff_1, dTLineOff_1 </span>and<span style=\"font-family: Courier New;\"> Koff_1 </span>parameters. </p>
-<p><br><b><span style=\"font-size: 14pt;\">IV </span></b>LEPSE allows to investigate different means of increasing dynamic stability. The first of them is the changement of <u>Automatic Voltage Regulator</u> (AVR) control coefficients in <a href=\"LEPSE.Basic.Excitation_Regulator\">Excitation_Regulator</a> model as well as setpoints of field forcing, which is realised by<a href=\"LEPSE.Basic.logical_switch\"> logical_switch</a> implementation in AVR model. The second one is series or parallel <u>electrical breaking</u>, <a href=\"LEPSE.Basic.Electrical_Braking\">Electrical_Braking</a> and <a href=\"LEPSE.Basic.Electrical_Braking_Parallel\">Electrical_Braking_Parallel</a> accordingly, which efficiency depends on their active resistanse value. The third mean is fast&nbsp;turbine&nbsp;valving&nbsp;control or <u>turbine fast valving</u> (defined by <img src=\"modelica://LEPSE/Resources/Images/equations/equation-6awBk0N3.png\" alt=\"T_regOff\"/>, <img src=\"modelica://LEPSE/Resources/Images/equations/equation-QtI4Wn3O.png\" alt=\"T_regOn\"/>, <img src=\"modelica://LEPSE/Resources/Images/equations/equation-AxMMqRl8.png\" alt=\"A_imp\"/>, <img src=\"modelica://LEPSE/Resources/Images/equations/equation-93tmmXQR.png\" alt=\"T_imp\"/>, <img src=\"modelica://LEPSE/Resources/Images/equations/equation-pQdwiQDu.png\" alt=\"dT_imp\"/> values) as well as <u>automatic speed controller</u> (ASC) parameters changement (<span style=\"font-family: Courier New;\">Sigma and </span><img src=\"modelica://LEPSE/Resources/Images/equations/equation-R4rEAi1t.png\" alt=\"T_auC_up\"/>). The fourth mean is <u>automatic reclosing</u>, which was mentioned before. Finally, the fifth way to increase dynamic stability is generation or load <u>reduction</u> or <u>disabling. </u></p>
-</html>"));
-    end Users_Guide;
-
-    class ModelicaLicense2 "Modelica License 2"
-
-      annotation (Documentation(info="<html>
-<head>
-    <title>The Modelica License 2</title>
-    <style type=\"text/css\">
-    *       { font-size: 10pt; font-family: Arial,sans-serif; }
-    code    { font-size:  9pt; font-family: Courier,monospace;}
-    h6      { font-size: 10pt; font-weight: bold; color: green; }
-    h5      { font-size: 11pt; font-weight: bold; color: green; }
-    h4      { font-size: 13pt; font-weight: bold; color: green; }
-    address {                  font-weight: normal}
-    td      { solid #000; vertical-align:top; }
-    th      { solid #000; vertical-align:top; font-weight: bold; }
-    table   { solid #000; border-collapse: collapse;}
-    </style>
-</head>
-<body lang=\"en-US\">
-    <p>All files in this directory and in all subdirectories are released under
-    the &quot;Modelica License&nbsp;2&quot; (if not explicitly noted
-    otherwise).</p>
-    <p><a href=\"#The_Modelica_License_2-outline\">The Modelica
-    License&nbsp;2</a><br>
-    <a href=\"#How_to_Apply_the_Modelica_License_2-outline\">How to Apply the
-    Modelica License&nbsp;2</a><br>
-    <a href=\"#Frequently_Asked_Questions-outline\">Frequently Asked
-    Questions</a><br></p>
-    <hr>
-    <h4><a name=\"The_Modelica_License_2-outline\" id=
-    \"The_Modelica_License_2-outline\"></a>The Modelica License&nbsp;2</h4>
-    <p><strong>Preamble.</strong> The goal of this license is that Modelica
-    related model libraries, software, images, documents, data files etc. can
-    be used freely in the original or a modified form, in open source and in
-    commercial environments (as long as the license conditions below are
-    fulfilled, in particular sections&nbsp;2c) and 2d). The Original Work is
-    provided free of charge and the use is completely at your own risk.
-    Developers of free Modelica packages are encouraged to utilize this license
-    for their work.</p>
-    <p>The Modelica License applies to any Original Work that contains the
-    following licensing notice adjacent to the copyright notice(s) for this
-    Original Work:</p>
-    <p><strong>Licensed by &lt;name of Licensor&gt; under the Modelica
-    License&nbsp;2</strong></p>
-    <p><strong>1. Definitions.</strong></p>
-    <ol type=\"a\">
-        <li>&quot;License&quot; is this Modelica License.</li>
-        <li>&quot;Original Work&quot; is any work of authorship, including
-        software, images, documents, data files, that contains the above
-        licensing notice or that is packed together with a licensing notice
-        referencing it.</li>
-        <li>&quot;Licensor&quot; is the provider of the Original Work who has
-        placed this licensing notice adjacent to the copyright notice(s) for
-        the Original Work. The Original Work is either directly provided by the
-        owner of the Original Work, or by a licensee of the owner.</li>
-        <li>&quot;Derivative Work&quot; is any modification of the Original
-        Work which represents, as a whole, an original work of authorship. For
-        the matter of clarity and as examples:
-            <ol type=\"a\">
-                <li>Derivative Work shall not include work that remains
-                separable from the Original Work, as well as merely extracting
-                a part of the Original Work without modifying it.</li>
-                <li>Derivative Work shall not include (a) fixing of errors
-                and/or (b) adding vendor specific Modelica annotations and/or
-                (c) using a subset of the classes of a Modelica package, and/or
-                (d) using a different representation, e.g., a binary
-                representation.</li>
-                <li>Derivative Work shall include classes that are copied from
-                the Original Work where declarations, equations or the
-                documentation are modified.</li>
-                <li>Derivative Work shall include executables to simulate the
-                models that are generated by a Modelica translator based on the
-                Original Work (of a Modelica package).</li>
-            </ol>
-        </li>
-        <li>&quot;Modified Work&quot; is any modification of the Original
-        Work with the following exceptions: (a) fixing of errors and/or (b)
-        adding vendor specific Modelica annotations and/or (c) using a subset
-        of the classes of a Modelica package, and/or (d) using a different
-        representation, e.g., a binary representation.</li>
-        <li>&quot;Source Code&quot; means the preferred form of the Original
-        Work for making modifications to it and all available documentation
-        describing how to modify the Original Work.</li>
-        <li>&quot;You&quot; means an individual or a legal entity exercising
-        rights under, and complying with all of the terms of, this
-        License.</li>
-        <li>&quot;Modelica package&quot; means any Modelica library that is
-        defined with the
-        &quot;<code><strong>package</strong>&nbsp;&lt;Name&gt;&nbsp;...&nbsp;<strong>end</strong>&nbsp;&lt;Name&gt;;</code>&quot;
-        Modelica language element.</li>
-    </ol>
-    <p><strong>2. Grant of Copyright License.</strong> Licensor grants You a
-    worldwide, royalty-free, non-exclusive, sublicensable license, for the
-    duration of the copyright, to do the following:</p>
-    <ol type=\"a\">
-        <li>
-            <p>To reproduce the Original Work in copies, either alone or as
-            part of a collection.</p>
-        </li>
-        <li>
-            <p>To create Derivative Works according to Section&nbsp;1d) of this
-            License.</p>
-        </li>
-        <li>
-            <p>To distribute or communicate to the public copies of the
-            <u>Original Work</u> or a <u>Derivative Work</u> under <u>this
-            License</u>. No fee, neither as a copyright-license fee, nor as a
-            selling fee for the copy as such may be charged under this License.
-            Furthermore, a verbatim copy of this License must be included in
-            any copy of the Original Work or a Derivative Work under this
-            License.<br>
-            For the matter of clarity, it is permitted A) to distribute or
-            communicate such copies as part of a (possible commercial)
-            collection where other parts are provided under different licenses
-            and a license fee is charged for the other parts only and B) to
-            charge for mere printing and shipping costs.</p>
-        </li>
-        <li>
-            <p>To distribute or communicate to the public copies of a
-            <u>Derivative Work</u>, alternatively to Section&nbsp;2c), under
-            <u>any other license</u> of your choice, especially also under a
-            license for commercial/proprietary software, as long as You comply
-            with Sections&nbsp;3, 4 and 8 below.<br>
-            For the matter of clarity, no restrictions regarding fees, either
-            as to a copyright-license fee or as to a selling fee for the copy
-            as such apply.</p>
-        </li>
-        <li>
-            <p>To perform the Original Work publicly.</p>
-        </li>
-        <li>
-            <p>To display the Original Work publicly.</p>
-        </li>
-    </ol>
-    <p><strong>3. Acceptance.</strong> Any use of the Original Work or a
-    Derivative Work, or any action according to either Section&nbsp;2a) to 2f)
-    above constitutes Your acceptance of this License.</p>
-    <p><strong>4. Designation of Derivative Works and of Modified
-    Works.</strong> The identifying designation of Derivative Work and of
-    Modified Work must be different to the corresponding identifying
-    designation of the Original Work. This means especially that the
-    (root-level) name of a Modelica package under this license must be changed
-    if the package is modified (besides fixing of errors, adding vendor
-    specific Modelica annotations, using a subset of the classes of a Modelica
-    package, or using another representation, e.g. a binary
-    representation).</p>
-    <p><strong>5. Grant of Patent License.</strong> Licensor grants You a
-    worldwide, royalty-free, non-exclusive, sublicensable license, under patent
-    claims owned by the Licensor or licensed to the Licensor by the owners of
-    the Original Work that are embodied in the Original Work as furnished by
-    the Licensor, for the duration of the patents, to make, use, sell, offer
-    for sale, have made, and import the Original Work and Derivative Works
-    under the conditions as given in Section&nbsp;2. For the matter of clarity,
-    the license regarding Derivative Works covers patent claims to the extent
-    as they are embodied in the Original Work only.</p>
-    <p><strong>6. Provision of Source Code.</strong> Licensor agrees to provide
-    You with a copy of the Source Code of the Original Work but reserves the
-    right to decide freely on the manner of how the Original Work is
-    provided.<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;For the matter of clarity, Licensor
-    might provide only a binary representation of the Original Work. In that
-    case, You may (a) either reproduce the Source Code from the binary
-    representation if this is possible (e.g., by performing a copy of an
-    encrypted Modelica package, if encryption allows the copy operation) or (b)
-    request the Source Code from the Licensor who will provide it to You.</p>
-    <p><strong>7. Exclusions from License Grant.</strong> Neither the names of
-    Licensor, nor the names of any contributors to the Original Work, nor any
-    of their trademarks or service marks, may be used to endorse or promote
-    products derived from this Original Work without express prior permission
-    of the Licensor. Except as otherwise expressly stated in this License and
-    in particular in Sections&nbsp;2 and 5, nothing in this License grants any
-    license to Licensor&apos;s trademarks, copyrights, patents, trade secrets or any
-    other intellectual property, and no patent license is granted to make, use,
-    sell, offer for sale, have made, or import embodiments of any patent
-    claims.<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;No license is granted to the trademarks
-    of Licensor even if such trademarks are included in the Original Work,
-    except as expressly stated in this License. Nothing in this License shall
-    be interpreted to prohibit Licensor from licensing under terms different
-    from this License any Original Work that Licensor otherwise would have a
-    right to license.</p>
-    <p><strong>8. Attribution Rights.</strong> You must retain in the Source
-    Code of the Original Work and of any Derivative Works that You create, all
-    author, copyright, patent, or trademark notices, as well as any descriptive
-    text identified therein as an &quot;Attribution Notice&quot;. The same
-    applies to the licensing notice of this License in the Original Work. For
-    the matter of clarity, &quot;author notice&quot; means the notice that
-    identifies the original author(s).<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;You must cause the Source Code for any
-    Derivative Works that You create to carry a prominent Attribution Notice
-    reasonably calculated to inform recipients that You have modified the
-    Original Work.<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;In case the Original Work or Derivative
-    Work is not provided in Source Code, the Attribution Notices shall be
-    appropriately displayed, e.g., in the documentation of the Derivative
-    Work.</p>
-    <p><strong>9. Disclaimer of Warranty.<br></strong> <u><strong>The Original
-    Work is provided under this License on an &quot;as is&quot; basis and
-    without warranty, either express or implied, including, without limitation,
-    the warranties of non-infringement, merchantability or fitness for a
-    particular purpose. The entire risk as to the quality of the Original Work
-    is with You.</strong></u> This disclaimer of warranty constitutes an
-    essential part of this License. No license to the Original Work is granted
-    by this License except under this disclaimer.</p>
-    <p><strong>10. Limitation of Liability.</strong> Under no circumstances and
-    under no legal theory, whether in tort (including negligence), contract, or
-    otherwise, shall the Licensor, the owner or a licensee of the Original Work
-    be liable to anyone for any direct, indirect, general, special, incidental,
-    or consequential damages of any character arising as a result of this
-    License or the use of the Original Work including, without limitation,
-    damages for loss of goodwill, work stoppage, computer failure or
-    malfunction, or any and all other commercial damages or losses. This
-    limitation of liability shall not apply to the extent applicable law
-    prohibits such limitation.</p>
-    <p><strong>11. Termination.</strong> This License conditions your rights to
-    undertake the activities listed in Section&nbsp;2 and 5, including your
-    right to create Derivative Works based upon the Original Work, and doing so
-    without observing these terms and conditions is prohibited by copyright law
-    and international treaty. Nothing in this License is intended to affect
-    copyright exceptions and limitations. This License shall terminate
-    immediately and You may no longer exercise any of the rights granted to You
-    by this License upon your failure to observe the conditions of this
-    license.</p>
-    <p><strong>12. Termination for Patent Action.</strong> This License shall
-    terminate automatically and You may no longer exercise any of the rights
-    granted to You by this License as of the date You commence an action,
-    including a cross-claim or counterclaim, against Licensor, any owners of
-    the Original Work or any licensee alleging that the Original Work infringes
-    a patent. This termination provision shall not apply for an action alleging
-    patent infringement through combinations of the Original Work under
-    combination with other software or hardware.</p>
-    <p><strong>13. Jurisdiction.</strong> Any action or suit relating to this
-    License may be brought only in the courts of a jurisdiction wherein the
-    Licensor resides and under the laws of that jurisdiction excluding its
-    conflict-of-law provisions. The application of the United Nations
-    Convention on Contracts for the International Sale of Goods is expressly
-    excluded. Any use of the Original Work outside the scope of this License or
-    after its termination shall be subject to the requirements and penalties of
-    copyright or patent law in the appropriate jurisdiction. This section shall
-    survive the termination of this License.</p>
-    <p><strong>14. Attorneys&apos; Fees.</strong> In any action to enforce the terms
-    of this License or seeking damages relating thereto, the prevailing party
-    shall be entitled to recover its costs and expenses, including, without
-    limitation, reasonable attorneys&apos; fees and costs incurred in connection
-    with such action, including any appeal of such action. This section shall
-    survive the termination of this License.</p>
-    <p><strong>15. Miscellaneous.</strong></p>
-    <ol type=\"a\">
-        <li>If any provision of this License is held to be unenforceable, such
-        provision shall be reformed only to the extent necessary to make it
-        enforceable.</li>
-        <li>No verbal ancillary agreements have been made. Changes and
-        additions to this License must appear in writing to be valid. This also
-        applies to changing the clause pertaining to written form.</li>
-        <li>You may use the Original Work in all ways not otherwise restricted
-        or conditioned by this License or by law, and Licensor promises not to
-        interfere with or be responsible for such uses by You.</li>
-    </ol>
-    <hr>
-    <h4><a name=\"How_to_Apply_the_Modelica_License_2-outline\" id=
-    \"How_to_Apply_the_Modelica_License_2-outline\"></a> How to Apply the
-    Modelica License&nbsp;2</h4>
-    <p>At the top level of your Modelica package and at every important
-    subpackage, add the following notices in the info layer of the package:</p>
-    <p>Licensed by &lt;Licensor&gt; under the Modelica License&nbsp;2<br>
-    Copyright &copy; &lt;year1&gt;-&lt;year2&gt;, &lt;name of copyright
-    holder(s)&gt;.</p>
-    <p><em>This Modelica package is <u>free</u> software and the use is
-    completely at <u>your own risk</u>; it can be redistributed and/or modified
-    under the terms of the Modelica License&nbsp;2. For license conditions
-    (including the disclaimer of warranty) see <a href=
-    \"modelica://Modelica.UsersGuide.ModelicaLicense2\">Modelica.UsersGuide.ModelicaLicense2</a>
-    or visit <a href=
-    \"http://www.modelica.org/licenses/ModelicaLicense2\">http://www.modelica.org/licenses/ModelicaLicense2</a>.</em></p>
-    <p>Include a copy of the Modelica License&nbsp;2 under
-    <strong>&lt;library&gt;.UsersGuide.ModelicaLicense2</strong> (use <a href=
-    \"http://www.modelica.org/licenses/ModelicaLicense2.mo\">http://www.modelica.org/licenses/ModelicaLicense2.mo</a>).
-    Furthermore, add the list of authors and contributors under
-    <strong>&lt;library&gt;.UsersGuide.Contributors</strong> or
-    <strong>&lt;library&gt;.UsersGuide.Contact</strong>.</p>
-    <p>For example, sublibrary Modelica.Blocks of the Modelica Standard Library
-    may have the following notices:</p>
-    <p>Licensed by Modelica Association under the Modelica License&nbsp;2<br>
-    Copyright &copy; 1998-2008, Modelica Association.</p>
-    <p><em>This Modelica package is <u>free</u> software and the use is
-    completely at <u>your own risk</u>; it can be redistributed and/or modified
-    under the terms of the Modelica License&nbsp;2. For license conditions
-    (including the disclaimer of warranty) see <a href=
-    \"modelica://Modelica.UsersGuide.ModelicaLicense2\">Modelica.UsersGuide.ModelicaLicense2</a>
-    or visit <a href=
-    \"http://www.modelica.org/licenses/ModelicaLicense2\">http://www.modelica.org/licenses/ModelicaLicense2</a>.</em></p>
-    <p>For C-source code and documents, add similar notices in the
-    corresponding file.</p>
-    <p>For images, add a &quot;readme.txt&quot; file to the directories where
-    the images are stored and include a similar notice in this file.</p>
-    <p>In these cases, save a copy of the Modelica License&nbsp;2 in one
-    directory of the distribution, e.g., <a href=
-    \"http://www.modelica.org/licenses/ModelicaLicense2.html\">http://www.modelica.org/licenses/ModelicaLicense2.html</a>
-    in directory
-    <strong>&lt;library&gt;/Resources/Documentation/ModelicaLicense2.html</strong>.</p>
-    <hr>
-    <h5><a name=\"Frequently_Asked_Questions-outline\" id=
-    \"Frequently_Asked_Questions-outline\"></a> Frequently Asked Questions</h5>
-    <p>This section contains questions/answer to users and/or distributors of
-    Modelica packages and/or documents under Modelica License&nbsp;2. Note, the
-    answers to the questions below are not a legal interpretation of the
-    Modelica License&nbsp;2. In case of a conflict, the language of the license
-    shall prevail.</p>
-    <h6>Using or Distributing a Modelica <u>Package</u> under the Modelica
-    License&nbsp;2</h6>
-    <p><strong>What are the main differences to the previous version of the
-    Modelica License?</strong></p>
-    <ol>
-        <li>
-            <p>Modelica License&nbsp;1 is unclear whether the licensed Modelica
-            package can be distributed under a different license.
-            Version&nbsp;2 explicitly allows that &quot;Derivative Work&quot;
-            can be distributed under any license of Your choice, see examples
-            in Section&nbsp;1d) as to what qualifies as Derivative Work (so,
-            version&nbsp;2 is clearer).</p>
-        </li>
-        <li>
-            <p>If You modify a Modelica package under Modelica License&nbsp;2
-            (besides fixing of errors, adding vendor specific Modelica
-            annotations, using a subset of the classes of a Modelica package,
-            or using another representation, e.g., a binary representation),
-            you must rename the root-level name of the package for your
-            distribution. In version&nbsp;1 you could keep the name (so,
-            version&nbsp;2 is more restrictive). The reason of this restriction
-            is to reduce the risk that Modelica packages are available that
-            have identical names, but different functionality.</p>
-        </li>
-        <li>
-            <p>Modelica License&nbsp;1 states that &quot;It is not allowed to
-            charge a fee for the original version or a modified version of the
-            software, besides a reasonable fee for distribution and
-            support&quot;. Version&nbsp;2 has a similar intention for all
-            Original Work under <u>Modelica License&nbsp;2</u> (to remain free
-            of charge and open source) but states this more clearly as
-            &quot;No fee, neither as a copyright-license fee, nor as a selling
-            fee for the copy as such may be charged&quot;. Contrary to
-            version&nbsp;1, Modelica License&nbsp;2 has no restrictions on fees
-            for Derivative Work that is provided under a different license (so,
-            version&nbsp;2 is clearer and has fewer restrictions).</p>
-        </li>
-        <li>
-            <p>Modelica License&nbsp;2 introduces several useful provisions for
-            the licensee (articles&nbsp;5, 6, 12), and for the licensor
-            (articles&nbsp;7, 12, 13, 14) that have no counter part in
-            version&nbsp;1.</p>
-        </li>
-        <li>
-            <p>Modelica License&nbsp;2 can be applied to all type of work,
-            including documents, images and data files, contrary to
-            version&nbsp;1 that was dedicated for software only (so,
-            version&nbsp;2 is more general).</p>
-        </li>
-    </ol>
-    <p><strong>Can I distribute a Modelica package (under Modelica
-    License&nbsp;2) as part of my commercial Modelica modeling and simulation
-    environment?</strong></p>
-    <p>Yes, according to Section&nbsp;2c). However, you are not allowed to
-    charge a fee for this part of your environment. Of course, you can charge
-    for your part of the environment.</p>
-    <p><strong>Can I distribute a Modelica package (under Modelica
-    License&nbsp;2) under a different license?</strong></p>
-    <p>No. The license of an unmodified Modelica package cannot be changed
-    according to Sections&nbsp;2c) and 2d). This means that you cannot
-    <u>sell</u> copies of it, any distribution has to be free of charge.</p>
-    <p><strong>Can I distribute a Modelica package (under Modelica
-    License&nbsp;2) under a different license when I first encrypt the
-    package?</strong></p>
-    <p>No. Merely encrypting a package does not qualify for Derivative Work and
-    therefore the encrypted package has to stay under Modelica
-    License&nbsp;2.</p>
-    <p><strong>Can I distribute a Modelica package (under Modelica
-    License&nbsp;2) under a different license when I first add classes to the
-    package?</strong></p>
-    <p>No. The package itself remains unmodified, i.e., it is Original Work,
-    and therefore the license for this part must remain under Modelica
-    License&nbsp;2. The newly added classes can be, however, under a different
-    license.</p>
-    <p><strong>Can I copy a class out of a Modelica package (under Modelica
-    License&nbsp;2) and include it</strong> <u><strong>unmodified</strong></u>
-    <strong>in a Modelica package under a</strong>
-    <u><strong>commercial/proprietary</strong></u>
-    <strong>license?</strong></p>
-    <p>No, according to article&nbsp;2c). However, you can include model,
-    block, function, package, record and connector classes in your Modelica
-    package under <u>Modelica License&nbsp;2</u>. This means that your Modelica
-    package could be under a commercial/proprietary license, but one or more
-    classes of it are under Modelica License&nbsp;2.<br>
-    Note, a &quot;type&quot; class (e.g., type Angle =
-    Real(unit=&quot;rad&quot;)) can be copied and included unmodified under a
-    commercial/proprietary license (for details, see the next question).</p>
-    <p><strong>Can I copy a type class or</strong> <u><strong>part</strong></u>
-    <strong>of a model, block, function, record, connector class, out of a
-    Modelica package (under Modelica License&nbsp;2) and include it modified or
-    unmodified in a Modelica package under a</strong>
-    <u><strong>commercial/proprietary</strong></u>
-    <strong>license?</strong></p>
-    <p>Yes, according to article&nbsp;2d), since this will in the end usually
-    qualify as Derivative Work. The reasoning is the following: A type class or
-    part of another class (e.g., an equation, a declaration, part of a class
-    description) cannot be utilized &quot;by its own&quot;. In order to make
-    this &quot;usable&quot;, you have to add additional code in order that
-    the class can be utilized. This is therefore usually Derivative Work and
-    Derivative Work can be provided under a different license. Note, this only
-    holds, if the additional code introduced is sufficient to qualify for
-    Derivative Work. Merely, just copying a class and changing, say, one
-    character in the documentation of this class would be no Derivative Work
-    and therefore the copied code would have to stay under Modelica
-    License&nbsp;2.</p>
-    <p><strong>Can I copy a class out of a Modelica package (under Modelica
-    License&nbsp;2) and include it in</strong> <u><strong>modified</strong></u>
-    <strong>form in a</strong> <u><strong>commercial/proprietary</strong></u>
-    <strong>Modelica package?</strong></p>
-    <p>Yes. If the modification can be seen as a &quot;Derivative Work&quot;,
-    you can place it under your commercial/proprietary license. If the
-    modification does not qualify as &quot;Derivative Work&quot; (e.g., bug
-    fixes, vendor specific annotations), it must remain under Modelica
-    License&nbsp;2. This means that your Modelica package could be under a
-    commercial/proprietary license, but one or more parts of it are under
-    Modelica License&nbsp;2.</p>
-    <p><strong>Can I distribute a &quot;save total model&quot; under my
-    commercial/proprietary license, even if classes under Modelica
-    License&nbsp;2 are included?</strong></p>
-    <p>Your classes of the &quot;save total model&quot; can be distributed
-    under your commercial/proprietary license, but the classes under Modelica
-    License&nbsp;2 must remain under Modelica License&nbsp;2. This means you
-    can distribute a &quot;save total model&quot;, but some parts might be
-    under Modelica License&nbsp;2.</p>
-    <p><strong>Can I distribute a Modelica package (under Modelica
-    License&nbsp;2) in encrypted form?</strong></p>
-    <p>Yes. Note, if the encryption does not allow &quot;copying&quot; of
-    classes (in to unencrypted Modelica source code), you have to send the
-    Modelica source code of this package to your customer, if he/she wishes it,
-    according to article&nbsp;6.</p>
-    <p><strong>Can I distribute an executable under my commercial/proprietary
-    license, if the model from which the executable is generated uses models
-    from a Modelica package under Modelica License&nbsp;2?</strong></p>
-    <p>Yes, according to article&nbsp;2d), since this is seen as Derivative
-    Work. The reasoning is the following: An executable allows the simulation
-    of a concrete model, whereas models from a Modelica package (without
-    pre-processing, translation, tool run-time library) are not able to be
-    simulated without tool support. By the processing of the tool and by its
-    run-time libraries, significant new functionality is added (a model can be
-    simulated whereas previously it could not be simulated) and functionality
-    available in the package is removed (e.g., to build up a new model by
-    dragging components of the package is no longer possible with the
-    executable).</p>
-    <p><strong>Is my modification to a Modelica package (under Modelica
-    License&nbsp;2) a Derivative Work?</strong></p>
-    <p>It is not possible to give a general answer to it. To be regarded as
-    &quot;an original work of authorship&quot;, a derivative work must be
-    different enough from the original or must contain a substantial amount of
-    new material. Making minor changes or additions of little substance to a
-    preexisting work will not qualify the work as a new version for such
-    purposes.</p>
-    <h6>Using or Distributing a Modelica <u>Document</u> under the Modelica
-    License&nbsp;2</h6>
-    <p>This section is devoted especially for the following applications:</p>
-    <ol type=\"a\">
-        <li>
-            <p>A Modelica tool extracts information out of a Modelica package
-            and presents the result in form of a &quot;manual&quot; for this
-            package in, e.g., html, doc, or pdf format.</p>
-        </li>
-        <li>
-            <p>The Modelica language specification is a document defining the
-            Modelica language. It will be licensed under Modelica
-            License&nbsp;2.</p>
-        </li>
-        <li>
-            <p>Someone writes a book about the Modelica language and/or
-            Modelica packages and uses information which is available in the
-            Modelica language specification and/or the corresponding Modelica
-            package.</p>
-        </li>
-    </ol>
-    <p><strong>Can I sell a manual that was basically derived by extracting
-    information automatically from a Modelica package under Modelica
-    License&nbsp;2 (e.g., a &quot;reference guide&quot; of the Modelica
-    Standard Library)?</strong></p>
-    <p>Yes. Extracting information from a Modelica package, and providing it in
-    a human readable, suitable format, like html, doc or pdf format, where the
-    content is significantly modified (e.g. tables with interface information
-    are constructed from the declarations of the public variables) qualifies as
-    Derivative Work and there are no restrictions to charge a fee for
-    Derivative Work under alternative&nbsp;2d).</p>
-    <p><strong>Can I copy a text passage out of a Modelica document (under
-    Modelica License&nbsp;2) and use it</strong>
-    <u><strong>unmodified</strong></u> <strong>in my document (e.g. the
-    Modelica syntax description in the Modelica Specification)?</strong></p>
-    <p>Yes. In case you distribute your document, the copied parts are still
-    under Modelica License&nbsp;2 and you are not allowed to charge a license
-    fee for this part. You can, of course, charge a fee for the rest of your
-    document.</p>
-    <p><strong>Can I copy a text passage out of a Modelica document (under
-    Modelica License&nbsp;2) and use it in</strong>
-    <u><strong>modified</strong></u> <strong>form in my document?</strong></p>
-    <p>Yes, the creation of Derivative Works is allowed. In case the content is
-    significantly modified this qualifies as Derivative Work and there are no
-    restrictions to charge a fee for Derivative Work under
-    alternative&nbsp;2d).</p>
-    <p><strong>Can I sell a printed version of a Modelica document (under
-    Modelica License&nbsp;2), e.g., the Modelica Language
-    Specification?</strong></p>
-    <p>No, if you are not the copyright-holder, since article&nbsp;2c) does not
-    allow a selling fee for a (in this case physical) copy. However, mere
-    printing and shipping costs may be recovered.</p>
-</body>
-</html>"));
-    end ModelicaLicense2;
-
-    partial class Contact "Icon for contact information"
-
-      annotation (Icon(coordinateSystem(preserveAspectRatio=false, extent={{-100,
-                -100},{100,100}}), graphics={
-            Rectangle(
-              extent={{-100,70},{100,-72}},
-              fillColor={235,235,235},
-              fillPattern=FillPattern.Solid),
-            Polygon(
-              points={{-100,-72},{100,-72},{0,20},{-100,-72}},
-              fillColor={215,215,215},
-              fillPattern=FillPattern.Solid),
-            Polygon(
-              points={{22,0},{100,70},{100,-72},{22,0}},
-              fillColor={235,235,235},
-              fillPattern=FillPattern.Solid),
-            Polygon(
-              points={{-100,70},{100,70},{0,-20},{-100,70}},
-              fillColor={241,241,241},
-              fillPattern=FillPattern.Solid)}),
-                                Documentation(info="<html>
-<p>LEPSE is developed by many people, who works or studies in St. Petersburg Polytechnic university. This page shows the active members. </p>
-<p><br><b><a href=\"http://belyaev.spb.ru/\">Andrey Nikolaevich Belyaev</a></b></p>
-<p>Professor</p>
-<p>email: andreybelyaev@yandex.ru</p>
-<p><br><b>Alexey Yurievich Koshlakov</b></p>
-<p>Graduate student</p>
-<p>email: koshlakov.aleksei@gmail.com</p>
-<p><br><b><a href=\"https://web.telegram.org/k/#@Florida_la_Vella\">Andrey Alexandrovich Florinsky</a></b></p>
-<p>Graduate student</p>
-<p>email: andrej.florinskiy@gmail.com</p>
-<p><br><b>Evgeny Vladimirovich Sorokin</b></p>
-<p>Docent</p>
-<p>email: sorokin_ev@spbstu.ru</p>
-</html>"));
-    end Contact;
-    annotation (Icon(graphics={Bitmap(extent={{-94,-98},{94,100}}, fileName=
-                "F:/Политех/Аспирандура/Modelica assotiation/LEPSE/Images/Info_Simple_bw.svg.png")}));
-  end UsersGuide;
   annotation (Coordsys(
       extent=[0, 0; 791, 630],
       grid=[2, 2],
@@ -8516,8 +8269,8 @@
       library=1,
       autolayout=1),
     uses(Modelica(version="4.0.0")),
-    Icon(graphics={Bitmap(extent={{-558,-416},{644,408}}, fileName=
-              "F:/Политех/Аспирандура/Modelica assotiation/LEPSE/Images/SM.png")}),
+    Icon(graphics={Bitmap(extent={{-562,-440},{644,386}}, fileName=
+              "modelica://LEPSE/Images/SM.png")}),
     Documentation(info="<html>
 <p><b><span style=\"font-family: Arial Black; font-size: 10pt;\">Library of electric power system elements </span></b></p>
 <p>LEPSE is a libary for power enerygy system, developed and maintained by<span style=\"font-family: YS 58; background-color: #ffffff;\"> </span>the staff of the <a href=\"https://ie.spbstu.ru/department/vysshaya_shkola_elektroenergeticheskih_sistem/\">Higher School of Electrical Power Systems</a> of the<span style=\"font-family: YS 58; background-color: #ffffff;\"> </span><a href=\"https://www.spbstu.ru/\">Peter the Great St. Petersburg Polytechnic University</a>, led by <a href=\"http://belyaev.spb.ru/\">Belyaev Andrey Nikolaevich</a>. </p>

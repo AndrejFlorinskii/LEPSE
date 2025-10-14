@@ -1,4 +1,4 @@
-within ;
+within Basic;
 model Constant_Conductivity_Load
   parameter Real Gn=0.7 "Active load";
   parameter Real Bn=-0.35 "Reactive load";
@@ -7,29 +7,35 @@ model Constant_Conductivity_Load
   parameter Real dTloadOff=10 "Duration of load disconnection";
   parameter Real Koff=0.7 "Degree of load disconnection";
   //-------------------------------------------------------------
-  Real Udn;
-  Real Uqn;
-  Real Iqn;
-  Real Idn;
-  Real Pn;
-  Real Qn;
-  LEPSE.Basic.Pin_v2 inp annotation (
+  Real Udn "D-axis voltage of load";
+  Real Uqn "Q-axis voltage of load";
+  Real Iqn "D-axis current of load";
+  Real Idn "Q-axis current of load";
+  Real Pn "Active power of load";
+  Real Qn "Reactive power of load";
+  LEPSE.Interfaces.Pin_v2 inp annotation (
     extent=[-10,76; 10,96],
     layer="icon",
-    Placement(transformation(extent={{-10,76},{10,96}}, rotation=0)));
+    Placement(transformation(extent={{-10,88},{10,108}},rotation=0),
+        iconTransformation(extent={{-10,88},{10,108}})));
 equation
+  // active and reactive load
   Pn = Uqn*Iqn + Udn*Idn;
   Qn = -Uqn*Idn + Udn*Iqn;
+
+  //the algorithm of triping load
   Idn = if time >= TloadOff and time < TloadOff + dTloadOff then Koff*(Udn*
     Gn + Uqn*Bn) else Udn*Gn + Uqn*Bn;
   Iqn = if time >= TloadOff and time < TloadOff + dTloadOff then Koff*(Uqn*
     Gn - Udn*Bn) else Uqn*Gn - Udn*Bn;
+
   //-----connector-----
   inp.Vd = Udn;
   inp.Vq = Uqn;
 
   inp.Id = -Idn;
   inp.Iq = -Iqn;
+
   annotation (
     Coordsys(
       extent=[-100, -100; 100, 100],
@@ -49,23 +55,24 @@ equation
         initialScale=0),
       graphics={
         Rectangle(
-          extent={{-20,60},{20,-40}},
-          lineColor={28,108,200},
+          extent={{-20,72},{20,-28}},
+          lineColor={0,0,255},
           lineThickness=1.0),
         Line(
-          points={{0,-40},{0,-60}},
-          color={28,108,200},
+          points={{0,-28},{0,-48}},
+          color={0,0,255},
           thickness=1.0),
         Line(
-          points={{-20,-60},{20,-60}},
-          color={28,108,200},
+          points={{-20,-48},{20,-48}},
+          color={0,0,255},
           thickness=1.0),
         Line(
-          points={{0,80},{0,60}},
-          color={28,108,200},
+          points={{0,92},{0,72}},
+          color={0,0,255},
           thickness=1.0),
-        Text(extent={{-100,-64},{100,-100}}, textString=
-                                                 "%name")},
+        Text(extent={{-98,-60},{102,-96}},
+          textColor={0,0,0},
+          textString="%name")},
       Rectangle(extent=[-20, 60; 20, -40], style(thickness=2)),
       Line(points=[0, -40; 0, -60], style(thickness=2)),
       Line(points=[-20, -60; 20, -60], style(thickness=2)),

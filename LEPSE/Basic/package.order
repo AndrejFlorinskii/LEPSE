@@ -1,0 +1,12 @@
+HVline
+Transformer
+Constant_Conductivity_Load
+ShortCircuitShunt
+Electrical_Braking_Shunt
+Electrical_Braking_Series
+Transfer_Function
+Gen_with_ARV_control
+Excitation_Regulator
+Synch_Machine
+Summator
+logical_switch
