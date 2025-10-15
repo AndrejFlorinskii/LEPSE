@@ -1,4 +1,5 @@
-﻿package LEPSE
+within ;
+package LEPSE
 
   package UsersGuide
     partial class Implementation_Notes "Icon for general information packages"
@@ -8284,3 +8285,4 @@
 <p><i><span style=\"font-family: Arial; font-size: 10pt;\">This Modelica package is&nbsp;<u>free</u>&nbsp;software and the use is completely at&nbsp;<u>your own risk</u>; it can be redistributed and/or modified under the terms of the Modelica License&nbsp;2. For license conditions (including the disclaimer of warranty) see&nbsp;<a href=\"modelica://Modelica.UsersGuide.ModelicaLicense2\">Modelica.UsersGuide.ModelicaLicense2</a>&nbsp;or visit&nbsp;<a href=\"http://www.modelica.org/licenses/ModelicaLicense2\">http://www.modelica.org/licenses/ModelicaLicense2</a>.</span></i></p>
 </html>"));
 end LEPSE;
+
