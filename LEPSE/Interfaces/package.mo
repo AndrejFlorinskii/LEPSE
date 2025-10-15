@@ -1,6 +1,23 @@
-within ;
+within LEPSE;
 package Interfaces
+  connector Pin_v2
+    Real Vd "Potential Vd";
+    Real Vq "Potential Vq";
+    flow Real Id "Current Id";
+    flow Real Iq "Current Iq";
 
-  annotation (Icon(graphics={Bitmap(extent={{-120,-104},{122,102}}, fileName=
-              "modelica://LEPSE/v1.2/Images/Connector.png")}));
+  end Pin_v2;
+
+  connector Single_Pin
+    Real Signal "Connector's signal";
+
+  end Single_Pin;
+
+  connector Node
+    Real Vd "Potential Vd";
+    Real Vq "Potential Vq";
+    flow Real Id "Current Id";
+    flow Real Iq "Current Iq";
+
+  end Node;
 end Interfaces;
