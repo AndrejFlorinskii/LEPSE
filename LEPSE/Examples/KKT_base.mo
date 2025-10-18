@@ -94,7 +94,7 @@ model KKT_base
     Bline1=0.0202,
     Bline2=0.0202)
     annotation (Placement(transformation(extent={{442,8},{462,28}})));
-  LEPSE.Basic.Constant_Conductivity_Load N01(Gn=52.9, Bn=-24.69)
+  LEPSE.Basic.Constant_Conductivity_Load N01(Gn=51.8, Bn=-24.69)
                                                                 annotation (
      Placement(transformation(
         extent={{-10,-10},{10,10}},
@@ -2513,3 +2513,4 @@ equation
 <p>Basic model for KKT-1</p>
 </html>"));
 end KKT_base;
+
