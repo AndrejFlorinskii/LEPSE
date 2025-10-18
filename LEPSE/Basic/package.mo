@@ -744,16 +744,3 @@ package Basic
 
   end logical_switch;
 end Basic;
- 
-connector LEPSE.Interfaces.Pin_v2
-  Real Vd "Potential Vd";
-  Real Vq "Potential Vq";
-  flow Real Id "Current Id";
-  flow Real Iq "Current Iq";
-
-end Pin_v2;
- 
-connector LEPSE.Interfaces.Single_Pin
-  Real Signal "Connector's signal";
-
-end Single_Pin;
