@@ -96,7 +96,7 @@ package Examples
       Bline1=0.0202,
       Bline2=0.0202)
       annotation (Placement(transformation(extent={{442,8},{462,28}})));
-    LEPSE.Basic.Constant_Conductivity_Load N01(Gn=52.9, Bn=-24.69)
+    LEPSE.Basic.Constant_Conductivity_Load N01(Gn=51.8, Bn=-24.69)
                                                                   annotation (
        Placement(transformation(
           extent={{-10,-10},{10,10}},
@@ -6262,4 +6262,5 @@ package Examples
           fillPattern=FillPattern.Solid,
           points={{-58.0,46.0},{42.0,-14.0},{-58.0,-74.0},{-58.0,46.0}})}));
 end Examples;
+
 
