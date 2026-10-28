@@ -1,0 +1,3971 @@
+#1
+char Aclass(3,24)
+Adymosim
+1.4
+Modelica experiment file
+
+
+#    Experiment parameters
+double experiment(7,1)
+       0                   # StartTime    Time at which integration starts
+                           #              (and linearization and trimming time)
+      80                   # StopTime     Time at which integration stops
+       0                   # Increment    Communication step size, if > 0
+     500                   # nInterval    Number of communication intervals, if > 0
+  1.0000000000000000E-04   # Tolerance    Relative precision of signals for
+                           #              simulation, linearization and trimming
+       0                   # MaxFixedStep Maximum step size of fixed step size
+                           #              integrators, if > 0.0
+       8                   # Algorithm    Integration algorithm as integer (1...28)
+                           #
+                           #             | model|       |        | dense | state |
+                           # Algorithm   | typ  | stiff | order  | output| event |
+                           # ------------+------+-------+--------+-------+-------+
+                           #  1 | deabm  |  ode |   no  |  1-12  |  yes  |   no  |
+                           #  2 | lsode1 |  ode |   no  |  1-12  |  yes  |   no  |
+                           #  3 | lsode2 |  ode |  yes  |  1-5   |  yes  |   no  |
+                           #  4 | lsodar |  ode |  both |1-12,1-5|  yes  |  yes  |
+                           #  5 | dopri5 |  ode |   no  |   5    |   no  |   no  |
+                           #  6 | dopri8 |  ode |   no  |   8    |   no  |   no  |
+                           #  7 | grk4t  |  ode |  yes  |   4    |   no  |   no  |
+                           #  8 | dassl  |  dae |  yes  |  1-5   |  yes  |  yes  |
+                           #  9 | odassl | hdae |  yes  |  1-5   |  yes  |  yes  |
+                           # 10 | mexx   | hdae |   no  |  2-24  |   no  |   no  |
+                           # 11 | euler  |  ode |   no  |   1    |   no  |  yes  |
+                           # 12 | rkfix2 |  ode |   no  |   2    |   no  |  yes  |
+                           # 13 | rkfix3 |  ode |   no  |   3    |   no  |  yes  |
+                           # 14 | rkfix4 |  ode |   no  |   4    |   no  |  yes  |
+                           #>=14| others |  ode |yes/no |  2-5   |   yes |  yes  |
+                           # ---+--------+------+-------+--------+-------+-------+
+                           # euler and rkfix have fixed stepsize.
+
+
+#    Method tuning parameters
+double method(27,1)
+       1                   # grid     type of communication time grid, defined by
+                           #          = 1: equidistant points ("Increment/nInterval")
+                           #          = 2: vector of grid points ("tgrid")
+                           #          = 3: variable step integrator (automatically)
+                           #          = 4: model (call of "increment" in Dymola, e.g.
+                           #                      incr=Time > 2 then 0 else 0.1
+                           #                      dummy=increment(incr))
+                           #          grid = 1,3 is stopped by "StopTime"
+                           #          grid = 2   is stopped by "tgrid(last)"
+                           #          grid = 4   runs forever (stopped by model)
+       1                   # nt       Use every NT time instant, if grid = 3
+       3                   # dense    1/2/3 restart/step/interpolate GRID points
+       1                   # evgrid   0/1 do not/save event points in comm. time grid
+       1                   # evu      0/1 U-discontinuity does not/trigger events
+       0                   # evuord       U-discontinuity order to consider (0,1,...)
+       0                   # error    0/1/2 One message/warning/error messages
+       0                   # jac      0/1 Compute jacobian numerically/by BLOCKJ
+       0                   # xd0c     0/1 Compute/set XD0
+       0                   # f3       0/1 Ignore/use F3 of HDAE (= index 1)
+       0                   # f4       0/1 Ignore/use F4 of HDAE (= index 2)
+       0                   # f5       0/1 Ignore/use F5 of HDAE (= invar.)
+       0                   # debug    flags for debug information (1<<0 uses pdebug) 
+     100                   # pdebug       priority of debug information (1...100)
+       0                   # fmax     Maximum number of evaluations of BLOCKF, if > 0
+       0                   # ordmax   Maximum allowed integration order, if > 0
+       0                   # hmax     Maximum absolute stepsize, if > 0
+       0                   # hmin     Minimum absolute stepsize, if > 0 (use with care!)
+       0                   # h0       Stepsize to be attempted on first step, if > 0
+  2.0000000000000000E-14   # teps     Bound to check, if 2 equal time instants
+  1.0000000000000000E-10   # eveps    Hysteresis epsilon at event points
+      20                   # eviter   Maximum number of event iterations
+  9.9999999999999995E-07   # delaym   Minimum time increment in delay buffers
+       1                   # fexcep   0/1 floating exception crashes/stops dymosim
+       1                   # tscale   clock-time = tscale*simulation-time, if grid = 5
+                           #          > 1: simulation too slow
+                           #          = 1: simulation-time = real-time
+                           #          < 1: simulation too fast
+       1                   # shared   (not used)
+    2473                   # memkey   (not used)
+
+
+#    Output parameters
+int settings(13,1)
+ 0                         # lprec    0/1 do not/store result data in double
+ 1                         # lx       0/1 do not/store x  (state variables)
+ 1                         # lxd      0/1 do not/store xd (derivative of states)
+ 1                         # lu       0/1 do not/store u  (input     signals)
+ 1                         # ly       0/1 do not/store y  (output    signals)
+ 1                         # lz       0/1 do not/store z  (indicator signals)
+ 1                         # lw       0/1 do not/store w  (auxiliary signals)
+ 1                         # la       0/1 do not/store a  (alias     signals)
+ 1                         # lperf    0/1 do not/store performance indicators
+ 0                         # levent   0/1 do not/store event point
+ 1                         # lres     0/1 do not/store results on result file
+ 0                         # lshare   0/1 do not/store info data for shared memory on dsshare.txt
+ 1                         # lform    0/1 ASCII/Matlab-binary storage format of results
+                           #              (for simulation/linearization; not for trimming)
+
+
+#    Names of initial variables
+char initialName(1272,54)
+delta_G1_G2
+der(delta_G1_G2)
+delta_G1_G3
+der(delta_G1_G3)
+delta_G2_G3
+der(delta_G2_G3)
+T_G1.Rline
+T_G1.Xline
+T_G1.TtOff
+T_G1.dTtOff
+T_G1.Koff
+T_G1.I12d
+T_G1.I12q
+T_G1.I12m
+T_G1.U1m
+T_G1.U2m
+T_G1.P1
+T_G1.Q1
+T_G1.P2
+T_G1.Q2
+T_G1.RL
+T_G1.XL
+T_G2.Rline
+T_G2.Xline
+T_G2.TtOff
+T_G2.dTtOff
+T_G2.Koff
+T_G2.I12d
+T_G2.I12q
+T_G2.I12m
+T_G2.U1m
+T_G2.U2m
+T_G2.P1
+T_G2.Q1
+T_G2.P2
+T_G2.Q2
+T_G2.RL
+T_G2.XL
+L1.Rline
+L1.Xline
+L1.Bline1
+L1.Bline2
+L1.TLineOff
+L1.dTLineOff
+L1.Koff
+L1.TLineOff_1
+L1.dTLineOff_1
+L1.Koff_1
+L1.I12d
+L1.I12q
+L1.I12m
+L1.U1m
+L1.U2m
+L1.I1d
+L1.I1q
+L1.I2d
+L1.I2q
+L1.Idc1
+L1.Iqc1
+L1.Idc2
+L1.Iqc2
+L1.DU1
+L1.DU2
+L1.P1
+L1.Q1
+L1.P2
+L1.Q2
+L1.RL
+L1.XL
+L1.BL1
+L1.BL2
+L2.Rline
+L2.Xline
+L2.Bline1
+L2.Bline2
+L2.TLineOff
+L2.dTLineOff
+L2.Koff
+L2.TLineOff_1
+L2.dTLineOff_1
+L2.Koff_1
+L2.I12d
+L2.I12q
+L2.I12m
+L2.U1m
+L2.U2m
+L2.I1d
+L2.I1q
+L2.I2d
+L2.I2q
+L2.Idc1
+L2.Iqc1
+L2.Idc2
+L2.Iqc2
+L2.DU1
+L2.DU2
+L2.P1
+L2.Q1
+L2.P2
+L2.Q2
+L2.RL
+L2.XL
+L2.BL1
+L2.BL2
+AT_HV.Rline
+AT_HV.Xline
+AT_HV.TtOff
+AT_HV.dTtOff
+AT_HV.Koff
+AT_HV.I12d
+AT_HV.I12q
+AT_HV.I12m
+AT_HV.U1m
+AT_HV.U2m
+AT_HV.P1
+AT_HV.Q1
+AT_HV.P2
+AT_HV.Q2
+AT_HV.RL
+AT_HV.XL
+AT_LV.Rline
+AT_LV.Xline
+AT_LV.TtOff
+AT_LV.dTtOff
+AT_LV.Koff
+AT_LV.I12d
+AT_LV.I12q
+AT_LV.I12m
+AT_LV.U1m
+AT_LV.U2m
+AT_LV.P1
+AT_LV.Q1
+AT_LV.P2
+AT_LV.Q2
+AT_LV.RL
+AT_LV.XL
+AT_MV.Rline
+AT_MV.Xline
+AT_MV.TtOff
+AT_MV.dTtOff
+AT_MV.Koff
+AT_MV.I12d
+AT_MV.I12q
+AT_MV.I12m
+AT_MV.U1m
+AT_MV.U2m
+AT_MV.P1
+AT_MV.Q1
+AT_MV.P2
+AT_MV.Q2
+AT_MV.RL
+AT_MV.XL
+N1.Gn
+N1.Bn
+N1.TloadOff
+N1.dTloadOff
+N1.Koff
+N1.Iqn
+N1.Idn
+N1.Pn
+N1.Qn
+L6.Rline
+L6.Xline
+L6.Bline1
+L6.Bline2
+L6.TLineOff
+L6.dTLineOff
+L6.Koff
+L6.TLineOff_1
+L6.dTLineOff_1
+L6.Koff_1
+L6.I12d
+L6.I12q
+L6.I12m
+L6.U1m
+L6.U2m
+L6.I1d
+L6.I1q
+L6.I2d
+L6.I2q
+L6.Idc1
+L6.Iqc1
+L6.Idc2
+L6.Iqc2
+L6.DU1
+L6.DU2
+L6.P1
+L6.Q1
+L6.P2
+L6.Q2
+L6.RL
+L6.XL
+L6.BL1
+L6.BL2
+L3.Rline
+L3.Xline
+L3.Bline1
+L3.Bline2
+L3.TLineOff
+L3.dTLineOff
+L3.Koff
+L3.TLineOff_1
+L3.dTLineOff_1
+L3.Koff_1
+L3.I12d
+L3.I12q
+L3.I12m
+L3.U1m
+L3.U2m
+L3.I1d
+L3.I1q
+L3.I2d
+L3.I2q
+L3.Idc1
+L3.Iqc1
+L3.Idc2
+L3.Iqc2
+L3.DU1
+L3.DU2
+L3.P1
+L3.Q1
+L3.P2
+L3.Q2
+L3.RL
+L3.XL
+L3.BL1
+L3.BL2
+L4.Rline
+L4.Xline
+L4.Bline1
+L4.Bline2
+L4.TLineOff
+L4.dTLineOff
+L4.Koff
+L4.TLineOff_1
+L4.dTLineOff_1
+L4.Koff_1
+L4.I12d
+L4.I12q
+L4.I12m
+L4.U1m
+L4.U2m
+L4.I1d
+L4.I1q
+L4.I2d
+L4.I2q
+L4.Idc1
+L4.Iqc1
+L4.Idc2
+L4.Iqc2
+L4.DU1
+L4.DU2
+L4.P1
+L4.Q1
+L4.P2
+L4.Q2
+L4.RL
+L4.XL
+L4.BL1
+L4.BL2
+L5.Rline
+L5.Xline
+L5.Bline1
+L5.Bline2
+L5.TLineOff
+L5.dTLineOff
+L5.Koff
+L5.TLineOff_1
+L5.dTLineOff_1
+L5.Koff_1
+L5.I12d
+L5.I12q
+L5.I12m
+L5.U1m
+L5.U2m
+L5.I1d
+L5.I1q
+L5.I2d
+L5.I2q
+L5.Idc1
+L5.Iqc1
+L5.Idc2
+L5.Iqc2
+L5.DU1
+L5.DU2
+L5.P1
+L5.Q1
+L5.P2
+L5.Q2
+L5.RL
+L5.XL
+L5.BL1
+L5.BL2
+T1.Rline
+T1.Xline
+T1.TtOff
+T1.dTtOff
+T1.Koff
+T1.I12d
+T1.I12q
+T1.I12m
+T1.U1m
+T1.U2m
+T1.P1
+T1.Q1
+T1.P2
+T1.Q2
+T1.RL
+T1.XL
+T3.Rline
+T3.Xline
+T3.TtOff
+T3.dTtOff
+T3.Koff
+T3.I12d
+T3.I12q
+T3.I12m
+T3.U1m
+T3.U2m
+T3.P1
+T3.Q1
+T3.P2
+T3.Q2
+T3.RL
+T3.XL
+N2.Gn
+N2.Bn
+N2.TloadOff
+N2.dTloadOff
+N2.Koff
+N2.Iqn
+N2.Idn
+N2.Pn
+N2.Qn
+N4.Gn
+N4.Bn
+N4.TloadOff
+N4.dTloadOff
+N4.Koff
+N4.Iqn
+N4.Idn
+N4.Pn
+N4.Qn
+T2_MV.Rline
+T2_MV.Xline
+T2_MV.TtOff
+T2_MV.dTtOff
+T2_MV.Koff
+T2_MV.I12d
+T2_MV.I12q
+T2_MV.I12m
+T2_MV.U1m
+T2_MV.U2m
+T2_MV.P1
+T2_MV.Q1
+T2_MV.P2
+T2_MV.Q2
+T2_MV.RL
+T2_MV.XL
+T2_HV.Rline
+T2_HV.Xline
+T2_HV.TtOff
+T2_HV.dTtOff
+T2_HV.Koff
+T2_HV.I12d
+T2_HV.I12q
+T2_HV.I12m
+T2_HV.U1m
+T2_HV.U2m
+T2_HV.P1
+T2_HV.Q1
+T2_HV.P2
+T2_HV.Q2
+T2_HV.RL
+T2_HV.XL
+T2_LV.Rline
+T2_LV.Xline
+T2_LV.TtOff
+T2_LV.dTtOff
+T2_LV.Koff
+T2_LV.I12d
+T2_LV.I12q
+T2_LV.I12m
+T2_LV.U1m
+T2_LV.U2m
+T2_LV.P1
+T2_LV.Q1
+T2_LV.P2
+T2_LV.Q2
+T2_LV.RL
+T2_LV.XL
+N3.Gn
+N3.Bn
+N3.TloadOff
+N3.dTloadOff
+N3.Koff
+N3.Iqn
+N3.Idn
+N3.Pn
+N3.Qn
+shortCircuitShunt.Bn
+shortCircuitShunt.Gn
+shortCircuitShunt.Yn
+shortCircuitShunt.TkzOn
+shortCircuitShunt.dTkzOn
+shortCircuitShunt.id
+shortCircuitShunt.iq
+ElBr02.Rline
+ElBr02.TLineOff
+ElBr02.dTLineOff
+ElBr02.I12d
+ElBr02.I12q
+ElBr02.I12m
+ElBr02.U1m
+ElBr02.U2m
+ElBr02.RL
+ElBrShun02.Rline
+ElBrShun02.TLineOff
+ElBrShun02.dTLineOff
+ElBrShun02.I12d
+ElBrShun02.I12q
+ElBrShun02.I12m
+ElBrShun02.Um
+ElBr01.Rline
+ElBr01.TLineOff
+ElBr01.dTLineOff
+ElBr01.I12d
+ElBr01.I12q
+ElBr01.I12m
+ElBr01.U1m
+ElBr01.U2m
+ElBr01.RL
+ElBrShunt01.Rline
+ElBrShunt01.TLineOff
+ElBrShunt01.dTLineOff
+ElBrShunt01.I12d
+ElBrShunt01.I12q
+ElBrShunt01.I12m
+ElBrShunt01.Um
+shortCircuitShunt1.Bn
+shortCircuitShunt1.Gn
+shortCircuitShunt1.Yn
+shortCircuitShunt1.TkzOn
+shortCircuitShunt1.dTkzOn
+shortCircuitShunt1.id
+shortCircuitShunt1.iq
+shortCircuitShunt2.Bn
+shortCircuitShunt2.Gn
+shortCircuitShunt2.Yn
+shortCircuitShunt2.TkzOn
+shortCircuitShunt2.dTkzOn
+shortCircuitShunt2.id
+shortCircuitShunt2.iq
+shortCircuitShunt3.Bn
+shortCircuitShunt3.Gn
+shortCircuitShunt3.Yn
+shortCircuitShunt3.TkzOn
+shortCircuitShunt3.dTkzOn
+shortCircuitShunt3.id
+shortCircuitShunt3.iq
+shortCircuitShunt4.Bn
+shortCircuitShunt4.Gn
+shortCircuitShunt4.Yn
+shortCircuitShunt4.TkzOn
+shortCircuitShunt4.dTkzOn
+shortCircuitShunt4.id
+shortCircuitShunt4.iq
+shortCircuitShunt5.Bn
+shortCircuitShunt5.Gn
+shortCircuitShunt5.Yn
+shortCircuitShunt5.TkzOn
+shortCircuitShunt5.dTkzOn
+shortCircuitShunt5.id
+shortCircuitShunt5.iq
+shortCircuitShunt6.Bn
+shortCircuitShunt6.Gn
+shortCircuitShunt6.Yn
+shortCircuitShunt6.TkzOn
+shortCircuitShunt6.dTkzOn
+shortCircuitShunt6.id
+shortCircuitShunt6.iq
+shortCircuitShunt7.Bn
+shortCircuitShunt7.Gn
+shortCircuitShunt7.Yn
+shortCircuitShunt7.TkzOn
+shortCircuitShunt7.dTkzOn
+shortCircuitShunt7.id
+shortCircuitShunt7.iq
+shortCircuitShunt8.Bn
+shortCircuitShunt8.Gn
+shortCircuitShunt8.Yn
+shortCircuitShunt8.TkzOn
+shortCircuitShunt8.dTkzOn
+shortCircuitShunt8.id
+shortCircuitShunt8.iq
+shortCircuitShunt9.Bn
+shortCircuitShunt9.Gn
+shortCircuitShunt9.Yn
+shortCircuitShunt9.TkzOn
+shortCircuitShunt9.dTkzOn
+shortCircuitShunt9.id
+shortCircuitShunt9.iq
+shortCircuitShunt10.Bn
+shortCircuitShunt10.Gn
+shortCircuitShunt10.Yn
+shortCircuitShunt10.TkzOn
+shortCircuitShunt10.dTkzOn
+shortCircuitShunt10.id
+shortCircuitShunt10.iq
+shortCircuitShunt11.Bn
+shortCircuitShunt11.Gn
+shortCircuitShunt11.Yn
+shortCircuitShunt11.TkzOn
+shortCircuitShunt11.dTkzOn
+shortCircuitShunt11.id
+shortCircuitShunt11.iq
+shortCircuitShunt12.Bn
+shortCircuitShunt12.Gn
+shortCircuitShunt12.Yn
+shortCircuitShunt12.TkzOn
+shortCircuitShunt12.dTkzOn
+shortCircuitShunt12.id
+shortCircuitShunt12.iq
+shortCircuitShunt13.Bn
+shortCircuitShunt13.Gn
+shortCircuitShunt13.Yn
+shortCircuitShunt13.TkzOn
+shortCircuitShunt13.dTkzOn
+shortCircuitShunt13.id
+shortCircuitShunt13.iq
+shortCircuitShunt15.Bn
+shortCircuitShunt15.Gn
+shortCircuitShunt15.Yn
+shortCircuitShunt15.TkzOn
+shortCircuitShunt15.dTkzOn
+shortCircuitShunt15.id
+shortCircuitShunt15.iq
+shortCircuitShunt16.Bn
+shortCircuitShunt16.Gn
+shortCircuitShunt16.Yn
+shortCircuitShunt16.TkzOn
+shortCircuitShunt16.dTkzOn
+shortCircuitShunt16.id
+shortCircuitShunt16.iq
+shortCircuitShunt17.Bn
+shortCircuitShunt17.Gn
+shortCircuitShunt17.Yn
+shortCircuitShunt17.TkzOn
+shortCircuitShunt17.dTkzOn
+shortCircuitShunt17.id
+shortCircuitShunt17.iq
+shortCircuitShunt18.Bn
+shortCircuitShunt18.Gn
+shortCircuitShunt18.Yn
+shortCircuitShunt18.TkzOn
+shortCircuitShunt18.dTkzOn
+shortCircuitShunt18.id
+shortCircuitShunt18.iq
+G2.G2.TgenOff
+G2.G2.dTgenOff
+G2.G2.Pg
+G2.G2.Qg
+G2.G2.Ut
+G2.G2.Xd_p
+G2.G2.Xq_p
+G2.G2.Xs_p
+G2.G2.X1d_p
+G2.G2.X2d_p
+G2.G2.X2q_p
+G2.G2.Rf_p
+G2.G2.R1d_p
+G2.G2.R1q_p
+G2.G2.Tj_p
+G2.G2.Sigma
+G2.G2.TauC_up
+G2.G2.TregOff
+G2.G2.TregOn
+G2.G2.Mtmax
+G2.G2.Mtmin
+G2.G2.Aimp
+G2.G2.Timp
+G2.G2.dTimp
+G2.G2.TauC_down
+G2.G2.TkzOn
+G2.G2.Pg_new
+G2.G2.Kemax
+G2.G2.Kemin
+G2.G2.dUtr
+G2.G2.dWu
+G2.G2.dIf
+G2.G2.dEr
+G2.G2.dWf
+G2.G2.PI
+G2.G2.Wc
+G2.G2.Xt
+G2.G2.Ra
+G2.G2.Rt
+G2.G2.EQ
+G2.G2.Dg
+G2.G2.Uq
+G2.G2.Ud
+G2.G2.Id
+G2.G2.Iq
+G2.G2.Mt
+G2.G2.Eiq
+G2.G2.Ir
+G2.G2.Uf
+G2.G2.Eq
+G2.G2.Er0
+G2.G2.PsiR
+G2.G2.PsiRD
+G2.G2.PsiRQ
+G2.G2.Er_max
+G2.G2.Er_min
+G2.G2.Uf_full
+G2.G2.Xad
+G2.G2.Xaq
+G2.G2.X2dt
+G2.G2.X2qt
+G2.G2.Rs
+G2.G2.Xsf
+G2.G2.Xs1d
+G2.G2.Xs1q
+G2.G2.X1
+G2.G2.X2
+G2.G2.X3
+G2.G2.Ugen
+G2.G2.Mu0
+G2.G2.Ro
+G2.G2.Mu
+G2.G2.der(Mu)
+G2.G2.Mt_pp
+G2.G2.Pgen
+G2.G2.Qgen
+G2.G2.Yr
+G2.G2.der(Yr)
+G2.G2.Yrd
+G2.G2.der(Yrd)
+G2.G2.Yrq
+G2.G2.der(Yrq)
+G2.G2.s
+G2.G2.der(s)
+G2.G2.DGi
+G2.G2.der(DGi)
+G2.G2.Me
+G2.G2.Yad
+G2.G2.Yaq
+G2.G2.iq
+G2.G2.id
+G2.G2.ir
+G2.G2.ird
+G2.G2.irq
+G2.G2.ud
+G2.G2.uq
+G2.G2.E11d
+G2.G2.E11q
+G2.G2.TauC
+G2.G2.MT_MAX
+G2.G2.MT_MIN
+G2.G2.Xd
+G2.G2.Xq
+G2.G2.Xs
+G2.G2.X1d
+G2.G2.Rf
+G2.G2.R1d
+G2.G2.R1q
+G2.G2.Tj
+G2.G2.f
+G2.excitation_Regulator1.K0u
+G2.excitation_Regulator1.K1u
+G2.excitation_Regulator1.K0w
+G2.excitation_Regulator1.K1w
+G2.excitation_Regulator1.K1if
+G2.excitation_Regulator1.Uforc
+G2.excitation_Regulator1.Udeforc
+G2.excitation_Regulator1.Tforcedelay
+G2.excitation_Regulator1.DL0
+G2.excitation_Regulator1.Tokp
+G2.excitation_Regulator1.T0u
+G2.excitation_Regulator1.T1u
+G2.excitation_Regulator1.Tfb
+G2.excitation_Regulator1.T0w
+G2.excitation_Regulator1.T1w
+G2.excitation_Regulator1.T1if
+G2.excitation_Regulator1.VoltageDeviation.b[1]
+G2.excitation_Regulator1.VoltageDeviation.a[1]
+G2.excitation_Regulator1.VoltageDeviation.a[2]
+G2.excitation_Regulator1.VoltageDeviation.x[1]
+G2.excitation_Regulator1.VoltageDeviation.der(x[1])
+G2.excitation_Regulator1.VoltageDeviation.na
+G2.excitation_Regulator1.VoltageDeviation.nb
+G2.excitation_Regulator1.VoltageDeviation.nx
+G2.excitation_Regulator1.VoltageDeviation.y
+G2.excitation_Regulator1.VoltageDerivative.b[1]
+G2.excitation_Regulator1.VoltageDerivative.b[2]
+G2.excitation_Regulator1.VoltageDerivative.a[1]
+G2.excitation_Regulator1.VoltageDerivative.a[2]
+G2.excitation_Regulator1.VoltageDerivative.x[1]
+G2.excitation_Regulator1.VoltageDerivative.der(x[1])
+G2.excitation_Regulator1.VoltageDerivative.na
+G2.excitation_Regulator1.VoltageDerivative.nb
+G2.excitation_Regulator1.VoltageDerivative.nx
+G2.excitation_Regulator1.VoltageDerivative.y
+G2.excitation_Regulator1.FrequencyBlockD.b[1]
+G2.excitation_Regulator1.FrequencyBlockD.a[1]
+G2.excitation_Regulator1.FrequencyBlockD.a[2]
+G2.excitation_Regulator1.FrequencyBlockD.x[1]
+G2.excitation_Regulator1.FrequencyBlockD.der(x[1])
+G2.excitation_Regulator1.FrequencyBlockD.na
+G2.excitation_Regulator1.FrequencyBlockD.nb
+G2.excitation_Regulator1.FrequencyBlockD.nx
+G2.excitation_Regulator1.FrequencyBlockD.y
+G2.excitation_Regulator1.FrequencyBlockU.b[1]
+G2.excitation_Regulator1.FrequencyBlockU.b[2]
+G2.excitation_Regulator1.FrequencyBlockU.a[1]
+G2.excitation_Regulator1.FrequencyBlockU.a[2]
+G2.excitation_Regulator1.FrequencyBlockU.x[1]
+G2.excitation_Regulator1.FrequencyBlockU.der(x[1])
+G2.excitation_Regulator1.FrequencyBlockU.na
+G2.excitation_Regulator1.FrequencyBlockU.nb
+G2.excitation_Regulator1.FrequencyBlockU.nx
+G2.excitation_Regulator1.FrequencyBlockU.y
+G2.excitation_Regulator1.FrequencyDeviation.b[1]
+G2.excitation_Regulator1.FrequencyDeviation.b[2]
+G2.excitation_Regulator1.FrequencyDeviation.a[1]
+G2.excitation_Regulator1.FrequencyDeviation.a[2]
+G2.excitation_Regulator1.FrequencyDeviation.x[1]
+G2.excitation_Regulator1.FrequencyDeviation.der(x[1])
+G2.excitation_Regulator1.FrequencyDeviation.na
+G2.excitation_Regulator1.FrequencyDeviation.nb
+G2.excitation_Regulator1.FrequencyDeviation.nx
+G2.excitation_Regulator1.FrequencyDeviation.u
+G2.excitation_Regulator1.FrequencyDeviation.y
+G2.excitation_Regulator1.FrequencyDerivative.b[1]
+G2.excitation_Regulator1.FrequencyDerivative.b[2]
+G2.excitation_Regulator1.FrequencyDerivative.a[1]
+G2.excitation_Regulator1.FrequencyDerivative.a[2]
+G2.excitation_Regulator1.FrequencyDerivative.x[1]
+G2.excitation_Regulator1.FrequencyDerivative.der(x[1])
+G2.excitation_Regulator1.FrequencyDerivative.na
+G2.excitation_Regulator1.FrequencyDerivative.nb
+G2.excitation_Regulator1.FrequencyDerivative.nx
+G2.excitation_Regulator1.FrequencyDerivative.y
+G2.excitation_Regulator1.ExcitationCurrent.b[1]
+G2.excitation_Regulator1.ExcitationCurrent.b[2]
+G2.excitation_Regulator1.ExcitationCurrent.a[1]
+G2.excitation_Regulator1.ExcitationCurrent.a[2]
+G2.excitation_Regulator1.ExcitationCurrent.x[1]
+G2.excitation_Regulator1.ExcitationCurrent.der(x[1])
+G2.excitation_Regulator1.ExcitationCurrent.na
+G2.excitation_Regulator1.ExcitationCurrent.nb
+G2.excitation_Regulator1.ExcitationCurrent.nx
+G2.excitation_Regulator1.ExcitationCurrent.y
+G2.excitation_Regulator1.SimpleExciter.b[1]
+G2.excitation_Regulator1.SimpleExciter.a[1]
+G2.excitation_Regulator1.SimpleExciter.a[2]
+G2.excitation_Regulator1.SimpleExciter.x[1]
+G2.excitation_Regulator1.SimpleExciter.der(x[1])
+G2.excitation_Regulator1.SimpleExciter.na
+G2.excitation_Regulator1.SimpleExciter.nb
+G2.excitation_Regulator1.SimpleExciter.nx
+G2.excitation_Regulator1.SimpleExciter.u
+G2.excitation_Regulator1.Summator2.out.Signal
+G2.excitation_Regulator1.Summator3.out.Signal
+G2.excitation_Regulator1.Summator5.out.Signal
+G2.excitation_Regulator1.Summator6.out.Signal
+G2.excitation_Regulator1.logical_switch1.a1
+G2.excitation_Regulator1.logical_switch1.a2
+G2.excitation_Regulator1.logical_switch1.a3
+G2.excitation_Regulator1.logical_switch1.a4
+G2.excitation_Regulator1.logical_switch1.T_force_on
+G2.Stator_pin.Id
+G2.Stator_pin.Iq
+G3.G3.TgenOff
+G3.G3.dTgenOff
+G3.G3.Pg
+G3.G3.Qg
+G3.G3.Ut
+G3.G3.Xd_p
+G3.G3.Xq_p
+G3.G3.Xs_p
+G3.G3.X1d_p
+G3.G3.X2d_p
+G3.G3.X2q_p
+G3.G3.Rf_p
+G3.G3.R1d_p
+G3.G3.R1q_p
+G3.G3.Tj_p
+G3.G3.Sigma
+G3.G3.TauC_up
+G3.G3.TregOff
+G3.G3.TregOn
+G3.G3.Mtmax
+G3.G3.Mtmin
+G3.G3.Aimp
+G3.G3.Timp
+G3.G3.dTimp
+G3.G3.TauC_down
+G3.G3.TkzOn
+G3.G3.Pg_new
+G3.G3.Kemax
+G3.G3.Kemin
+G3.G3.dUtr
+G3.G3.dWu
+G3.G3.dIf
+G3.G3.dEr
+G3.G3.dWf
+G3.G3.PI
+G3.G3.Wc
+G3.G3.Xt
+G3.G3.Ra
+G3.G3.Rt
+G3.G3.EQ
+G3.G3.Dg
+G3.G3.Uq
+G3.G3.Ud
+G3.G3.Id
+G3.G3.Iq
+G3.G3.Mt
+G3.G3.Eiq
+G3.G3.Ir
+G3.G3.Uf
+G3.G3.Eq
+G3.G3.Er0
+G3.G3.PsiR
+G3.G3.PsiRD
+G3.G3.PsiRQ
+G3.G3.Er_max
+G3.G3.Er_min
+G3.G3.Uf_full
+G3.G3.Xad
+G3.G3.Xaq
+G3.G3.X2dt
+G3.G3.X2qt
+G3.G3.Rs
+G3.G3.Xsf
+G3.G3.Xs1d
+G3.G3.Xs1q
+G3.G3.X1
+G3.G3.X2
+G3.G3.X3
+G3.G3.Ugen
+G3.G3.Mu0
+G3.G3.Ro
+G3.G3.Mu
+G3.G3.der(Mu)
+G3.G3.Mt_pp
+G3.G3.Pgen
+G3.G3.Qgen
+G3.G3.Yr
+G3.G3.der(Yr)
+G3.G3.Yrd
+G3.G3.der(Yrd)
+G3.G3.Yrq
+G3.G3.der(Yrq)
+G3.G3.s
+G3.G3.der(s)
+G3.G3.DGi
+G3.G3.der(DGi)
+G3.G3.Me
+G3.G3.Yad
+G3.G3.Yaq
+G3.G3.iq
+G3.G3.id
+G3.G3.ir
+G3.G3.ird
+G3.G3.irq
+G3.G3.ud
+G3.G3.uq
+G3.G3.E11d
+G3.G3.E11q
+G3.G3.TauC
+G3.G3.MT_MAX
+G3.G3.MT_MIN
+G3.G3.Xd
+G3.G3.Xq
+G3.G3.Xs
+G3.G3.X1d
+G3.G3.Rf
+G3.G3.R1d
+G3.G3.R1q
+G3.G3.Tj
+G3.G3.f
+G3.G3_Regulator.K0u
+G3.G3_Regulator.K1u
+G3.G3_Regulator.K0w
+G3.G3_Regulator.K1w
+G3.G3_Regulator.K1if
+G3.G3_Regulator.Uforc
+G3.G3_Regulator.Udeforc
+G3.G3_Regulator.Tforcedelay
+G3.G3_Regulator.DL0
+G3.G3_Regulator.Tokp
+G3.G3_Regulator.T0u
+G3.G3_Regulator.T1u
+G3.G3_Regulator.Tfb
+G3.G3_Regulator.T0w
+G3.G3_Regulator.T1w
+G3.G3_Regulator.T1if
+G3.G3_Regulator.VoltageDeviation.b[1]
+G3.G3_Regulator.VoltageDeviation.a[1]
+G3.G3_Regulator.VoltageDeviation.a[2]
+G3.G3_Regulator.VoltageDeviation.x[1]
+G3.G3_Regulator.VoltageDeviation.der(x[1])
+G3.G3_Regulator.VoltageDeviation.na
+G3.G3_Regulator.VoltageDeviation.nb
+G3.G3_Regulator.VoltageDeviation.nx
+G3.G3_Regulator.VoltageDeviation.y
+G3.G3_Regulator.VoltageDerivative.b[1]
+G3.G3_Regulator.VoltageDerivative.b[2]
+G3.G3_Regulator.VoltageDerivative.a[1]
+G3.G3_Regulator.VoltageDerivative.a[2]
+G3.G3_Regulator.VoltageDerivative.x[1]
+G3.G3_Regulator.VoltageDerivative.der(x[1])
+G3.G3_Regulator.VoltageDerivative.na
+G3.G3_Regulator.VoltageDerivative.nb
+G3.G3_Regulator.VoltageDerivative.nx
+G3.G3_Regulator.VoltageDerivative.y
+G3.G3_Regulator.FrequencyBlockD.b[1]
+G3.G3_Regulator.FrequencyBlockD.a[1]
+G3.G3_Regulator.FrequencyBlockD.a[2]
+G3.G3_Regulator.FrequencyBlockD.x[1]
+G3.G3_Regulator.FrequencyBlockD.der(x[1])
+G3.G3_Regulator.FrequencyBlockD.na
+G3.G3_Regulator.FrequencyBlockD.nb
+G3.G3_Regulator.FrequencyBlockD.nx
+G3.G3_Regulator.FrequencyBlockD.y
+G3.G3_Regulator.FrequencyBlockU.b[1]
+G3.G3_Regulator.FrequencyBlockU.b[2]
+G3.G3_Regulator.FrequencyBlockU.a[1]
+G3.G3_Regulator.FrequencyBlockU.a[2]
+G3.G3_Regulator.FrequencyBlockU.x[1]
+G3.G3_Regulator.FrequencyBlockU.der(x[1])
+G3.G3_Regulator.FrequencyBlockU.na
+G3.G3_Regulator.FrequencyBlockU.nb
+G3.G3_Regulator.FrequencyBlockU.nx
+G3.G3_Regulator.FrequencyBlockU.y
+G3.G3_Regulator.FrequencyDeviation.b[1]
+G3.G3_Regulator.FrequencyDeviation.b[2]
+G3.G3_Regulator.FrequencyDeviation.a[1]
+G3.G3_Regulator.FrequencyDeviation.a[2]
+G3.G3_Regulator.FrequencyDeviation.x[1]
+G3.G3_Regulator.FrequencyDeviation.der(x[1])
+G3.G3_Regulator.FrequencyDeviation.na
+G3.G3_Regulator.FrequencyDeviation.nb
+G3.G3_Regulator.FrequencyDeviation.nx
+G3.G3_Regulator.FrequencyDeviation.u
+G3.G3_Regulator.FrequencyDeviation.y
+G3.G3_Regulator.FrequencyDerivative.b[1]
+G3.G3_Regulator.FrequencyDerivative.b[2]
+G3.G3_Regulator.FrequencyDerivative.a[1]
+G3.G3_Regulator.FrequencyDerivative.a[2]
+G3.G3_Regulator.FrequencyDerivative.x[1]
+G3.G3_Regulator.FrequencyDerivative.der(x[1])
+G3.G3_Regulator.FrequencyDerivative.na
+G3.G3_Regulator.FrequencyDerivative.nb
+G3.G3_Regulator.FrequencyDerivative.nx
+G3.G3_Regulator.FrequencyDerivative.y
+G3.G3_Regulator.ExcitationCurrent.b[1]
+G3.G3_Regulator.ExcitationCurrent.b[2]
+G3.G3_Regulator.ExcitationCurrent.a[1]
+G3.G3_Regulator.ExcitationCurrent.a[2]
+G3.G3_Regulator.ExcitationCurrent.x[1]
+G3.G3_Regulator.ExcitationCurrent.der(x[1])
+G3.G3_Regulator.ExcitationCurrent.na
+G3.G3_Regulator.ExcitationCurrent.nb
+G3.G3_Regulator.ExcitationCurrent.nx
+G3.G3_Regulator.ExcitationCurrent.y
+G3.G3_Regulator.SimpleExciter.b[1]
+G3.G3_Regulator.SimpleExciter.a[1]
+G3.G3_Regulator.SimpleExciter.a[2]
+G3.G3_Regulator.SimpleExciter.x[1]
+G3.G3_Regulator.SimpleExciter.der(x[1])
+G3.G3_Regulator.SimpleExciter.na
+G3.G3_Regulator.SimpleExciter.nb
+G3.G3_Regulator.SimpleExciter.nx
+G3.G3_Regulator.SimpleExciter.u
+G3.G3_Regulator.Summator2.out.Signal
+G3.G3_Regulator.Summator3.out.Signal
+G3.G3_Regulator.Summator5.out.Signal
+G3.G3_Regulator.Summator6.out.Signal
+G3.G3_Regulator.logical_switch1.a1
+G3.G3_Regulator.logical_switch1.a2
+G3.G3_Regulator.logical_switch1.a3
+G3.G3_Regulator.logical_switch1.a4
+G3.G3_Regulator.logical_switch1.T_force_on
+G3.Stator_pin.Id
+G3.Stator_pin.Iq
+G1.G1.TgenOff
+G1.G1.dTgenOff
+G1.G1.Pg
+G1.G1.Qg
+G1.G1.Ut
+G1.G1.Xd_p
+G1.G1.Xq_p
+G1.G1.Xs_p
+G1.G1.X1d_p
+G1.G1.X2d_p
+G1.G1.X2q_p
+G1.G1.Rf_p
+G1.G1.R1d_p
+G1.G1.R1q_p
+G1.G1.Tj_p
+G1.G1.Sigma
+G1.G1.TauC_up
+G1.G1.TregOff
+G1.G1.TregOn
+G1.G1.Mtmax
+G1.G1.Mtmin
+G1.G1.Aimp
+G1.G1.Timp
+G1.G1.dTimp
+G1.G1.TauC_down
+G1.G1.TkzOn
+G1.G1.Pg_new
+G1.G1.Kemax
+G1.G1.Kemin
+G1.G1.dUtr
+G1.G1.dWu
+G1.G1.dIf
+G1.G1.dEr
+G1.G1.dWf
+G1.G1.PI
+G1.G1.Wc
+G1.G1.Xt
+G1.G1.Ra
+G1.G1.Rt
+G1.G1.EQ
+G1.G1.Dg
+G1.G1.Uq
+G1.G1.Ud
+G1.G1.Id
+G1.G1.Iq
+G1.G1.Mt
+G1.G1.Eiq
+G1.G1.Ir
+G1.G1.Uf
+G1.G1.Eq
+G1.G1.Er0
+G1.G1.PsiR
+G1.G1.PsiRD
+G1.G1.PsiRQ
+G1.G1.Er_max
+G1.G1.Er_min
+G1.G1.Uf_full
+G1.G1.Xad
+G1.G1.Xaq
+G1.G1.X2dt
+G1.G1.X2qt
+G1.G1.Rs
+G1.G1.Xsf
+G1.G1.Xs1d
+G1.G1.Xs1q
+G1.G1.X1
+G1.G1.X2
+G1.G1.X3
+G1.G1.Ugen
+G1.G1.Mu0
+G1.G1.Ro
+G1.G1.Mu
+G1.G1.der(Mu)
+G1.G1.Mt_pp
+G1.G1.Pgen
+G1.G1.Qgen
+G1.G1.DeltaIJ
+G1.G1.Yr
+G1.G1.der(Yr)
+G1.G1.Yrd
+G1.G1.der(Yrd)
+G1.G1.Yrq
+G1.G1.der(Yrq)
+G1.G1.s
+G1.G1.der(s)
+G1.G1.DGi
+G1.G1.der(DGi)
+G1.G1.Me
+G1.G1.Yad
+G1.G1.Yaq
+G1.G1.ir
+G1.G1.ird
+G1.G1.irq
+G1.G1.E11d
+G1.G1.E11q
+G1.G1.TauC
+G1.G1.MT_MAX
+G1.G1.MT_MIN
+G1.G1.Xd
+G1.G1.Xq
+G1.G1.Xs
+G1.G1.X1d
+G1.G1.Rf
+G1.G1.R1d
+G1.G1.R1q
+G1.G1.Tj
+G1.G1.f
+G1.excitation_Regulator.K0u
+G1.excitation_Regulator.K1u
+G1.excitation_Regulator.K0w
+G1.excitation_Regulator.K1w
+G1.excitation_Regulator.K1if
+G1.excitation_Regulator.Uforc
+G1.excitation_Regulator.Udeforc
+G1.excitation_Regulator.Tforcedelay
+G1.excitation_Regulator.DL0
+G1.excitation_Regulator.Tokp
+G1.excitation_Regulator.T0u
+G1.excitation_Regulator.T1u
+G1.excitation_Regulator.Tfb
+G1.excitation_Regulator.T0w
+G1.excitation_Regulator.T1w
+G1.excitation_Regulator.T1if
+G1.excitation_Regulator.VoltageDeviation.b[1]
+G1.excitation_Regulator.VoltageDeviation.a[1]
+G1.excitation_Regulator.VoltageDeviation.a[2]
+G1.excitation_Regulator.VoltageDeviation.x[1]
+G1.excitation_Regulator.VoltageDeviation.der(x[1])
+G1.excitation_Regulator.VoltageDeviation.na
+G1.excitation_Regulator.VoltageDeviation.nb
+G1.excitation_Regulator.VoltageDeviation.nx
+G1.excitation_Regulator.VoltageDeviation.y
+G1.excitation_Regulator.VoltageDerivative.b[1]
+G1.excitation_Regulator.VoltageDerivative.b[2]
+G1.excitation_Regulator.VoltageDerivative.a[1]
+G1.excitation_Regulator.VoltageDerivative.a[2]
+G1.excitation_Regulator.VoltageDerivative.x[1]
+G1.excitation_Regulator.VoltageDerivative.der(x[1])
+G1.excitation_Regulator.VoltageDerivative.na
+G1.excitation_Regulator.VoltageDerivative.nb
+G1.excitation_Regulator.VoltageDerivative.nx
+G1.excitation_Regulator.VoltageDerivative.y
+G1.excitation_Regulator.FrequencyBlockD.b[1]
+G1.excitation_Regulator.FrequencyBlockD.a[1]
+G1.excitation_Regulator.FrequencyBlockD.a[2]
+G1.excitation_Regulator.FrequencyBlockD.x[1]
+G1.excitation_Regulator.FrequencyBlockD.der(x[1])
+G1.excitation_Regulator.FrequencyBlockD.na
+G1.excitation_Regulator.FrequencyBlockD.nb
+G1.excitation_Regulator.FrequencyBlockD.nx
+G1.excitation_Regulator.FrequencyBlockD.y
+G1.excitation_Regulator.FrequencyBlockU.b[1]
+G1.excitation_Regulator.FrequencyBlockU.b[2]
+G1.excitation_Regulator.FrequencyBlockU.a[1]
+G1.excitation_Regulator.FrequencyBlockU.a[2]
+G1.excitation_Regulator.FrequencyBlockU.x[1]
+G1.excitation_Regulator.FrequencyBlockU.der(x[1])
+G1.excitation_Regulator.FrequencyBlockU.na
+G1.excitation_Regulator.FrequencyBlockU.nb
+G1.excitation_Regulator.FrequencyBlockU.nx
+G1.excitation_Regulator.FrequencyBlockU.y
+G1.excitation_Regulator.FrequencyDeviation.b[1]
+G1.excitation_Regulator.FrequencyDeviation.b[2]
+G1.excitation_Regulator.FrequencyDeviation.a[1]
+G1.excitation_Regulator.FrequencyDeviation.a[2]
+G1.excitation_Regulator.FrequencyDeviation.x[1]
+G1.excitation_Regulator.FrequencyDeviation.der(x[1])
+G1.excitation_Regulator.FrequencyDeviation.na
+G1.excitation_Regulator.FrequencyDeviation.nb
+G1.excitation_Regulator.FrequencyDeviation.nx
+G1.excitation_Regulator.FrequencyDeviation.u
+G1.excitation_Regulator.FrequencyDeviation.y
+G1.excitation_Regulator.FrequencyDerivative.b[1]
+G1.excitation_Regulator.FrequencyDerivative.b[2]
+G1.excitation_Regulator.FrequencyDerivative.a[1]
+G1.excitation_Regulator.FrequencyDerivative.a[2]
+G1.excitation_Regulator.FrequencyDerivative.x[1]
+G1.excitation_Regulator.FrequencyDerivative.der(x[1])
+G1.excitation_Regulator.FrequencyDerivative.na
+G1.excitation_Regulator.FrequencyDerivative.nb
+G1.excitation_Regulator.FrequencyDerivative.nx
+G1.excitation_Regulator.FrequencyDerivative.y
+G1.excitation_Regulator.ExcitationCurrent.b[1]
+G1.excitation_Regulator.ExcitationCurrent.b[2]
+G1.excitation_Regulator.ExcitationCurrent.a[1]
+G1.excitation_Regulator.ExcitationCurrent.a[2]
+G1.excitation_Regulator.ExcitationCurrent.x[1]
+G1.excitation_Regulator.ExcitationCurrent.der(x[1])
+G1.excitation_Regulator.ExcitationCurrent.na
+G1.excitation_Regulator.ExcitationCurrent.nb
+G1.excitation_Regulator.ExcitationCurrent.nx
+G1.excitation_Regulator.ExcitationCurrent.y
+G1.excitation_Regulator.SimpleExciter.b[1]
+G1.excitation_Regulator.SimpleExciter.a[1]
+G1.excitation_Regulator.SimpleExciter.a[2]
+G1.excitation_Regulator.SimpleExciter.x[1]
+G1.excitation_Regulator.SimpleExciter.der(x[1])
+G1.excitation_Regulator.SimpleExciter.na
+G1.excitation_Regulator.SimpleExciter.nb
+G1.excitation_Regulator.SimpleExciter.nx
+G1.excitation_Regulator.SimpleExciter.u
+G1.excitation_Regulator.Summator2.out.Signal
+G1.excitation_Regulator.Summator3.out.Signal
+G1.excitation_Regulator.Summator5.out.Signal
+G1.excitation_Regulator.Summator6.out.Signal
+G1.excitation_Regulator.logical_switch1.a1
+G1.excitation_Regulator.logical_switch1.a2
+G1.excitation_Regulator.logical_switch1.a3
+G1.excitation_Regulator.logical_switch1.a4
+G1.excitation_Regulator.logical_switch1.T_force_on
+G1.pin_v2_2.Id
+G1.pin_v2_2.Iq
+node_14.Vd
+node_14.Vq
+node_14.Id
+node_14.Iq
+node_13.Vd
+node_13.Vq
+node_13.Id
+node_13.Iq
+node_15.Vd
+node_15.Vq
+node_15.Id
+node_15.Iq
+node_12.Vd
+node_12.Vq
+node_12.Id
+node_12.Iq
+node_10.Vd
+node_10.Vq
+node_10.Id
+node_10.Iq
+node_11.Vd
+node_11.Vq
+node_11.Id
+node_11.Iq
+node_7.Vd
+node_7.Vq
+node_7.Id
+node_7.Iq
+node_16.Vd
+node_16.Vq
+node_16.Id
+node_16.Iq
+node_8.Vd
+node_8.Vq
+node_8.Id
+node_8.Iq
+node_21.Vd
+node_21.Vq
+node_21.Id
+node_21.Iq
+node_9.Vd
+node_9.Vq
+node_9.Id
+node_9.Iq
+node_5.Vd
+node_5.Vq
+node_5.Id
+node_5.Iq
+node_4.Vd
+node_4.Vq
+node_4.Id
+node_4.Iq
+node_6.Vd
+node_6.Vq
+node_6.Id
+node_6.Iq
+node_3.Vd
+node_3.Vq
+node_3.Id
+node_3.Iq
+node_2.Vd
+node_2.Vq
+node_2.Id
+node_2.Iq
+node_1.Vd
+node_1.Vq
+node_1.Id
+node_1.Iq
+node_22.Vd
+node_22.Vq
+node_22.Id
+node_22.Iq
+
+double initialValue(1272,6)
+ -1 -6.6304481029510498E-01       0                  0  2   280   # delta_G1_G2
+  0       0                       0                  0  3   256   # der(delta_G1_G2)
+ -1  3.6994481086730957E-01       0                  0  2   280   # delta_G1_G3
+  0       0                       0                  0  3   256   # der(delta_G1_G3)
+ -1  1.0329896211624146E+00       0                  0  2   280   # delta_G2_G3
+  0       0                       0                  0  3   256   # der(delta_G2_G3)
+ -1  2.8860000000000001E-03       0                  0  1   280   # T_G1.Rline
+ -1  1.1000000000000000E-01       0                  0  1   280   # T_G1.Xline
+ -1    1000                       0                  0  1   280   # T_G1.TtOff
+ -1      10                       0                  0  1   280   # T_G1.dTtOff
+ -1  100000                       0                  0  1   280   # T_G1.Koff
+  0       0                       0                  0  6   256   # T_G1.I12d
+  0       0                       0                  0  6   256   # T_G1.I12q
+  0       0                       0                  0  6   256   # T_G1.I12m
+  0       0                       0                  0  6   256   # T_G1.U1m
+  0       0                       0                  0  6   256   # T_G1.U2m
+  0       0                       0                  0  6   256   # T_G1.P1
+  0       0                       0                  0  6   256   # T_G1.Q1
+  0       0                       0                  0  6   256   # T_G1.P2
+  0       0                       0                  0  6   256   # T_G1.Q2
+  0       0                       0                  0  6   320   # T_G1.RL
+  0       0                       0                  0  6   320   # T_G1.XL
+ -1  7.7498200000000001E-04       0                  0  1   280   # T_G2.Rline
+ -1  5.5960000000000003E-02       0                  0  1   280   # T_G2.Xline
+ -1    1000                       0                  0  1   280   # T_G2.TtOff
+ -1      10                       0                  0  1   280   # T_G2.dTtOff
+ -1  100000                       0                  0  1   280   # T_G2.Koff
+  0       0                       0                  0  6   256   # T_G2.I12d
+  0       0                       0                  0  6   256   # T_G2.I12q
+  0       0                       0                  0  6   256   # T_G2.I12m
+  0       0                       0                  0  6   256   # T_G2.U1m
+  0       0                       0                  0  6   256   # T_G2.U2m
+  0       0                       0                  0  6   256   # T_G2.P1
+  0       0                       0                  0  6   256   # T_G2.Q1
+  0       0                       0                  0  6   256   # T_G2.P2
+  0       0                       0                  0  6   256   # T_G2.Q2
+  0       0                       0                  0  6   320   # T_G2.RL
+  0       0                       0                  0  6   320   # T_G2.XL
+ -1  7.8890000000000002E-02       0                  0  1   280   # L1.Rline
+ -1  5.3910000000000002E-01       0                  0  1   280   # L1.Xline
+ -1  3.7449999999999997E-02       0                  0  1   280   # L1.Bline1
+ -1  3.7449999999999997E-02       0                  0  1   280   # L1.Bline2
+ -1  5.0200000000000003E+01       0                  0  1   280   # L1.TLineOff
+ -1  2.9999999999999999E-01       0                  0  1   280   # L1.dTLineOff
+ -1  100000                       0                  0  1   280   # L1.Koff
+ -1    2000                       0                  0  1   280   # L1.TLineOff_1
+ -1      20                       0                  0  1   280   # L1.dTLineOff_1
+ -1       4                       0                  0  1   280   # L1.Koff_1
+  0       0                       0                  0  6   256   # L1.I12d
+  0       0                       0                  0  6   256   # L1.I12q
+  0       0                       0                  0  6   256   # L1.I12m
+  0       0                       0                  0  6   256   # L1.U1m
+  0       0                       0                  0  6   256   # L1.U2m
+  0       0                       0                  0  6   384   # L1.I1d
+  0       0                       0                  0  6   384   # L1.I1q
+  0       0                       0                  0  6   384   # L1.I2d
+  0       0                       0                  0  6   384   # L1.I2q
+  0       0                       0                  0  6   256   # L1.Idc1
+  0       0                       0                  0  6   256   # L1.Iqc1
+  0       0                       0                  0  6   256   # L1.Idc2
+  0       0                       0                  0  6   256   # L1.Iqc2
+  0       0                       0                  0  6   256   # L1.DU1
+  0       0                       0                  0  6   256   # L1.DU2
+  0       0                       0                  0  6   256   # L1.P1
+  0       0                       0                  0  6   256   # L1.Q1
+  0       0                       0                  0  6   256   # L1.P2
+  0       0                       0                  0  6   256   # L1.Q2
+  0       0                       0                  0  6   320   # L1.RL
+  0       0                       0                  0  6   320   # L1.XL
+  0       0                       0                  0  6   320   # L1.BL1
+  0       0                       0                  0  6   320   # L1.BL2
+ -1  1.0520000000000000E-02       0                  0  1   280   # L2.Rline
+ -1  1.3506000000000001E-01       0                  0  1   280   # L2.Xline
+ -1 -3.7019000000000002E-01       0                  0  1   280   # L2.Bline1
+ -1  2.8981000000000001E-01       0                  0  1   280   # L2.Bline2
+ -1    1000                       0                  0  1   280   # L2.TLineOff
+ -1      10                       0                  0  1   280   # L2.dTLineOff
+ -1       2                       0                  0  1   280   # L2.Koff
+ -1    2000                       0                  0  1   280   # L2.TLineOff_1
+ -1      20                       0                  0  1   280   # L2.dTLineOff_1
+ -1       4                       0                  0  1   280   # L2.Koff_1
+  0       0                       0                  0  6   256   # L2.I12d
+  0       0                       0                  0  6   256   # L2.I12q
+  0       0                       0                  0  6   256   # L2.I12m
+  0       0                       0                  0  6   256   # L2.U1m
+  0       0                       0                  0  6   256   # L2.U2m
+  0       0                       0                  0  6   384   # L2.I1d
+  0       0                       0                  0  6   384   # L2.I1q
+  0       0                       0                  0  6   384   # L2.I2d
+  0       0                       0                  0  6   384   # L2.I2q
+  0       0                       0                  0  6   256   # L2.Idc1
+  0       0                       0                  0  6   256   # L2.Iqc1
+  0       0                       0                  0  6   256   # L2.Idc2
+  0       0                       0                  0  6   256   # L2.Iqc2
+  0       0                       0                  0  6   256   # L2.DU1
+  0       0                       0                  0  6   256   # L2.DU2
+  0       0                       0                  0  6   256   # L2.P1
+  0       0                       0                  0  6   256   # L2.Q1
+  0       0                       0                  0  6   256   # L2.P2
+  0       0                       0                  0  6   256   # L2.Q2
+  0       0                       0                  0  6   320   # L2.RL
+  0       0                       0                  0  6   320   # L2.XL
+  0       0                       0                  0  6   320   # L2.BL1
+  0       0                       0                  0  6   320   # L2.BL2
+ -1  4.3555599999999997E-04       0                  0  1   280   # AT_HV.Rline
+ -1  5.2549999999999999E-02       0                  0  1   280   # AT_HV.Xline
+ -1    1000                       0                  0  1   280   # AT_HV.TtOff
+ -1      10                       0                  0  1   280   # AT_HV.dTtOff
+ -1  100000                       0                  0  1   280   # AT_HV.Koff
+  0       0                       0                  0  6   256   # AT_HV.I12d
+  0       0                       0                  0  6   256   # AT_HV.I12q
+  0       0                       0                  0  6   256   # AT_HV.I12m
+  0       0                       0                  0  6   256   # AT_HV.U1m
+  0       0                       0                  0  6   256   # AT_HV.U2m
+  0       0                       0                  0  6   256   # AT_HV.P1
+  0       0                       0                  0  6   256   # AT_HV.Q1
+  0       0                       0                  0  6   256   # AT_HV.P2
+  0       0                       0                  0  6   256   # AT_HV.Q2
+  0       0                       0                  0  6   320   # AT_HV.RL
+  0       0                       0                  0  6   320   # AT_HV.XL
+ -1  1.2088900000000000E-03       0                  0  1   280   # AT_LV.Rline
+ -1  8.7630000000000000E-02       0                  0  1   280   # AT_LV.Xline
+ -1    1000                       0                  0  1   280   # AT_LV.TtOff
+ -1      10                       0                  0  1   280   # AT_LV.dTtOff
+ -1  100000                       0                  0  1   280   # AT_LV.Koff
+  0       0                       0                  0  6   256   # AT_LV.I12d
+  0       0                       0                  0  6   256   # AT_LV.I12q
+  0       0                       0                  0  6   256   # AT_LV.I12m
+  0       0                       0                  0  6   256   # AT_LV.U1m
+  0       0                       0                  0  6   256   # AT_LV.U2m
+  0       0                       0                  0  6   256   # AT_LV.P1
+  0       0                       0                  0  6   256   # AT_LV.Q1
+  0       0                       0                  0  6   256   # AT_LV.P2
+  0       0                       0                  0  6   256   # AT_LV.Q2
+  0       0                       0                  0  6   320   # AT_LV.RL
+  0       0                       0                  0  6   320   # AT_LV.XL
+ -1  4.3555599999999997E-04       0                  0  1   280   # AT_MV.Rline
+ -1       0                       0                  0  1   280   # AT_MV.Xline
+ -1    1000                       0                  0  1   280   # AT_MV.TtOff
+ -1      10                       0                  0  1   280   # AT_MV.dTtOff
+ -1  100000                       0                  0  1   280   # AT_MV.Koff
+  0       0                       0                  0  6   256   # AT_MV.I12d
+  0       0                       0                  0  6   256   # AT_MV.I12q
+  0       0                       0                  0  6   256   # AT_MV.I12m
+  0       0                       0                  0  6   256   # AT_MV.U1m
+  0       0                       0                  0  6   256   # AT_MV.U2m
+  0       0                       0                  0  6   256   # AT_MV.P1
+  0       0                       0                  0  6   256   # AT_MV.Q1
+  0       0                       0                  0  6   256   # AT_MV.P2
+  0       0                       0                  0  6   256   # AT_MV.Q2
+  0       0                       0                  0  6   320   # AT_MV.RL
+  0       0                       0                  0  6   320   # AT_MV.XL
+ -1  5.0000000000000000E-01       0                  0  1   280   # N1.Gn
+ -1 -5.4339999999999999E-02       0                  0  1   280   # N1.Bn
+ -1    1000                       0                  0  1   280   # N1.TloadOff
+ -1      10                       0                  0  1   280   # N1.dTloadOff
+ -1  6.9999999999999996E-01       0                  0  1   280   # N1.Koff
+  0       0                       0                  0  6   256   # N1.Iqn
+  0       0                       0                  0  6   256   # N1.Idn
+  0       0                       0                  0  6   256   # N1.Pn
+  0       0                       0                  0  6   256   # N1.Qn
+ -1  2.0760000000000001E-02       0                  0  1   280   # L6.Rline
+ -1  1.4187000000000000E-01       0                  0  1   280   # L6.Xline
+ -1  9.8548999999999998E-03       0                  0  1   280   # L6.Bline1
+ -1  9.8548999999999998E-03       0                  0  1   280   # L6.Bline2
+ -1    1000                       0                  0  1   280   # L6.TLineOff
+ -1      10                       0                  0  1   280   # L6.dTLineOff
+ -1       2                       0                  0  1   280   # L6.Koff
+ -1    2000                       0                  0  1   280   # L6.TLineOff_1
+ -1      20                       0                  0  1   280   # L6.dTLineOff_1
+ -1       4                       0                  0  1   280   # L6.Koff_1
+  0       0                       0                  0  6   256   # L6.I12d
+  0       0                       0                  0  6   256   # L6.I12q
+  0       0                       0                  0  6   256   # L6.I12m
+  0       0                       0                  0  6   256   # L6.U1m
+  0       0                       0                  0  6   256   # L6.U2m
+  0       0                       0                  0  6   384   # L6.I1d
+  0       0                       0                  0  6   384   # L6.I1q
+  0       0                       0                  0  6   384   # L6.I2d
+  0       0                       0                  0  6   384   # L6.I2q
+  0       0                       0                  0  6   256   # L6.Idc1
+  0       0                       0                  0  6   256   # L6.Iqc1
+  0       0                       0                  0  6   256   # L6.Idc2
+  0       0                       0                  0  6   256   # L6.Iqc2
+  0       0                       0                  0  6   256   # L6.DU1
+  0       0                       0                  0  6   256   # L6.DU2
+  0       0                       0                  0  6   256   # L6.P1
+  0       0                       0                  0  6   256   # L6.Q1
+  0       0                       0                  0  6   256   # L6.P2
+  0       0                       0                  0  6   256   # L6.Q2
+  0       0                       0                  0  6   320   # L6.RL
+  0       0                       0                  0  6   320   # L6.XL
+  0       0                       0                  0  6   320   # L6.BL1
+  0       0                       0                  0  6   320   # L6.BL2
+ -1  4.1520000000000001E-02       0                  0  1   280   # L3.Rline
+ -1  2.2907000000000000E-01       0                  0  1   280   # L3.Xline
+ -1  1.5630000000000002E-02       0                  0  1   280   # L3.Bline1
+ -1  1.5630000000000002E-02       0                  0  1   280   # L3.Bline2
+ -1    1000                       0                  0  1   280   # L3.TLineOff
+ -1      10                       0                  0  1   280   # L3.dTLineOff
+ -1       2                       0                  0  1   280   # L3.Koff
+ -1    2000                       0                  0  1   280   # L3.TLineOff_1
+ -1      20                       0                  0  1   280   # L3.dTLineOff_1
+ -1       4                       0                  0  1   280   # L3.Koff_1
+  0       0                       0                  0  6   256   # L3.I12d
+  0       0                       0                  0  6   256   # L3.I12q
+  0       0                       0                  0  6   256   # L3.I12m
+  0       0                       0                  0  6   256   # L3.U1m
+  0       0                       0                  0  6   256   # L3.U2m
+  0       0                       0                  0  6   384   # L3.I1d
+  0       0                       0                  0  6   384   # L3.I1q
+  0       0                       0                  0  6   384   # L3.I2d
+  0       0                       0                  0  6   384   # L3.I2q
+  0       0                       0                  0  6   256   # L3.Idc1
+  0       0                       0                  0  6   256   # L3.Iqc1
+  0       0                       0                  0  6   256   # L3.Idc2
+  0       0                       0                  0  6   256   # L3.Iqc2
+  0       0                       0                  0  6   256   # L3.DU1
+  0       0                       0                  0  6   256   # L3.DU2
+  0       0                       0                  0  6   256   # L3.P1
+  0       0                       0                  0  6   256   # L3.Q1
+  0       0                       0                  0  6   256   # L3.P2
+  0       0                       0                  0  6   256   # L3.Q2
+  0       0                       0                  0  6   320   # L3.RL
+  0       0                       0                  0  6   320   # L3.XL
+  0       0                       0                  0  6   320   # L3.BL1
+  0       0                       0                  0  6   320   # L3.BL2
+ -1  4.1520000000000001E-02       0                  0  1   280   # L4.Rline
+ -1  2.2900000000000001E-01       0                  0  1   280   # L4.Xline
+ -1  1.5630000000000002E-02       0                  0  1   280   # L4.Bline1
+ -1  1.5630000000000002E-02       0                  0  1   280   # L4.Bline2
+ -1    1000                       0                  0  1   280   # L4.TLineOff
+ -1      10                       0                  0  1   280   # L4.dTLineOff
+ -1       2                       0                  0  1   280   # L4.Koff
+ -1    2000                       0                  0  1   280   # L4.TLineOff_1
+ -1      20                       0                  0  1   280   # L4.dTLineOff_1
+ -1       4                       0                  0  1   280   # L4.Koff_1
+  0       0                       0                  0  6   256   # L4.I12d
+  0       0                       0                  0  6   256   # L4.I12q
+  0       0                       0                  0  6   256   # L4.I12m
+  0       0                       0                  0  6   256   # L4.U1m
+  0       0                       0                  0  6   256   # L4.U2m
+  0       0                       0                  0  6   384   # L4.I1d
+  0       0                       0                  0  6   384   # L4.I1q
+  0       0                       0                  0  6   384   # L4.I2d
+  0       0                       0                  0  6   384   # L4.I2q
+  0       0                       0                  0  6   256   # L4.Idc1
+  0       0                       0                  0  6   256   # L4.Iqc1
+  0       0                       0                  0  6   256   # L4.Idc2
+  0       0                       0                  0  6   256   # L4.Iqc2
+  0       0                       0                  0  6   256   # L4.DU1
+  0       0                       0                  0  6   256   # L4.DU2
+  0       0                       0                  0  6   256   # L4.P1
+  0       0                       0                  0  6   256   # L4.Q1
+  0       0                       0                  0  6   256   # L4.P2
+  0       0                       0                  0  6   256   # L4.Q2
+  0       0                       0                  0  6   320   # L4.RL
+  0       0                       0                  0  6   320   # L4.XL
+  0       0                       0                  0  6   320   # L4.BL1
+  0       0                       0                  0  6   320   # L4.BL2
+ -1  5.1900000000000002E-02       0                  0  1   280   # L5.Rline
+ -1  2.8632999999999997E-01       0                  0  1   280   # L5.Xline
+ -1  1.9539999999999998E-02       0                  0  1   280   # L5.Bline1
+ -1  1.9539999999999998E-02       0                  0  1   280   # L5.Bline2
+ -1    1000                       0                  0  1   280   # L5.TLineOff
+ -1      10                       0                  0  1   280   # L5.dTLineOff
+ -1       2                       0                  0  1   280   # L5.Koff
+ -1    2000                       0                  0  1   280   # L5.TLineOff_1
+ -1      20                       0                  0  1   280   # L5.dTLineOff_1
+ -1       4                       0                  0  1   280   # L5.Koff_1
+  0       0                       0                  0  6   256   # L5.I12d
+  0       0                       0                  0  6   256   # L5.I12q
+  0       0                       0                  0  6   256   # L5.I12m
+  0       0                       0                  0  6   256   # L5.U1m
+  0       0                       0                  0  6   256   # L5.U2m
+  0       0                       0                  0  6   384   # L5.I1d
+  0       0                       0                  0  6   384   # L5.I1q
+  0       0                       0                  0  6   384   # L5.I2d
+  0       0                       0                  0  6   384   # L5.I2q
+  0       0                       0                  0  6   256   # L5.Idc1
+  0       0                       0                  0  6   256   # L5.Iqc1
+  0       0                       0                  0  6   256   # L5.Idc2
+  0       0                       0                  0  6   256   # L5.Iqc2
+  0       0                       0                  0  6   256   # L5.DU1
+  0       0                       0                  0  6   256   # L5.DU2
+  0       0                       0                  0  6   256   # L5.P1
+  0       0                       0                  0  6   256   # L5.Q1
+  0       0                       0                  0  6   256   # L5.P2
+  0       0                       0                  0  6   256   # L5.Q2
+  0       0                       0                  0  6   320   # L5.RL
+  0       0                       0                  0  6   320   # L5.XL
+  0       0                       0                  0  6   320   # L5.BL1
+  0       0                       0                  0  6   320   # L5.BL2
+ -1  9.5762799999999995E-03       0                  0  1   280   # T1.Rline
+ -1  2.4943000000000001E-01       0                  0  1   280   # T1.Xline
+ -1    1000                       0                  0  1   280   # T1.TtOff
+ -1      10                       0                  0  1   280   # T1.dTtOff
+ -1  100000                       0                  0  1   280   # T1.Koff
+  0       0                       0                  0  6   256   # T1.I12d
+  0       0                       0                  0  6   256   # T1.I12q
+  0       0                       0                  0  6   256   # T1.I12m
+  0       0                       0                  0  6   256   # T1.U1m
+  0       0                       0                  0  6   256   # T1.U2m
+  0       0                       0                  0  6   256   # T1.P1
+  0       0                       0                  0  6   256   # T1.Q1
+  0       0                       0                  0  6   256   # T1.P2
+  0       0                       0                  0  6   256   # T1.Q2
+  0       0                       0                  0  6   320   # T1.RL
+  0       0                       0                  0  6   320   # T1.XL
+ -1  6.0939999999999996E-03       0                  0  1   280   # T3.Rline
+ -1  1.5873000000000001E-01       0                  0  1   280   # T3.Xline
+ -1    1000                       0                  0  1   280   # T3.TtOff
+ -1      10                       0                  0  1   280   # T3.dTtOff
+ -1  100000                       0                  0  1   280   # T3.Koff
+  0       0                       0                  0  6   256   # T3.I12d
+  0       0                       0                  0  6   256   # T3.I12q
+  0       0                       0                  0  6   256   # T3.I12m
+  0       0                       0                  0  6   256   # T3.U1m
+  0       0                       0                  0  6   256   # T3.U2m
+  0       0                       0                  0  6   256   # T3.P1
+  0       0                       0                  0  6   256   # T3.Q1
+  0       0                       0                  0  6   256   # T3.P2
+  0       0                       0                  0  6   256   # T3.Q2
+  0       0                       0                  0  6   320   # T3.RL
+  0       0                       0                  0  6   320   # T3.XL
+ -1  2.8000000000000003E-01       0                  0  1   280   # N2.Gn
+ -1 -5.2030000000000000E-02       0                  0  1   280   # N2.Bn
+ -1    1000                       0                  0  1   280   # N2.TloadOff
+ -1      10                       0                  0  1   280   # N2.dTloadOff
+ -1  6.9999999999999996E-01       0                  0  1   280   # N2.Koff
+  0       0                       0                  0  6   256   # N2.Iqn
+  0       0                       0                  0  6   256   # N2.Idn
+  0       0                       0                  0  6   256   # N2.Pn
+  0       0                       0                  0  6   256   # N2.Qn
+ -1  4.5000000000000001E-01       0                  0  1   280   # N4.Gn
+ -1 -6.7909999999999998E-02       0                  0  1   280   # N4.Bn
+ -1    1000                       0                  0  1   280   # N4.TloadOff
+ -1      10                       0                  0  1   280   # N4.dTloadOff
+ -1  6.9999999999999996E-01       0                  0  1   280   # N4.Koff
+  0       0                       0                  0  6   256   # N4.Iqn
+  0       0                       0                  0  6   256   # N4.Idn
+  0       0                       0                  0  6   256   # N4.Pn
+  0       0                       0                  0  6   256   # N4.Qn
+ -1  4.3555600000000000E-05       0                  0  1   280   # T2_MV.Rline
+ -1       0                       0                  0  1   280   # T2_MV.Xline
+ -1    1000                       0                  0  1   280   # T2_MV.TtOff
+ -1      10                       0                  0  1   280   # T2_MV.dTtOff
+ -1  100000                       0                  0  1   280   # T2_MV.Koff
+  0       0                       0                  0  6   256   # T2_MV.I12d
+  0       0                       0                  0  6   256   # T2_MV.I12q
+  0       0                       0                  0  6   256   # T2_MV.I12m
+  0       0                       0                  0  6   256   # T2_MV.U1m
+  0       0                       0                  0  6   256   # T2_MV.U2m
+  0       0                       0                  0  6   256   # T2_MV.P1
+  0       0                       0                  0  6   256   # T2_MV.Q1
+  0       0                       0                  0  6   256   # T2_MV.P2
+  0       0                       0                  0  6   256   # T2_MV.Q2
+  0       0                       0                  0  6   320   # T2_MV.RL
+  0       0                       0                  0  6   320   # T2_MV.XL
+ -1  4.3555600000000000E-05       0                  0  1   280   # T2_HV.Rline
+ -1  2.2550000000000001E-02       0                  0  1   280   # T2_HV.Xline
+ -1    1000                       0                  0  1   280   # T2_HV.TtOff
+ -1      10                       0                  0  1   280   # T2_HV.dTtOff
+ -1  100000                       0                  0  1   280   # T2_HV.Koff
+  0       0                       0                  0  6   256   # T2_HV.I12d
+  0       0                       0                  0  6   256   # T2_HV.I12q
+  0       0                       0                  0  6   256   # T2_HV.I12m
+  0       0                       0                  0  6   256   # T2_HV.U1m
+  0       0                       0                  0  6   256   # T2_HV.U2m
+  0       0                       0                  0  6   256   # T2_HV.P1
+  0       0                       0                  0  6   256   # T2_HV.Q1
+  0       0                       0                  0  6   256   # T2_HV.P2
+  0       0                       0                  0  6   256   # T2_HV.Q2
+  0       0                       0                  0  6   320   # T2_HV.RL
+  0       0                       0                  0  6   320   # T2_HV.XL
+ -1  1.2088900000000000E-03       0                  0  1   280   # T2_LV.Rline
+ -1  8.7590000000000001E-02       0                  0  1   280   # T2_LV.Xline
+ -1    1000                       0                  0  1   280   # T2_LV.TtOff
+ -1      10                       0                  0  1   280   # T2_LV.dTtOff
+ -1  100000                       0                  0  1   280   # T2_LV.Koff
+  0       0                       0                  0  6   256   # T2_LV.I12d
+  0       0                       0                  0  6   256   # T2_LV.I12q
+  0       0                       0                  0  6   256   # T2_LV.I12m
+  0       0                       0                  0  6   256   # T2_LV.U1m
+  0       0                       0                  0  6   256   # T2_LV.U2m
+  0       0                       0                  0  6   256   # T2_LV.P1
+  0       0                       0                  0  6   256   # T2_LV.Q1
+  0       0                       0                  0  6   256   # T2_LV.P2
+  0       0                       0                  0  6   256   # T2_LV.Q2
+  0       0                       0                  0  6   320   # T2_LV.RL
+  0       0                       0                  0  6   320   # T2_LV.XL
+ -1  4.5000000000000001E-01       0                  0  1   280   # N3.Gn
+ -1 -6.7909999999999998E-02       0                  0  1   280   # N3.Bn
+ -1    1000                       0                  0  1   280   # N3.TloadOff
+ -1      10                       0                  0  1   280   # N3.dTloadOff
+ -1  6.9999999999999996E-01       0                  0  1   280   # N3.Koff
+  0       0                       0                  0  6   256   # N3.Iqn
+  0       0                       0                  0  6   256   # N3.Idn
+  0       0                       0                  0  6   256   # N3.Pn
+  0       0                       0                  0  6   256   # N3.Qn
+ -1 -1.0000000000000000E+06       0                  0  1   280   # shortCircuitShunt.Bn
+ -1 -100000                       0                  0  1   280   # shortCircuitShunt.Gn
+  0       0                       0                  0  6   256   # shortCircuitShunt.Yn
+ -1      50                       0                  0  1   280   # shortCircuitShunt.TkzOn
+ -1  2.0000000000000001E-01       0                  0  1   280   # shortCircuitShunt.dTkzOn
+  0       0                       0                  0  6   256   # shortCircuitShunt.id
+  0       0                       0                  0  6   256   # shortCircuitShunt.iq
+ -1  2.0000000000000001E-01       0                  0  1   280   # ElBr02.Rline
+ -1    1000                       0                  0  1   280   # ElBr02.TLineOff
+ -1      10                       0                  0  1   280   # ElBr02.dTLineOff
+  0       0                       0                  0  6   256   # ElBr02.I12d
+  0       0                       0                  0  6   256   # ElBr02.I12q
+  0       0                       0                  0  6   256   # ElBr02.I12m
+  0       0                       0                  0  6   256   # ElBr02.U1m
+  0       0                       0                  0  6   256   # ElBr02.U2m
+  0       0                       0                  0  6   320   # ElBr02.RL
+ -1  2.0000000000000001E-01       0                  0  1   280   # ElBrShun02.Rline
+ -1    1000                       0                  0  1   280   # ElBrShun02.TLineOff
+ -1      10                       0                  0  1   280   # ElBrShun02.dTLineOff
+  0       0                       0                  0  6   256   # ElBrShun02.I12d
+  0       0                       0                  0  6   256   # ElBrShun02.I12q
+  0       0                       0                  0  6   256   # ElBrShun02.I12m
+  0       0                       0                  0  6   256   # ElBrShun02.Um
+ -1  2.0000000000000001E-01       0                  0  1   280   # ElBr01.Rline
+ -1    1000                       0                  0  1   280   # ElBr01.TLineOff
+ -1      10                       0                  0  1   280   # ElBr01.dTLineOff
+  0       0                       0                  0  6   256   # ElBr01.I12d
+  0       0                       0                  0  6   256   # ElBr01.I12q
+  0       0                       0                  0  6   256   # ElBr01.I12m
+  0       0                       0                  0  6   256   # ElBr01.U1m
+  0       0                       0                  0  6   256   # ElBr01.U2m
+  0       0                       0                  0  6   320   # ElBr01.RL
+ -1  2.0000000000000001E-01       0                  0  1   280   # ElBrShunt01.Rline
+ -1    1000                       0                  0  1   280   # ElBrShunt01.TLineOff
+ -1      10                       0                  0  1   280   # ElBrShunt01.dTLineOff
+  0       0                       0                  0  6   256   # ElBrShunt01.I12d
+  0       0                       0                  0  6   256   # ElBrShunt01.I12q
+  0       0                       0                  0  6   256   # ElBrShunt01.I12m
+  0       0                       0                  0  6   256   # ElBrShunt01.Um
+ -1 -100000                       0                  0  1   280   # shortCircuitShunt1.Bn
+ -1 -100000                       0                  0  1   280   # shortCircuitShunt1.Gn
+  0       0                       0                  0  6   256   # shortCircuitShunt1.Yn
+ -1    1000                       0                  0  1   280   # shortCircuitShunt1.TkzOn
+ -1  1.2000000000000000E-01       0                  0  1   280   # shortCircuitShunt1.dTkzOn
+  0       0                       0                  0  6   256   # shortCircuitShunt1.id
+  0       0                       0                  0  6   256   # shortCircuitShunt1.iq
+ -1 -100000                       0                  0  1   280   # shortCircuitShunt2.Bn
+ -1 -100000                       0                  0  1   280   # shortCircuitShunt2.Gn
+  0       0                       0                  0  6   256   # shortCircuitShunt2.Yn
+ -1    1000                       0                  0  1   280   # shortCircuitShunt2.TkzOn
+ -1  1.2000000000000000E-01       0                  0  1   280   # shortCircuitShunt2.dTkzOn
+  0       0                       0                  0  6   256   # shortCircuitShunt2.id
+  0       0                       0                  0  6   256   # shortCircuitShunt2.iq
+ -1 -100000                       0                  0  1   280   # shortCircuitShunt3.Bn
+ -1 -100000                       0                  0  1   280   # shortCircuitShunt3.Gn
+  0       0                       0                  0  6   256   # shortCircuitShunt3.Yn
+ -1      65                       0                  0  1   280   # shortCircuitShunt3.TkzOn
+ -1  1.4999999999999999E-01       0                  0  1   280   # shortCircuitShunt3.dTkzOn
+  0       0                       0                  0  6   256   # shortCircuitShunt3.id
+  0       0                       0                  0  6   256   # shortCircuitShunt3.iq
+ -1 -100000                       0                  0  1   280   # shortCircuitShunt4.Bn
+ -1 -100000                       0                  0  1   280   # shortCircuitShunt4.Gn
+  0       0                       0                  0  6   256   # shortCircuitShunt4.Yn
+ -1    1000                       0                  0  1   280   # shortCircuitShunt4.TkzOn
+ -1  1.2000000000000000E-01       0                  0  1   280   # shortCircuitShunt4.dTkzOn
+  0       0                       0                  0  6   256   # shortCircuitShunt4.id
+  0       0                       0                  0  6   256   # shortCircuitShunt4.iq
+ -1 -100000                       0                  0  1   280   # shortCircuitShunt5.Bn
+ -1 -100000                       0                  0  1   280   # shortCircuitShunt5.Gn
+  0       0                       0                  0  6   256   # shortCircuitShunt5.Yn
+ -1    1000                       0                  0  1   280   # shortCircuitShunt5.TkzOn
+ -1  1.2000000000000000E-01       0                  0  1   280   # shortCircuitShunt5.dTkzOn
+  0       0                       0                  0  6   256   # shortCircuitShunt5.id
+  0       0                       0                  0  6   256   # shortCircuitShunt5.iq
+ -1 -100000                       0                  0  1   280   # shortCircuitShunt6.Bn
+ -1 -100000                       0                  0  1   280   # shortCircuitShunt6.Gn
+  0       0                       0                  0  6   256   # shortCircuitShunt6.Yn
+ -1    1000                       0                  0  1   280   # shortCircuitShunt6.TkzOn
+ -1  1.2000000000000000E-01       0                  0  1   280   # shortCircuitShunt6.dTkzOn
+  0       0                       0                  0  6   256   # shortCircuitShunt6.id
+  0       0                       0                  0  6   256   # shortCircuitShunt6.iq
+ -1 -100000                       0                  0  1   280   # shortCircuitShunt7.Bn
+ -1 -100000                       0                  0  1   280   # shortCircuitShunt7.Gn
+  0       0                       0                  0  6   256   # shortCircuitShunt7.Yn
+ -1    1000                       0                  0  1   280   # shortCircuitShunt7.TkzOn
+ -1  1.2000000000000000E-01       0                  0  1   280   # shortCircuitShunt7.dTkzOn
+  0       0                       0                  0  6   256   # shortCircuitShunt7.id
+  0       0                       0                  0  6   256   # shortCircuitShunt7.iq
+ -1 -100000                       0                  0  1   280   # shortCircuitShunt8.Bn
+ -1 -100000                       0                  0  1   280   # shortCircuitShunt8.Gn
+  0       0                       0                  0  6   256   # shortCircuitShunt8.Yn
+ -1    1000                       0                  0  1   280   # shortCircuitShunt8.TkzOn
+ -1  1.2000000000000000E-01       0                  0  1   280   # shortCircuitShunt8.dTkzOn
+  0       0                       0                  0  6   256   # shortCircuitShunt8.id
+  0       0                       0                  0  6   256   # shortCircuitShunt8.iq
+ -1 -100000                       0                  0  1   280   # shortCircuitShunt9.Bn
+ -1 -100000                       0                  0  1   280   # shortCircuitShunt9.Gn
+  0       0                       0                  0  6   256   # shortCircuitShunt9.Yn
+ -1    1000                       0                  0  1   280   # shortCircuitShunt9.TkzOn
+ -1  1.2000000000000000E-01       0                  0  1   280   # shortCircuitShunt9.dTkzOn
+  0       0                       0                  0  6   256   # shortCircuitShunt9.id
+  0       0                       0                  0  6   256   # shortCircuitShunt9.iq
+ -1 -100000                       0                  0  1   280   # shortCircuitShunt10.Bn
+ -1 -100000                       0                  0  1   280   # shortCircuitShunt10.Gn
+  0       0                       0                  0  6   256   # shortCircuitShunt10.Yn
+ -1    1000                       0                  0  1   280   # shortCircuitShunt10.TkzOn
+ -1  1.2000000000000000E-01       0                  0  1   280   # shortCircuitShunt10.dTkzOn
+  0       0                       0                  0  6   256   # shortCircuitShunt10.id
+  0       0                       0                  0  6   256   # shortCircuitShunt10.iq
+ -1 -100000                       0                  0  1   280   # shortCircuitShunt11.Bn
+ -1 -100000                       0                  0  1   280   # shortCircuitShunt11.Gn
+  0       0                       0                  0  6   256   # shortCircuitShunt11.Yn
+ -1    1000                       0                  0  1   280   # shortCircuitShunt11.TkzOn
+ -1  1.2000000000000000E-01       0                  0  1   280   # shortCircuitShunt11.dTkzOn
+  0       0                       0                  0  6   256   # shortCircuitShunt11.id
+  0       0                       0                  0  6   256   # shortCircuitShunt11.iq
+ -1 -100000                       0                  0  1   280   # shortCircuitShunt12.Bn
+ -1 -100000                       0                  0  1   280   # shortCircuitShunt12.Gn
+  0       0                       0                  0  6   256   # shortCircuitShunt12.Yn
+ -1    1000                       0                  0  1   280   # shortCircuitShunt12.TkzOn
+ -1  1.2000000000000000E-01       0                  0  1   280   # shortCircuitShunt12.dTkzOn
+  0       0                       0                  0  6   256   # shortCircuitShunt12.id
+  0       0                       0                  0  6   256   # shortCircuitShunt12.iq
+ -1 -100000                       0                  0  1   280   # shortCircuitShunt13.Bn
+ -1 -100000                       0                  0  1   280   # shortCircuitShunt13.Gn
+  0       0                       0                  0  6   256   # shortCircuitShunt13.Yn
+ -1    1000                       0                  0  1   280   # shortCircuitShunt13.TkzOn
+ -1  1.2000000000000000E-01       0                  0  1   280   # shortCircuitShunt13.dTkzOn
+  0       0                       0                  0  6   256   # shortCircuitShunt13.id
+  0       0                       0                  0  6   256   # shortCircuitShunt13.iq
+ -1 -100000                       0                  0  1   280   # shortCircuitShunt15.Bn
+ -1 -100000                       0                  0  1   280   # shortCircuitShunt15.Gn
+  0       0                       0                  0  6   256   # shortCircuitShunt15.Yn
+ -1    1000                       0                  0  1   280   # shortCircuitShunt15.TkzOn
+ -1  1.2000000000000000E-01       0                  0  1   280   # shortCircuitShunt15.dTkzOn
+  0       0                       0                  0  6   256   # shortCircuitShunt15.id
+  0       0                       0                  0  6   256   # shortCircuitShunt15.iq
+ -1 -100000                       0                  0  1   280   # shortCircuitShunt16.Bn
+ -1 -100000                       0                  0  1   280   # shortCircuitShunt16.Gn
+  0       0                       0                  0  6   256   # shortCircuitShunt16.Yn
+ -1    1000                       0                  0  1   280   # shortCircuitShunt16.TkzOn
+ -1  1.2000000000000000E-01       0                  0  1   280   # shortCircuitShunt16.dTkzOn
+  0       0                       0                  0  6   256   # shortCircuitShunt16.id
+  0       0                       0                  0  6   256   # shortCircuitShunt16.iq
+ -1 -100000                       0                  0  1   280   # shortCircuitShunt17.Bn
+ -1 -100000                       0                  0  1   280   # shortCircuitShunt17.Gn
+  0       0                       0                  0  6   256   # shortCircuitShunt17.Yn
+ -1    1000                       0                  0  1   280   # shortCircuitShunt17.TkzOn
+ -1  1.2000000000000000E-01       0                  0  1   280   # shortCircuitShunt17.dTkzOn
+  0       0                       0                  0  6   256   # shortCircuitShunt17.id
+  0       0                       0                  0  6   256   # shortCircuitShunt17.iq
+ -1 -100000                       0                  0  1   280   # shortCircuitShunt18.Bn
+ -1 -100000                       0                  0  1   280   # shortCircuitShunt18.Gn
+  0       0                       0                  0  6   256   # shortCircuitShunt18.Yn
+ -1    1000                       0                  0  1   280   # shortCircuitShunt18.TkzOn
+ -1  1.2000000000000000E-01       0                  0  1   280   # shortCircuitShunt18.dTkzOn
+  0       0                       0                  0  6   256   # shortCircuitShunt18.id
+  0       0                       0                  0  6   256   # shortCircuitShunt18.iq
+ -1    1000                       0                  0  1   280   # G2.G2.TgenOff
+ -1      10                       0                  0  1   280   # G2.G2.dTgenOff
+ -1  8.8000000000000000E-01       0                  0  1   280   # G2.G2.Pg
+ -1  5.4659999999999997E-01       0                  0  1   280   # G2.G2.Qg
+ -1  1.0660000000000001E+00       0                  0  1   280   # G2.G2.Ut
+ -1  1.5547899999999999E+00       0                  0  1   280   # G2.G2.Xd_p
+ -1  1.5547899999999999E+00       0                  0  1   280   # G2.G2.Xq_p
+ -1  1.2042000000000000E-01       0                  0  1   280   # G2.G2.Xs_p
+ -1  2.1249999999999999E-01       0                  0  1   280   # G2.G2.X1d_p
+ -1  1.3813000000000000E-01       0                  0  1   280   # G2.G2.X2d_p
+ -1  1.9903999999999999E-01       0                  0  1   280   # G2.G2.X2q_p
+ -1  6.9999999999999999E-04       0                  0  1   280   # G2.G2.Rf_p
+ -1  1.9749300000000002E-03       0                  0  1   280   # G2.G2.R1d_p
+ -1  5.1774999999999998E-03       0                  0  1   280   # G2.G2.R1q_p
+ -1  1.2231360000000000E+01       0                  0  1   280   # G2.G2.Tj_p
+ -1  4.7500000000000001E-02       0                  0  1   280   # G2.G2.Sigma
+ -1  2.0000000000000001E-01       0                  0  1   280   # G2.G2.TauC_up
+ -1     500                       0                  0  1   280   # G2.G2.TregOff
+ -1      50                       0                  0  1   280   # G2.G2.TregOn
+ -1  1.1000000000000001E+00       0                  0  1   280   # G2.G2.Mtmax
+ -1       0                       0                  0  1   280   # G2.G2.Mtmin
+ -1  8.0000000000000004E-01       0                  0  1   280   # G2.G2.Aimp
+ -1  6.5099999999999994E+01       0                  0  1   280   # G2.G2.Timp
+ -1  2.0000000000000001E-01       0                  0  1   280   # G2.G2.dTimp
+ -1  5.0000000000000003E-02       0                  0  1   280   # G2.G2.TauC_down
+ -1    1000                       0                  0  1   280   # G2.G2.TkzOn
+ -1  8.4999999999999998E-01       0                  0  1   280   # G2.G2.Pg_new
+ -1  2.1000000000000001E+00       0                  0  1   280   # G2.G2.Kemax
+ -1 -5.9999999999999998E-01       0                  0  1   280   # G2.G2.Kemin
+  0       0                       0                  0  6   256   # G2.G2.dUtr
+  0       0                       0                  0  6   256   # G2.G2.dWu
+  0       0                       0                  0  6   256   # G2.G2.dIf
+  0       0                       0                  0  6   256   # G2.G2.dEr
+  0       0                       0                  0  6   256   # G2.G2.dWf
+  0  3.1415926535897931E+00       0                  0  6   256   # G2.G2.PI
+  0  3.1415926535897933E+02       0                  0  6   256   # G2.G2.Wc
+  0       0                       0                  0  6   256   # G2.G2.Xt
+  0       0                       0                  0  6   256   # G2.G2.Ra
+  0       0                       0                  0  6   256   # G2.G2.Rt
+  0       0                       0                  0  6   256   # G2.G2.EQ
+  0       0                       0                  0  6   256   # G2.G2.Dg
+  0       0                       0                  0  6   256   # G2.G2.Uq
+  0       0                       0                  0  6   256   # G2.G2.Ud
+  0       0                       0                  0  6   256   # G2.G2.Id
+  0       0                       0                  0  6   256   # G2.G2.Iq
+  0       0                       0                  0  6   256   # G2.G2.Mt
+  0       0                       0                  0  6   256   # G2.G2.Eiq
+  0       0                       0                  0  6   256   # G2.G2.Ir
+  0       0                       0                  0  6   256   # G2.G2.Uf
+  0       0                       0                  0  6   256   # G2.G2.Eq
+  0       0                       0                  0  6   256   # G2.G2.Er0
+  0       0                       0                  0  6   256   # G2.G2.PsiR
+  0       0                       0                  0  6   256   # G2.G2.PsiRD
+  0       0                       0                  0  6   256   # G2.G2.PsiRQ
+  0       0                       0                  0  6   256   # G2.G2.Er_max
+  0       0                       0                  0  6   256   # G2.G2.Er_min
+  0       0                       0                  0  6   256   # G2.G2.Uf_full
+  0       0                       0                  0  6   320   # G2.G2.Xad
+  0       0                       0                  0  6   320   # G2.G2.Xaq
+  0       0                       0                  0  6   320   # G2.G2.X2dt
+  0       0                       0                  0  6   320   # G2.G2.X2qt
+  0       0                       0                  0  6   256   # G2.G2.Rs
+  0       0                       0                  0  6   320   # G2.G2.Xsf
+  0       0                       0                  0  6   320   # G2.G2.Xs1d
+  0       0                       0                  0  6   320   # G2.G2.Xs1q
+  0       0                       0                  0  6   320   # G2.G2.X1
+  0       0                       0                  0  6   320   # G2.G2.X2
+  0       0                       0                  0  6   320   # G2.G2.X3
+  0       0                       0                  0  6   256   # G2.G2.Ugen
+  0       0                       0                  0  6   256   # G2.G2.Mu0
+  0       0                       0                  0  6   256   # G2.G2.Ro
+ -1       0                       0                  0  2   272   # G2.G2.Mu
+  0       0                       0                  0  3   256   # G2.G2.der(Mu)
+  0       0                       0                  0  6   256   # G2.G2.Mt_pp
+  0       0                       0                  0  6   256   # G2.G2.Pgen
+  0       0                       0                  0  6   256   # G2.G2.Qgen
+ -1       0                       0                  0  2   272   # G2.G2.Yr
+  0       0                       0                  0  3   256   # G2.G2.der(Yr)
+ -1       0                       0                  0  2   272   # G2.G2.Yrd
+  0       0                       0                  0  3   256   # G2.G2.der(Yrd)
+ -1       0                       0                  0  2   272   # G2.G2.Yrq
+  0       0                       0                  0  3   256   # G2.G2.der(Yrq)
+ -1       0                       0                  0  2   272   # G2.G2.s
+  0       0                       0                  0  3   256   # G2.G2.der(s)
+ -1       0                       0                  0  2   272   # G2.G2.DGi
+  0       0                       0                  0  3   256   # G2.G2.der(DGi)
+  0       0                       0                  0  6   256   # G2.G2.Me
+  0       0                       0                  0  6   256   # G2.G2.Yad
+  0       0                       0                  0  6   256   # G2.G2.Yaq
+  0       0                       0                  0  6   256   # G2.G2.iq
+  0       0                       0                  0  6   256   # G2.G2.id
+  0       0                       0                  0  6   256   # G2.G2.ir
+  0       0                       0                  0  6   256   # G2.G2.ird
+  0       0                       0                  0  6   256   # G2.G2.irq
+  0       0                       0                  0  6   256   # G2.G2.ud
+  0       0                       0                  0  6   256   # G2.G2.uq
+  0       0                       0                  0  6   256   # G2.G2.E11d
+  0       0                       0                  0  6   256   # G2.G2.E11q
+  0       0                       0                  0  6   320   # G2.G2.TauC
+  0       0                       0                  0  6   320   # G2.G2.MT_MAX
+  0       0                       0                  0  6   320   # G2.G2.MT_MIN
+  0       0                       0                  0  6   320   # G2.G2.Xd
+  0       0                       0                  0  6   320   # G2.G2.Xq
+  0       0                       0                  0  6   320   # G2.G2.Xs
+  0       0                       0                  0  6   320   # G2.G2.X1d
+  0       0                       0                  0  6   320   # G2.G2.Rf
+  0       0                       0                  0  6   320   # G2.G2.R1d
+  0       0                       0                  0  6   320   # G2.G2.R1q
+  0       0                       0                  0  6   320   # G2.G2.Tj
+  0       0                       0                  0  6   256   # G2.G2.f
+ -1     -20                       0                  0  1   280   # G2.excitation_Regulator1.K0u
+ -1       0                       0                  0  1   280   # G2.excitation_Regulator1.K1u
+ -1       0                       0                  0  1   280   # G2.excitation_Regulator1.K0w
+ -1       0                       0                  0  1   280   # G2.excitation_Regulator1.K1w
+ -1       0                       0                  0  1   280   # G2.excitation_Regulator1.K1if
+ -1  8.4999999999999998E-01       0                  0  1   280   # G2.excitation_Regulator1.Uforc
+ -1  9.0000000000000002E-01       0                  0  1   280   # G2.excitation_Regulator1.Udeforc
+ -1  1.0000000000000001E-01       0                  0  1   280   # G2.excitation_Regulator1.Tforcedelay
+ -1       0                       0                  0  1   280   # G2.excitation_Regulator1.DL0
+  0  5.0000000000000003E-02       0                  0  6   256   # G2.excitation_Regulator1.Tokp
+  0  2.0000000000000000E-02       0                  0  6   256   # G2.excitation_Regulator1.T0u
+  0  3.9000000000000000E-02       0                  0  6   256   # G2.excitation_Regulator1.T1u
+  0  7.0000000000000007E-02       0                  0  6   256   # G2.excitation_Regulator1.Tfb
+  0       1                       0                  0  6   256   # G2.excitation_Regulator1.T0w
+  0  2.5999999999999999E-02       0                  0  6   256   # G2.excitation_Regulator1.T1w
+  0  2.9999999999999999E-02       0                  0  6   256   # G2.excitation_Regulator1.T1if
+  0       0                       0                  0  6   256   # G2.excitation_Regulator1.VoltageDeviation.b[1]
+  0  2.0000000000000000E-02       0                  0  6   256   # G2.excitation_Regulator1.VoltageDeviation.a[1]
+  0       1                       0                  0  6   256   # G2.excitation_Regulator1.VoltageDeviation.a[2]
+ -1  1.1315948329865932E-02       0                  0  2   280   # G2.excitation_Regulator1.VoltageDeviation.x[1]
+  0       0                       0                  0  3   256   # G2.excitation_Regulator1.VoltageDeviation.der(x[1])
+  0       2                       0                  0  6  1282   # G2.excitation_Regulator1.VoltageDeviation.na
+  0       1                 -1.0000000000000000E+100  2  6  1282   # G2.excitation_Regulator1.VoltageDeviation.nb
+  0       1                       0                  0  6  1282   # G2.excitation_Regulator1.VoltageDeviation.nx
+  0       0                       0                  0  6  1280   # G2.excitation_Regulator1.VoltageDeviation.y
+  0       0                       0                  0  6   256   # G2.excitation_Regulator1.VoltageDerivative.b[1]
+  0       0                       0                  0  6   256   # G2.excitation_Regulator1.VoltageDerivative.b[2]
+  0  3.9000000000000000E-02       0                  0  6   256   # G2.excitation_Regulator1.VoltageDerivative.a[1]
+  0       1                       0                  0  6   256   # G2.excitation_Regulator1.VoltageDerivative.a[2]
+ -1  1.1315987445414066E-02       0                  0  2   280   # G2.excitation_Regulator1.VoltageDerivative.x[1]
+  0       0                       0                  0  3   256   # G2.excitation_Regulator1.VoltageDerivative.der(x[1])
+  0       2                       0                  0  6  1282   # G2.excitation_Regulator1.VoltageDerivative.na
+  0       2                 -1.0000000000000000E+100  2  6  1282   # G2.excitation_Regulator1.VoltageDerivative.nb
+  0       1                       0                  0  6  1282   # G2.excitation_Regulator1.VoltageDerivative.nx
+  0       0                       0                  0  6  1280   # G2.excitation_Regulator1.VoltageDerivative.y
+ -1       1                       0                  0  1   280   # G2.excitation_Regulator1.FrequencyBlockD.b[1]
+  0  7.0000000000000007E-02       0                  0  6   256   # G2.excitation_Regulator1.FrequencyBlockD.a[1]
+  0       1                       0                  0  6   256   # G2.excitation_Regulator1.FrequencyBlockD.a[2]
+ -1 -1.8514678955078125E+01       0                  0  2   280   # G2.excitation_Regulator1.FrequencyBlockD.x[1]
+  0       0                       0                  0  3   256   # G2.excitation_Regulator1.FrequencyBlockD.der(x[1])
+  0       2                       0                  0  6  1282   # G2.excitation_Regulator1.FrequencyBlockD.na
+  0       1                 -1.0000000000000000E+100  2  6  1282   # G2.excitation_Regulator1.FrequencyBlockD.nb
+  0       1                       0                  0  6  1282   # G2.excitation_Regulator1.FrequencyBlockD.nx
+  0       0                       0                  0  6  1280   # G2.excitation_Regulator1.FrequencyBlockD.y
+ -1       1                       0                  0  1   280   # G2.excitation_Regulator1.FrequencyBlockU.b[1]
+ -1       0                       0                  0  1   280   # G2.excitation_Regulator1.FrequencyBlockU.b[2]
+  0  7.0000000000000007E-02       0                  0  6   256   # G2.excitation_Regulator1.FrequencyBlockU.a[1]
+  0       1                       0                  0  6   256   # G2.excitation_Regulator1.FrequencyBlockU.a[2]
+ -1       0                       0                  0  2   272   # G2.excitation_Regulator1.FrequencyBlockU.x[1]
+  0       0                       0                  0  3   256   # G2.excitation_Regulator1.FrequencyBlockU.der(x[1])
+  0       2                       0                  0  6  1282   # G2.excitation_Regulator1.FrequencyBlockU.na
+  0       2                 -1.0000000000000000E+100  2  6  1282   # G2.excitation_Regulator1.FrequencyBlockU.nb
+  0       1                       0                  0  6  1282   # G2.excitation_Regulator1.FrequencyBlockU.nx
+  0       0                       0                  0  6  1280   # G2.excitation_Regulator1.FrequencyBlockU.y
+  0       0                       0                  0  6   256   # G2.excitation_Regulator1.FrequencyDeviation.b[1]
+  0       0                       0                  0  6   256   # G2.excitation_Regulator1.FrequencyDeviation.b[2]
+  0       1                       0                  0  6   256   # G2.excitation_Regulator1.FrequencyDeviation.a[1]
+  0       1                       0                  0  6   256   # G2.excitation_Regulator1.FrequencyDeviation.a[2]
+ -1 -1.8190698623657227E+01       0                  0  2   280   # G2.excitation_Regulator1.FrequencyDeviation.x[1]
+  0       0                       0                  0  3   256   # G2.excitation_Regulator1.FrequencyDeviation.der(x[1])
+  0       2                       0                  0  6  1282   # G2.excitation_Regulator1.FrequencyDeviation.na
+  0       2                 -1.0000000000000000E+100  2  6  1282   # G2.excitation_Regulator1.FrequencyDeviation.nb
+  0       1                       0                  0  6  1282   # G2.excitation_Regulator1.FrequencyDeviation.nx
+  0       0                       0                  0  6  1280   # G2.excitation_Regulator1.FrequencyDeviation.u
+  0       0                       0                  0  6  1280   # G2.excitation_Regulator1.FrequencyDeviation.y
+  0       0                       0                  0  6   256   # G2.excitation_Regulator1.FrequencyDerivative.b[1]
+  0       0                       0                  0  6   256   # G2.excitation_Regulator1.FrequencyDerivative.b[2]
+  0  2.5999999999999999E-02       0                  0  6   256   # G2.excitation_Regulator1.FrequencyDerivative.a[1]
+  0       1                       0                  0  6   256   # G2.excitation_Regulator1.FrequencyDerivative.a[2]
+ -1 -1.8506269454956055E+01       0                  0  2   280   # G2.excitation_Regulator1.FrequencyDerivative.x[1]
+  0       0                       0                  0  3   256   # G2.excitation_Regulator1.FrequencyDerivative.der(x[1])
+  0       2                       0                  0  6  1282   # G2.excitation_Regulator1.FrequencyDerivative.na
+  0       2                 -1.0000000000000000E+100  2  6  1282   # G2.excitation_Regulator1.FrequencyDerivative.nb
+  0       1                       0                  0  6  1282   # G2.excitation_Regulator1.FrequencyDerivative.nx
+  0       0                       0                  0  6  1280   # G2.excitation_Regulator1.FrequencyDerivative.y
+  0       0                       0                  0  6   256   # G2.excitation_Regulator1.ExcitationCurrent.b[1]
+  0       0                       0                  0  6   256   # G2.excitation_Regulator1.ExcitationCurrent.b[2]
+  0  2.9999999999999999E-02       0                  0  6   256   # G2.excitation_Regulator1.ExcitationCurrent.a[1]
+  0       1                       0                  0  6   256   # G2.excitation_Regulator1.ExcitationCurrent.a[2]
+ -1 -1.5779177844524384E-01       0                  0  2   280   # G2.excitation_Regulator1.ExcitationCurrent.x[1]
+  0       0                       0                  0  3   256   # G2.excitation_Regulator1.ExcitationCurrent.der(x[1])
+  0       2                       0                  0  6  1282   # G2.excitation_Regulator1.ExcitationCurrent.na
+  0       2                 -1.0000000000000000E+100  2  6  1282   # G2.excitation_Regulator1.ExcitationCurrent.nb
+  0       1                       0                  0  6  1282   # G2.excitation_Regulator1.ExcitationCurrent.nx
+  0       0                       0                  0  6  1280   # G2.excitation_Regulator1.ExcitationCurrent.y
+ -1       1                       0                  0  1   280   # G2.excitation_Regulator1.SimpleExciter.b[1]
+  0  5.0000000000000003E-02       0                  0  6   256   # G2.excitation_Regulator1.SimpleExciter.a[1]
+  0       1                       0                  0  6   256   # G2.excitation_Regulator1.SimpleExciter.a[2]
+ -1 -2.2632116079330444E-01       0                  0  2   280   # G2.excitation_Regulator1.SimpleExciter.x[1]
+  0       0                       0                  0  3   256   # G2.excitation_Regulator1.SimpleExciter.der(x[1])
+  0       2                       0                  0  6  1282   # G2.excitation_Regulator1.SimpleExciter.na
+  0       1                 -1.0000000000000000E+100  2  6  1282   # G2.excitation_Regulator1.SimpleExciter.nb
+  0       1                       0                  0  6  1282   # G2.excitation_Regulator1.SimpleExciter.nx
+  0       0                       0                  0  6  1280   # G2.excitation_Regulator1.SimpleExciter.u
+  0       0                       0                  0  6   260   # G2.excitation_Regulator1.Summator2.out.Signal
+  0       0                       0                  0  6   260   # G2.excitation_Regulator1.Summator3.out.Signal
+  0       0                       0                  0  6   260   # G2.excitation_Regulator1.Summator5.out.Signal
+  0       0                       0                  0  6   260   # G2.excitation_Regulator1.Summator6.out.Signal
+  0       0                       0                  0  6   256   # G2.excitation_Regulator1.logical_switch1.a1
+  0       0                       0                  0  6   256   # G2.excitation_Regulator1.logical_switch1.a2
+  0       0                       0                  0  6   256   # G2.excitation_Regulator1.logical_switch1.a3
+  0       0                       0                  0  6   256   # G2.excitation_Regulator1.logical_switch1.a4
+  0       0                       0                  0  6   320   # G2.excitation_Regulator1.logical_switch1.T_force_on
+  0       0                       0                  0  6   388   # G2.Stator_pin.Id
+  0       0                       0                  0  6   388   # G2.Stator_pin.Iq
+ -1    1000                       0                  0  1   280   # G3.G3.TgenOff
+ -1      10                       0                  0  1   280   # G3.G3.dTgenOff
+ -1       0                       0                  0  1   280   # G3.G3.Pg
+ -1       0                       0                  0  1   280   # G3.G3.Qg
+ -1       1                       0                  0  1   280   # G3.G3.Ut
+ -1  4.3679999999999997E-02       0                  0  1   280   # G3.G3.Xd_p
+ -1  4.3679999999999997E-02       0                  0  1   280   # G3.G3.Xq_p
+ -1  3.7490300000000000E-03       0                  0  1   280   # G3.G3.Xs_p
+ -1  5.7547500000000003E-03       0                  0  1   280   # G3.G3.X1d_p
+ -1  4.1051799999999999E-03       0                  0  1   280   # G3.G3.X2d_p
+ -1  5.9047099999999996E-03       0                  0  1   280   # G3.G3.X2q_p
+ -1  1.4399999999999999E-05       0                  0  1   280   # G3.G3.Rf_p
+ -1  3.6936700000000002E-05       0                  0  1   280   # G3.G3.R1d_p
+ -1  1.2114500000000001E-04       0                  0  1   280   # G3.G3.R1q_p
+ -1     500                       0                  0  1   280   # G3.G3.Tj_p
+ -1  4.7500000000000001E-02       0                  0  1   280   # G3.G3.Sigma
+ -1  8.0000000000000004E-01       0                  0  1   280   # G3.G3.TauC_up
+ -1      50                       0                  0  1   280   # G3.G3.TregOff
+ -1    1000                       0                  0  1   280   # G3.G3.TregOn
+ -1  1.1000000000000001E+00       0                  0  1   280   # G3.G3.Mtmax
+ -1       0                       0                  0  1   280   # G3.G3.Mtmin
+ -1       1                       0                  0  1   280   # G3.G3.Aimp
+ -1    1000                       0                  0  1   280   # G3.G3.Timp
+ -1  2.0000000000000001E-01       0                  0  1   280   # G3.G3.dTimp
+ -1       5                       0                  0  1   280   # G3.G3.TauC_down
+ -1    1000                       0                  0  1   280   # G3.G3.TkzOn
+ -1  8.4999999999999998E-01       0                  0  1   280   # G3.G3.Pg_new
+ -1  2.1000000000000001E+00       0                  0  1   280   # G3.G3.Kemax
+ -1 -5.9999999999999998E-01       0                  0  1   280   # G3.G3.Kemin
+  0       0                       0                  0  6   256   # G3.G3.dUtr
+  0       0                       0                  0  6   256   # G3.G3.dWu
+  0       0                       0                  0  6   256   # G3.G3.dIf
+  0       0                       0                  0  6   256   # G3.G3.dEr
+  0       0                       0                  0  6   256   # G3.G3.dWf
+  0  3.1415926535897931E+00       0                  0  6   256   # G3.G3.PI
+  0  3.1415926535897933E+02       0                  0  6   256   # G3.G3.Wc
+  0       0                       0                  0  6   256   # G3.G3.Xt
+  0       0                       0                  0  6   256   # G3.G3.Ra
+  0       0                       0                  0  6   256   # G3.G3.Rt
+  0       0                       0                  0  6   256   # G3.G3.EQ
+  0       0                       0                  0  6   256   # G3.G3.Dg
+  0       0                       0                  0  6   256   # G3.G3.Uq
+  0       0                       0                  0  6   256   # G3.G3.Ud
+  0       0                       0                  0  6   256   # G3.G3.Id
+  0       0                       0                  0  6   256   # G3.G3.Iq
+  0       0                       0                  0  6   256   # G3.G3.Mt
+  0       0                       0                  0  6   256   # G3.G3.Eiq
+  0       0                       0                  0  6   256   # G3.G3.Ir
+  0       0                       0                  0  6   256   # G3.G3.Uf
+  0       0                       0                  0  6   256   # G3.G3.Eq
+  0       0                       0                  0  6   256   # G3.G3.Er0
+  0       0                       0                  0  6   256   # G3.G3.PsiR
+  0       0                       0                  0  6   256   # G3.G3.PsiRD
+  0       0                       0                  0  6   256   # G3.G3.PsiRQ
+  0       0                       0                  0  6   256   # G3.G3.Er_max
+  0       0                       0                  0  6   256   # G3.G3.Er_min
+  0       0                       0                  0  6   256   # G3.G3.Uf_full
+  0       0                       0                  0  6   320   # G3.G3.Xad
+  0       0                       0                  0  6   320   # G3.G3.Xaq
+  0       0                       0                  0  6   320   # G3.G3.X2dt
+  0       0                       0                  0  6   320   # G3.G3.X2qt
+  0       0                       0                  0  6   256   # G3.G3.Rs
+  0       0                       0                  0  6   320   # G3.G3.Xsf
+  0       0                       0                  0  6   320   # G3.G3.Xs1d
+  0       0                       0                  0  6   320   # G3.G3.Xs1q
+  0       0                       0                  0  6   320   # G3.G3.X1
+  0       0                       0                  0  6   320   # G3.G3.X2
+  0       0                       0                  0  6   320   # G3.G3.X3
+  0       0                       0                  0  6   256   # G3.G3.Ugen
+  0       0                       0                  0  6   256   # G3.G3.Mu0
+  0       0                       0                  0  6   256   # G3.G3.Ro
+ -1       0                       0                  0  2   272   # G3.G3.Mu
+  0       0                       0                  0  3   256   # G3.G3.der(Mu)
+  0       0                       0                  0  6   256   # G3.G3.Mt_pp
+  0       0                       0                  0  6   256   # G3.G3.Pgen
+  0       0                       0                  0  6   256   # G3.G3.Qgen
+ -1       0                       0                  0  2   272   # G3.G3.Yr
+  0       0                       0                  0  3   256   # G3.G3.der(Yr)
+ -1       0                       0                  0  2   272   # G3.G3.Yrd
+  0       0                       0                  0  3   256   # G3.G3.der(Yrd)
+ -1       0                       0                  0  2   272   # G3.G3.Yrq
+  0       0                       0                  0  3   256   # G3.G3.der(Yrq)
+ -1       0                       0                  0  2   272   # G3.G3.s
+  0       0                       0                  0  3   256   # G3.G3.der(s)
+ -1       0                       0                  0  2   272   # G3.G3.DGi
+  0       0                       0                  0  3   256   # G3.G3.der(DGi)
+  0       0                       0                  0  6   256   # G3.G3.Me
+  0       0                       0                  0  6   256   # G3.G3.Yad
+  0       0                       0                  0  6   256   # G3.G3.Yaq
+  0       0                       0                  0  6   256   # G3.G3.iq
+  0       0                       0                  0  6   256   # G3.G3.id
+  0       0                       0                  0  6   256   # G3.G3.ir
+  0       0                       0                  0  6   256   # G3.G3.ird
+  0       0                       0                  0  6   256   # G3.G3.irq
+  0       0                       0                  0  6   256   # G3.G3.ud
+  0       0                       0                  0  6   256   # G3.G3.uq
+  0       0                       0                  0  6   256   # G3.G3.E11d
+  0       0                       0                  0  6   256   # G3.G3.E11q
+  0       0                       0                  0  6   320   # G3.G3.TauC
+  0       0                       0                  0  6   320   # G3.G3.MT_MAX
+  0       0                       0                  0  6   320   # G3.G3.MT_MIN
+  0       0                       0                  0  6   320   # G3.G3.Xd
+  0       0                       0                  0  6   320   # G3.G3.Xq
+  0       0                       0                  0  6   320   # G3.G3.Xs
+  0       0                       0                  0  6   320   # G3.G3.X1d
+  0       0                       0                  0  6   320   # G3.G3.Rf
+  0       0                       0                  0  6   320   # G3.G3.R1d
+  0       0                       0                  0  6   320   # G3.G3.R1q
+  0       0                       0                  0  6   320   # G3.G3.Tj
+  0       0                       0                  0  6   256   # G3.G3.f
+ -1     -50                       0                  0  1   280   # G3.G3_Regulator.K0u
+ -1       0                       0                  0  1   280   # G3.G3_Regulator.K1u
+ -1       0                       0                  0  1   280   # G3.G3_Regulator.K0w
+ -1       0                       0                  0  1   280   # G3.G3_Regulator.K1w
+ -1       0                       0                  0  1   280   # G3.G3_Regulator.K1if
+ -1  8.4999999999999998E-01       0                  0  1   280   # G3.G3_Regulator.Uforc
+ -1  9.0000000000000002E-01       0                  0  1   280   # G3.G3_Regulator.Udeforc
+ -1  1.0000000000000001E-01       0                  0  1   280   # G3.G3_Regulator.Tforcedelay
+ -1       0                       0                  0  1   280   # G3.G3_Regulator.DL0
+  0  5.0000000000000003E-02       0                  0  6   256   # G3.G3_Regulator.Tokp
+  0  2.0000000000000000E-02       0                  0  6   256   # G3.G3_Regulator.T0u
+  0  3.9000000000000000E-02       0                  0  6   256   # G3.G3_Regulator.T1u
+  0  7.0000000000000007E-02       0                  0  6   256   # G3.G3_Regulator.Tfb
+  0       1                       0                  0  6   256   # G3.G3_Regulator.T0w
+  0  2.5999999999999999E-02       0                  0  6   256   # G3.G3_Regulator.T1w
+  0  2.9999999999999999E-02       0                  0  6   256   # G3.G3_Regulator.T1if
+  0       0                       0                  0  6   256   # G3.G3_Regulator.VoltageDeviation.b[1]
+  0  2.0000000000000000E-02       0                  0  6   256   # G3.G3_Regulator.VoltageDeviation.a[1]
+  0       1                       0                  0  6   256   # G3.G3_Regulator.VoltageDeviation.a[2]
+ -1 -8.8365348346997052E-05       0                  0  2   280   # G3.G3_Regulator.VoltageDeviation.x[1]
+  0       0                       0                  0  3   256   # G3.G3_Regulator.VoltageDeviation.der(x[1])
+  0       2                       0                  0  6  1282   # G3.G3_Regulator.VoltageDeviation.na
+  0       1                 -1.0000000000000000E+100  2  6  1282   # G3.G3_Regulator.VoltageDeviation.nb
+  0       1                       0                  0  6  1282   # G3.G3_Regulator.VoltageDeviation.nx
+  0       0                       0                  0  6  1280   # G3.G3_Regulator.VoltageDeviation.y
+  0       0                       0                  0  6   256   # G3.G3_Regulator.VoltageDerivative.b[1]
+  0       0                       0                  0  6   256   # G3.G3_Regulator.VoltageDerivative.b[2]
+  0  3.9000000000000000E-02       0                  0  6   256   # G3.G3_Regulator.VoltageDerivative.a[1]
+  0       1                       0                  0  6   256   # G3.G3_Regulator.VoltageDerivative.a[2]
+ -1 -8.8361142843496054E-05       0                  0  2   280   # G3.G3_Regulator.VoltageDerivative.x[1]
+  0       0                       0                  0  3   256   # G3.G3_Regulator.VoltageDerivative.der(x[1])
+  0       2                       0                  0  6  1282   # G3.G3_Regulator.VoltageDerivative.na
+  0       2                 -1.0000000000000000E+100  2  6  1282   # G3.G3_Regulator.VoltageDerivative.nb
+  0       1                       0                  0  6  1282   # G3.G3_Regulator.VoltageDerivative.nx
+  0       0                       0                  0  6  1280   # G3.G3_Regulator.VoltageDerivative.y
+ -1       1                       0                  0  1   280   # G3.G3_Regulator.FrequencyBlockD.b[1]
+  0  7.0000000000000007E-02       0                  0  6   256   # G3.G3_Regulator.FrequencyBlockD.a[1]
+  0       1                       0                  0  6   256   # G3.G3_Regulator.FrequencyBlockD.a[2]
+ -1 -1.8514678955078125E+01       0                  0  2   280   # G3.G3_Regulator.FrequencyBlockD.x[1]
+  0       0                       0                  0  3   256   # G3.G3_Regulator.FrequencyBlockD.der(x[1])
+  0       2                       0                  0  6  1282   # G3.G3_Regulator.FrequencyBlockD.na
+  0       1                 -1.0000000000000000E+100  2  6  1282   # G3.G3_Regulator.FrequencyBlockD.nb
+  0       1                       0                  0  6  1282   # G3.G3_Regulator.FrequencyBlockD.nx
+  0       0                       0                  0  6  1280   # G3.G3_Regulator.FrequencyBlockD.y
+ -1       1                       0                  0  1   280   # G3.G3_Regulator.FrequencyBlockU.b[1]
+ -1       0                       0                  0  1   280   # G3.G3_Regulator.FrequencyBlockU.b[2]
+  0  7.0000000000000007E-02       0                  0  6   256   # G3.G3_Regulator.FrequencyBlockU.a[1]
+  0       1                       0                  0  6   256   # G3.G3_Regulator.FrequencyBlockU.a[2]
+ -1       0                       0                  0  2   272   # G3.G3_Regulator.FrequencyBlockU.x[1]
+  0       0                       0                  0  3   256   # G3.G3_Regulator.FrequencyBlockU.der(x[1])
+  0       2                       0                  0  6  1282   # G3.G3_Regulator.FrequencyBlockU.na
+  0       2                 -1.0000000000000000E+100  2  6  1282   # G3.G3_Regulator.FrequencyBlockU.nb
+  0       1                       0                  0  6  1282   # G3.G3_Regulator.FrequencyBlockU.nx
+  0       0                       0                  0  6  1280   # G3.G3_Regulator.FrequencyBlockU.y
+  0       0                       0                  0  6   256   # G3.G3_Regulator.FrequencyDeviation.b[1]
+  0       0                       0                  0  6   256   # G3.G3_Regulator.FrequencyDeviation.b[2]
+  0       1                       0                  0  6   256   # G3.G3_Regulator.FrequencyDeviation.a[1]
+  0       1                       0                  0  6   256   # G3.G3_Regulator.FrequencyDeviation.a[2]
+ -1 -1.8190702438354492E+01       0                  0  2   280   # G3.G3_Regulator.FrequencyDeviation.x[1]
+  0       0                       0                  0  3   256   # G3.G3_Regulator.FrequencyDeviation.der(x[1])
+  0       2                       0                  0  6  1282   # G3.G3_Regulator.FrequencyDeviation.na
+  0       2                 -1.0000000000000000E+100  2  6  1282   # G3.G3_Regulator.FrequencyDeviation.nb
+  0       1                       0                  0  6  1282   # G3.G3_Regulator.FrequencyDeviation.nx
+  0       0                       0                  0  6  1280   # G3.G3_Regulator.FrequencyDeviation.u
+  0       0                       0                  0  6  1280   # G3.G3_Regulator.FrequencyDeviation.y
+  0       0                       0                  0  6   256   # G3.G3_Regulator.FrequencyDerivative.b[1]
+  0       0                       0                  0  6   256   # G3.G3_Regulator.FrequencyDerivative.b[2]
+  0  2.5999999999999999E-02       0                  0  6   256   # G3.G3_Regulator.FrequencyDerivative.a[1]
+  0       1                       0                  0  6   256   # G3.G3_Regulator.FrequencyDerivative.a[2]
+ -1 -1.8506326675415039E+01       0                  0  2   280   # G3.G3_Regulator.FrequencyDerivative.x[1]
+  0       0                       0                  0  3   256   # G3.G3_Regulator.FrequencyDerivative.der(x[1])
+  0       2                       0                  0  6  1282   # G3.G3_Regulator.FrequencyDerivative.na
+  0       2                 -1.0000000000000000E+100  2  6  1282   # G3.G3_Regulator.FrequencyDerivative.nb
+  0       1                       0                  0  6  1282   # G3.G3_Regulator.FrequencyDerivative.nx
+  0       0                       0                  0  6  1280   # G3.G3_Regulator.FrequencyDerivative.y
+  0       0                       0                  0  6   256   # G3.G3_Regulator.ExcitationCurrent.b[1]
+  0       0                       0                  0  6   256   # G3.G3_Regulator.ExcitationCurrent.b[2]
+  0  2.9999999999999999E-02       0                  0  6   256   # G3.G3_Regulator.ExcitationCurrent.a[1]
+  0       1                       0                  0  6   256   # G3.G3_Regulator.ExcitationCurrent.a[2]
+ -1  1.1060376465320587E-01       0                  0  2   280   # G3.G3_Regulator.ExcitationCurrent.x[1]
+  0       0                       0                  0  3   256   # G3.G3_Regulator.ExcitationCurrent.der(x[1])
+  0       2                       0                  0  6  1282   # G3.G3_Regulator.ExcitationCurrent.na
+  0       2                 -1.0000000000000000E+100  2  6  1282   # G3.G3_Regulator.ExcitationCurrent.nb
+  0       1                       0                  0  6  1282   # G3.G3_Regulator.ExcitationCurrent.nx
+  0       0                       0                  0  6  1280   # G3.G3_Regulator.ExcitationCurrent.y
+ -1       1                       0                  0  1   280   # G3.G3_Regulator.SimpleExciter.b[1]
+  0  5.0000000000000003E-02       0                  0  6   256   # G3.G3_Regulator.SimpleExciter.a[1]
+  0       1                       0                  0  6   256   # G3.G3_Regulator.SimpleExciter.a[2]
+ -1  4.4177011586725712E-03       0                  0  2   280   # G3.G3_Regulator.SimpleExciter.x[1]
+  0       0                       0                  0  3   256   # G3.G3_Regulator.SimpleExciter.der(x[1])
+  0       2                       0                  0  6  1282   # G3.G3_Regulator.SimpleExciter.na
+  0       1                 -1.0000000000000000E+100  2  6  1282   # G3.G3_Regulator.SimpleExciter.nb
+  0       1                       0                  0  6  1282   # G3.G3_Regulator.SimpleExciter.nx
+  0       0                       0                  0  6  1280   # G3.G3_Regulator.SimpleExciter.u
+  0       0                       0                  0  6   260   # G3.G3_Regulator.Summator2.out.Signal
+  0       0                       0                  0  6   260   # G3.G3_Regulator.Summator3.out.Signal
+  0       0                       0                  0  6   260   # G3.G3_Regulator.Summator5.out.Signal
+  0       0                       0                  0  6   260   # G3.G3_Regulator.Summator6.out.Signal
+  0       0                       0                  0  6   256   # G3.G3_Regulator.logical_switch1.a1
+  0       0                       0                  0  6   256   # G3.G3_Regulator.logical_switch1.a2
+  0       0                       0                  0  6   256   # G3.G3_Regulator.logical_switch1.a3
+  0       0                       0                  0  6   256   # G3.G3_Regulator.logical_switch1.a4
+  0       0                       0                  0  6   320   # G3.G3_Regulator.logical_switch1.T_force_on
+  0       0                       0                  0  6   388   # G3.Stator_pin.Id
+  0       0                       0                  0  6   388   # G3.Stator_pin.Iq
+ -1    1000                       0                  0  1   280   # G1.G1.TgenOff
+ -1      10                       0                  0  1   280   # G1.G1.dTgenOff
+ -1  3.5999999999999999E-01       0                  0  1   280   # G1.G1.Pg
+ -1  1.1810000000000000E-01       0                  0  1   280   # G1.G1.Qg
+ -1  1.1147000000000000E+00       0                  0  1   280   # G1.G1.Ut
+ -1  2.0727300000000000E+00       0                  0  1   280   # G1.G1.Xd_p
+ -1  1.3472700000000000E+00       0                  0  1   280   # G1.G1.Xq_p
+ -1  2.2000000000000000E-01       0                  0  1   280   # G1.G1.Xs_p
+ -1  5.0909000000000004E-01       0                  0  1   280   # G1.G1.X1d_p
+ -1  3.2727000000000001E-01       0                  0  1   280   # G1.G1.X2d_p
+ -1  3.6364000000000002E-01       0                  0  1   280   # G1.G1.X2q_p
+ -1  1.2830000000000001E-03       0                  0  1   280   # G1.G1.Rf_p
+ -1  7.8421500000000009E-03       0                  0  1   280   # G1.G1.R1d_p
+ -1  9.2538900000000007E-03       0                  0  1   280   # G1.G1.R1q_p
+ -1  1.3250800000000000E+01       0                  0  1   280   # G1.G1.Tj_p
+ -1  4.7500000000000001E-02       0                  0  1   280   # G1.G1.Sigma
+ -1  8.0000000000000004E-01       0                  0  1   280   # G1.G1.TauC_up
+ -1      50                       0                  0  1   280   # G1.G1.TregOff
+ -1    1000                       0                  0  1   280   # G1.G1.TregOn
+ -1  1.1000000000000001E+00       0                  0  1   280   # G1.G1.Mtmax
+ -1       0                       0                  0  1   280   # G1.G1.Mtmin
+ -1       1                       0                  0  1   280   # G1.G1.Aimp
+ -1    1000                       0                  0  1   280   # G1.G1.Timp
+ -1  2.0000000000000001E-01       0                  0  1   280   # G1.G1.dTimp
+ -1       5                       0                  0  1   280   # G1.G1.TauC_down
+ -1  5.0399999999999999E+01       0                  0  1   280   # G1.G1.TkzOn
+ -1  1.3500000000000001E-01       0                  0  1   280   # G1.G1.Pg_new
+ -1  2.1000000000000001E+00       0                  0  1   280   # G1.G1.Kemax
+ -1 -5.9999999999999998E-01       0                  0  1   280   # G1.G1.Kemin
+  0       0                       0                  0  6   256   # G1.G1.dUtr
+  0       0                       0                  0  6   256   # G1.G1.dWu
+  0       0                       0                  0  6   256   # G1.G1.dIf
+  0       0                       0                  0  6   256   # G1.G1.dEr
+  0       0                       0                  0  6   256   # G1.G1.dWf
+  0  3.1415926535897931E+00       0                  0  6   256   # G1.G1.PI
+  0  3.1415926535897933E+02       0                  0  6   256   # G1.G1.Wc
+  0       0                       0                  0  6   256   # G1.G1.Xt
+  0       0                       0                  0  6   256   # G1.G1.Ra
+  0       0                       0                  0  6   256   # G1.G1.Rt
+  0       0                       0                  0  6   256   # G1.G1.EQ
+  0       0                       0                  0  6   256   # G1.G1.Dg
+  0       0                       0                  0  6   256   # G1.G1.Uq
+  0       0                       0                  0  6   256   # G1.G1.Ud
+  0       0                       0                  0  6   256   # G1.G1.Id
+  0       0                       0                  0  6   256   # G1.G1.Iq
+  0       0                       0                  0  6   256   # G1.G1.Mt
+  0       0                       0                  0  6   256   # G1.G1.Eiq
+  0       0                       0                  0  6   256   # G1.G1.Ir
+  0       0                       0                  0  6   256   # G1.G1.Uf
+  0       0                       0                  0  6   256   # G1.G1.Eq
+  0       0                       0                  0  6   256   # G1.G1.Er0
+  0       0                       0                  0  6   256   # G1.G1.PsiR
+  0       0                       0                  0  6   256   # G1.G1.PsiRD
+  0       0                       0                  0  6   256   # G1.G1.PsiRQ
+  0       0                       0                  0  6   256   # G1.G1.Er_max
+  0       0                       0                  0  6   256   # G1.G1.Er_min
+  0       0                       0                  0  6   256   # G1.G1.Uf_full
+  0       0                       0                  0  6   320   # G1.G1.Xad
+  0       0                       0                  0  6   320   # G1.G1.Xaq
+  0       0                       0                  0  6   320   # G1.G1.X2dt
+  0       0                       0                  0  6   320   # G1.G1.X2qt
+  0       0                       0                  0  6   256   # G1.G1.Rs
+  0       0                       0                  0  6   320   # G1.G1.Xsf
+  0       0                       0                  0  6   320   # G1.G1.Xs1d
+  0       0                       0                  0  6   320   # G1.G1.Xs1q
+  0       0                       0                  0  6   320   # G1.G1.X1
+  0       0                       0                  0  6   320   # G1.G1.X2
+  0       0                       0                  0  6   320   # G1.G1.X3
+  0       0                       0                  0  6   256   # G1.G1.Ugen
+  0       0                       0                  0  6   256   # G1.G1.Mu0
+  0       0                       0                  0  6   256   # G1.G1.Ro
+ -1       0                       0                  0  2   272   # G1.G1.Mu
+  0       0                       0                  0  3   256   # G1.G1.der(Mu)
+  0       0                       0                  0  6   256   # G1.G1.Mt_pp
+  0       0                       0                  0  6   256   # G1.G1.Pgen
+  0       0                       0                  0  6   256   # G1.G1.Qgen
+  0       0                       0                  0  6   256   # G1.G1.DeltaIJ
+ -1       0                       0                  0  2   272   # G1.G1.Yr
+  0       0                       0                  0  3   256   # G1.G1.der(Yr)
+ -1       0                       0                  0  2   272   # G1.G1.Yrd
+  0       0                       0                  0  3   256   # G1.G1.der(Yrd)
+ -1       0                       0                  0  2   272   # G1.G1.Yrq
+  0       0                       0                  0  3   256   # G1.G1.der(Yrq)
+ -1       0                       0                  0  2   272   # G1.G1.s
+  0       0                       0                  0  3   256   # G1.G1.der(s)
+ -1       0                       0                  0  2   272   # G1.G1.DGi
+  0       0                       0                  0  3   256   # G1.G1.der(DGi)
+  0       0                       0                  0  6   256   # G1.G1.Me
+  0       0                       0                  0  6   256   # G1.G1.Yad
+  0       0                       0                  0  6   256   # G1.G1.Yaq
+  0       0                       0                  0  6   256   # G1.G1.ir
+  0       0                       0                  0  6   256   # G1.G1.ird
+  0       0                       0                  0  6   256   # G1.G1.irq
+  0       0                       0                  0  6   256   # G1.G1.E11d
+  0       0                       0                  0  6   256   # G1.G1.E11q
+  0       0                       0                  0  6   320   # G1.G1.TauC
+  0       0                       0                  0  6   320   # G1.G1.MT_MAX
+  0       0                       0                  0  6   320   # G1.G1.MT_MIN
+  0       0                       0                  0  6   320   # G1.G1.Xd
+  0       0                       0                  0  6   320   # G1.G1.Xq
+  0       0                       0                  0  6   320   # G1.G1.Xs
+  0       0                       0                  0  6   320   # G1.G1.X1d
+  0       0                       0                  0  6   320   # G1.G1.Rf
+  0       0                       0                  0  6   320   # G1.G1.R1d
+  0       0                       0                  0  6   320   # G1.G1.R1q
+  0       0                       0                  0  6   320   # G1.G1.Tj
+  0       0                       0                  0  6   256   # G1.G1.f
+ -1     -20                       0                  0  1   280   # G1.excitation_Regulator.K0u
+ -1       0                       0                  0  1   280   # G1.excitation_Regulator.K1u
+ -1       0                       0                  0  1   280   # G1.excitation_Regulator.K0w
+ -1       0                       0                  0  1   280   # G1.excitation_Regulator.K1w
+ -1       0                       0                  0  1   280   # G1.excitation_Regulator.K1if
+ -1  8.4999999999999998E-01       0                  0  1   280   # G1.excitation_Regulator.Uforc
+ -1  9.0000000000000002E-01       0                  0  1   280   # G1.excitation_Regulator.Udeforc
+ -1  1.0000000000000001E-01       0                  0  1   280   # G1.excitation_Regulator.Tforcedelay
+ -1       0                       0                  0  1   280   # G1.excitation_Regulator.DL0
+  0  5.0000000000000003E-02       0                  0  6   256   # G1.excitation_Regulator.Tokp
+  0  2.0000000000000000E-02       0                  0  6   256   # G1.excitation_Regulator.T0u
+  0  3.9000000000000000E-02       0                  0  6   256   # G1.excitation_Regulator.T1u
+  0  7.0000000000000007E-02       0                  0  6   256   # G1.excitation_Regulator.Tfb
+  0       1                       0                  0  6   256   # G1.excitation_Regulator.T0w
+  0  2.5999999999999999E-02       0                  0  6   256   # G1.excitation_Regulator.T1w
+  0  2.9999999999999999E-02       0                  0  6   256   # G1.excitation_Regulator.T1if
+  0       0                       0                  0  6   256   # G1.excitation_Regulator.VoltageDeviation.b[1]
+  0  2.0000000000000000E-02       0                  0  6   256   # G1.excitation_Regulator.VoltageDeviation.a[1]
+  0       1                       0                  0  6   256   # G1.excitation_Regulator.VoltageDeviation.a[2]
+ -1 -1.8517049029469490E-02       0                  0  2   280   # G1.excitation_Regulator.VoltageDeviation.x[1]
+  0       0                       0                  0  3   256   # G1.excitation_Regulator.VoltageDeviation.der(x[1])
+  0       2                       0                  0  6  1282   # G1.excitation_Regulator.VoltageDeviation.na
+  0       1                 -1.0000000000000000E+100  2  6  1282   # G1.excitation_Regulator.VoltageDeviation.nb
+  0       1                       0                  0  6  1282   # G1.excitation_Regulator.VoltageDeviation.nx
+  0       0                       0                  0  6  1280   # G1.excitation_Regulator.VoltageDeviation.y
+  0       0                       0                  0  6   256   # G1.excitation_Regulator.VoltageDerivative.b[1]
+  0       0                       0                  0  6   256   # G1.excitation_Regulator.VoltageDerivative.b[2]
+  0  3.9000000000000000E-02       0                  0  6   256   # G1.excitation_Regulator.VoltageDerivative.a[1]
+  0       1                       0                  0  6   256   # G1.excitation_Regulator.VoltageDerivative.a[2]
+ -1 -1.8517008051276207E-02       0                  0  2   280   # G1.excitation_Regulator.VoltageDerivative.x[1]
+  0       0                       0                  0  3   256   # G1.excitation_Regulator.VoltageDerivative.der(x[1])
+  0       2                       0                  0  6  1282   # G1.excitation_Regulator.VoltageDerivative.na
+  0       2                 -1.0000000000000000E+100  2  6  1282   # G1.excitation_Regulator.VoltageDerivative.nb
+  0       1                       0                  0  6  1282   # G1.excitation_Regulator.VoltageDerivative.nx
+  0       0                       0                  0  6  1280   # G1.excitation_Regulator.VoltageDerivative.y
+ -1       1                       0                  0  1   280   # G1.excitation_Regulator.FrequencyBlockD.b[1]
+  0  7.0000000000000007E-02       0                  0  6   256   # G1.excitation_Regulator.FrequencyBlockD.a[1]
+  0       1                       0                  0  6   256   # G1.excitation_Regulator.FrequencyBlockD.a[2]
+ -1 -1.8514678955078125E+01       0                  0  2   280   # G1.excitation_Regulator.FrequencyBlockD.x[1]
+  0       0                       0                  0  3   256   # G1.excitation_Regulator.FrequencyBlockD.der(x[1])
+  0       2                       0                  0  6  1282   # G1.excitation_Regulator.FrequencyBlockD.na
+  0       1                 -1.0000000000000000E+100  2  6  1282   # G1.excitation_Regulator.FrequencyBlockD.nb
+  0       1                       0                  0  6  1282   # G1.excitation_Regulator.FrequencyBlockD.nx
+  0       0                       0                  0  6  1280   # G1.excitation_Regulator.FrequencyBlockD.y
+ -1       1                       0                  0  1   280   # G1.excitation_Regulator.FrequencyBlockU.b[1]
+ -1       0                       0                  0  1   280   # G1.excitation_Regulator.FrequencyBlockU.b[2]
+  0  7.0000000000000007E-02       0                  0  6   256   # G1.excitation_Regulator.FrequencyBlockU.a[1]
+  0       1                       0                  0  6   256   # G1.excitation_Regulator.FrequencyBlockU.a[2]
+ -1       0                       0                  0  2   272   # G1.excitation_Regulator.FrequencyBlockU.x[1]
+  0       0                       0                  0  3   256   # G1.excitation_Regulator.FrequencyBlockU.der(x[1])
+  0       2                       0                  0  6  1282   # G1.excitation_Regulator.FrequencyBlockU.na
+  0       2                 -1.0000000000000000E+100  2  6  1282   # G1.excitation_Regulator.FrequencyBlockU.nb
+  0       1                       0                  0  6  1282   # G1.excitation_Regulator.FrequencyBlockU.nx
+  0       0                       0                  0  6  1280   # G1.excitation_Regulator.FrequencyBlockU.y
+  0       0                       0                  0  6   256   # G1.excitation_Regulator.FrequencyDeviation.b[1]
+  0       0                       0                  0  6   256   # G1.excitation_Regulator.FrequencyDeviation.b[2]
+  0       1                       0                  0  6   256   # G1.excitation_Regulator.FrequencyDeviation.a[1]
+  0       1                       0                  0  6   256   # G1.excitation_Regulator.FrequencyDeviation.a[2]
+ -1 -1.8190702438354492E+01       0                  0  2   280   # G1.excitation_Regulator.FrequencyDeviation.x[1]
+  0       0                       0                  0  3   256   # G1.excitation_Regulator.FrequencyDeviation.der(x[1])
+  0       2                       0                  0  6  1282   # G1.excitation_Regulator.FrequencyDeviation.na
+  0       2                 -1.0000000000000000E+100  2  6  1282   # G1.excitation_Regulator.FrequencyDeviation.nb
+  0       1                       0                  0  6  1282   # G1.excitation_Regulator.FrequencyDeviation.nx
+  0       0                       0                  0  6  1280   # G1.excitation_Regulator.FrequencyDeviation.u
+  0       0                       0                  0  6  1280   # G1.excitation_Regulator.FrequencyDeviation.y
+  0       0                       0                  0  6   256   # G1.excitation_Regulator.FrequencyDerivative.b[1]
+  0       0                       0                  0  6   256   # G1.excitation_Regulator.FrequencyDerivative.b[2]
+  0  2.5999999999999999E-02       0                  0  6   256   # G1.excitation_Regulator.FrequencyDerivative.a[1]
+  0       1                       0                  0  6   256   # G1.excitation_Regulator.FrequencyDerivative.a[2]
+ -1 -1.8506282806396484E+01       0                  0  2   280   # G1.excitation_Regulator.FrequencyDerivative.x[1]
+  0       0                       0                  0  3   256   # G1.excitation_Regulator.FrequencyDerivative.der(x[1])
+  0       2                       0                  0  6  1282   # G1.excitation_Regulator.FrequencyDerivative.na
+  0       2                 -1.0000000000000000E+100  2  6  1282   # G1.excitation_Regulator.FrequencyDerivative.nb
+  0       1                       0                  0  6  1282   # G1.excitation_Regulator.FrequencyDerivative.nx
+  0       0                       0                  0  6  1280   # G1.excitation_Regulator.FrequencyDerivative.y
+  0       0                       0                  0  6   256   # G1.excitation_Regulator.ExcitationCurrent.b[1]
+  0       0                       0                  0  6   256   # G1.excitation_Regulator.ExcitationCurrent.b[2]
+  0  2.9999999999999999E-02       0                  0  6   256   # G1.excitation_Regulator.ExcitationCurrent.a[1]
+  0       1                       0                  0  6   256   # G1.excitation_Regulator.ExcitationCurrent.a[2]
+ -1 -4.2425468564033508E-01       0                  0  2   280   # G1.excitation_Regulator.ExcitationCurrent.x[1]
+  0       0                       0                  0  3   256   # G1.excitation_Regulator.ExcitationCurrent.der(x[1])
+  0       2                       0                  0  6  1282   # G1.excitation_Regulator.ExcitationCurrent.na
+  0       2                 -1.0000000000000000E+100  2  6  1282   # G1.excitation_Regulator.ExcitationCurrent.nb
+  0       1                       0                  0  6  1282   # G1.excitation_Regulator.ExcitationCurrent.nx
+  0       0                       0                  0  6  1280   # G1.excitation_Regulator.ExcitationCurrent.y
+ -1       1                       0                  0  1   280   # G1.excitation_Regulator.SimpleExciter.b[1]
+  0  5.0000000000000003E-02       0                  0  6   256   # G1.excitation_Regulator.SimpleExciter.a[1]
+  0       1                       0                  0  6   256   # G1.excitation_Regulator.SimpleExciter.a[2]
+ -1  3.7033876776695251E-01       0                  0  2   280   # G1.excitation_Regulator.SimpleExciter.x[1]
+  0       0                       0                  0  3   256   # G1.excitation_Regulator.SimpleExciter.der(x[1])
+  0       2                       0                  0  6  1282   # G1.excitation_Regulator.SimpleExciter.na
+  0       1                 -1.0000000000000000E+100  2  6  1282   # G1.excitation_Regulator.SimpleExciter.nb
+  0       1                       0                  0  6  1282   # G1.excitation_Regulator.SimpleExciter.nx
+  0       0                       0                  0  6  1280   # G1.excitation_Regulator.SimpleExciter.u
+  0       0                       0                  0  6   260   # G1.excitation_Regulator.Summator2.out.Signal
+  0       0                       0                  0  6   260   # G1.excitation_Regulator.Summator3.out.Signal
+  0       0                       0                  0  6   260   # G1.excitation_Regulator.Summator5.out.Signal
+  0       0                       0                  0  6   260   # G1.excitation_Regulator.Summator6.out.Signal
+  0       0                       0                  0  6   256   # G1.excitation_Regulator.logical_switch1.a1
+  0       0                       0                  0  6   256   # G1.excitation_Regulator.logical_switch1.a2
+  0       0                       0                  0  6   256   # G1.excitation_Regulator.logical_switch1.a3
+  0       0                       0                  0  6   256   # G1.excitation_Regulator.logical_switch1.a4
+  0       0                       0                  0  6   320   # G1.excitation_Regulator.logical_switch1.T_force_on
+  0       0                       0                  0  6   388   # G1.pin_v2_2.Id
+  0       0                       0                  0  6   388   # G1.pin_v2_2.Iq
+  0       0                       0                  0  6   260   # node_14.Vd
+  0       0                       0                  0  6   260   # node_14.Vq
+  0       0                       0                  0  6   388   # node_14.Id
+  0       0                       0                  0  6   388   # node_14.Iq
+  0       0                       0                  0  6   260   # node_13.Vd
+  0       0                       0                  0  6   260   # node_13.Vq
+  0       0                       0                  0  6   388   # node_13.Id
+  0       0                       0                  0  6   388   # node_13.Iq
+  0       0                       0                  0  6   260   # node_15.Vd
+  0       0                       0                  0  6   260   # node_15.Vq
+  0       0                       0                  0  6   388   # node_15.Id
+  0       0                       0                  0  6   388   # node_15.Iq
+  0       0                       0                  0  6   260   # node_12.Vd
+  0       0                       0                  0  6   260   # node_12.Vq
+  0       0                       0                  0  6   388   # node_12.Id
+  0       0                       0                  0  6   388   # node_12.Iq
+  0       0                       0                  0  6   260   # node_10.Vd
+  0       0                       0                  0  6   260   # node_10.Vq
+  0       0                       0                  0  6   388   # node_10.Id
+  0       0                       0                  0  6   388   # node_10.Iq
+  0       0                       0                  0  6   260   # node_11.Vd
+  0       0                       0                  0  6   260   # node_11.Vq
+  0       0                       0                  0  6   388   # node_11.Id
+  0       0                       0                  0  6   388   # node_11.Iq
+  0       0                       0                  0  6   260   # node_7.Vd
+  0       0                       0                  0  6   260   # node_7.Vq
+  0       0                       0                  0  6   388   # node_7.Id
+  0       0                       0                  0  6   388   # node_7.Iq
+  0       0                       0                  0  6   260   # node_16.Vd
+  0       0                       0                  0  6   260   # node_16.Vq
+  0       0                       0                  0  6   388   # node_16.Id
+  0       0                       0                  0  6   388   # node_16.Iq
+  0       0                       0                  0  6   260   # node_8.Vd
+  0       0                       0                  0  6   260   # node_8.Vq
+  0       0                       0                  0  6   388   # node_8.Id
+  0       0                       0                  0  6   388   # node_8.Iq
+  0       0                       0                  0  6   260   # node_21.Vd
+  0       0                       0                  0  6   260   # node_21.Vq
+  0       0                       0                  0  6   388   # node_21.Id
+  0       0                       0                  0  6   388   # node_21.Iq
+  0       0                       0                  0  6   260   # node_9.Vd
+  0       0                       0                  0  6   260   # node_9.Vq
+  0       0                       0                  0  6   388   # node_9.Id
+  0       0                       0                  0  6   388   # node_9.Iq
+  0       0                       0                  0  6   260   # node_5.Vd
+  0       0                       0                  0  6   260   # node_5.Vq
+  0       0                       0                  0  6   388   # node_5.Id
+  0       0                       0                  0  6   388   # node_5.Iq
+  0       0                       0                  0  6   260   # node_4.Vd
+  0       0                       0                  0  6   260   # node_4.Vq
+  0       0                       0                  0  6   388   # node_4.Id
+  0       0                       0                  0  6   388   # node_4.Iq
+  0       0                       0                  0  6   260   # node_6.Vd
+  0       0                       0                  0  6   260   # node_6.Vq
+  0       0                       0                  0  6   388   # node_6.Id
+  0       0                       0                  0  6   388   # node_6.Iq
+  0       0                       0                  0  6   260   # node_3.Vd
+  0       0                       0                  0  6   260   # node_3.Vq
+  0       0                       0                  0  6   388   # node_3.Id
+  0       0                       0                  0  6   388   # node_3.Iq
+  0       0                       0                  0  6   260   # node_2.Vd
+  0       0                       0                  0  6   260   # node_2.Vq
+  0       0                       0                  0  6   388   # node_2.Id
+  0       0                       0                  0  6   388   # node_2.Iq
+  0       0                       0                  0  6   260   # node_1.Vd
+  0       0                       0                  0  6   260   # node_1.Vq
+  0       0                       0                  0  6   388   # node_1.Id
+  0       0                       0                  0  6   388   # node_1.Iq
+  0       0                       0                  0  6   260   # node_22.Vd
+  0       0                       0                  0  6   260   # node_22.Vq
+  0       0                       0                  0  6   388   # node_22.Id
+  0       0                       0                  0  6   388   # node_22.Iq
+
+
+# Matrix with 6 columns defining the initial value calculation
+# (columns 5 and 6 are not utilized for the calculation but are
+#  reported by dymosim via dymosim -i for user convenience):
+#
+# column 1: Type of initial value
+#           = -2: special case: for continuing simulation (column 2 = value)
+#           = -1: fixed value (column 2 = fixed value)
+#           =  0: free value, i.e., no restriction (column 2 = initial value)
+#           >  0: desired value (column 1 = weight for optimization
+#                                column 2 = desired value)
+#                 use weight=1, since automatic scaling usually
+#                 leads to equally weighted terms
+# column 2: fixed, free or desired value according to column 1.
+# column 3: Minimum value (ignored, if Minimum >= Maximum).
+# column 4: Maximum value (ignored, if Minimum >= Maximum).
+#           Minimum and maximum restrict the search range in initial
+#           value calculation. They might also be used for scaling.
+# column 5: Category of variable.
+#           = 1: parameter.
+#           = 2: state.
+#           = 3: state derivative.
+#           = 4: output.
+#           = 5: input.
+#           = 6: auxiliary variable.
+# column 6: Data type of variable and flags according to dsBaseType
+#  <value>&3= 0: real.
+#  <value>&3= 1: boolean.
+#  <value>&3= 2: integer.
+#
+# Initial values are calculated according to the following procedure:
+#
+# Initial values are calculated according to the following procedure:
+#
+# - If parameters, states and inputs are FIXED, and other variables
+#   are FREE, the initialization is performed in the normal way.
+#
+# - If parameters and inputs are FIXED, and all other variables
+#   have special case for continue (-2 in 1st column), or FREE
+#   the initialization is ignored and variables are set to these values.
+#   This is intended to continue the simulation.
+#
+#   Which variables will be important for initialization and continue
+#   is indicated by value in column 6 & dsStartMasks.
+#
+char initialDescription(1272,62)
+[rad]
+[rad/s]
+[rad]
+[rad/s]
+Mutual angles
+der(Mutual angles)
+Active resistance of T-model
+Reactance of T-model
+Time of transformer disconnection
+Duration of transformer disconnection
+Degree of transformer disconnection
+D-axis current in the middle of HVline
+Q-axis current in the middle of HVline
+Full current in the middle of HVline
+Full voltage at the beginning of HVline
+Full voltage at the end of HVline
+active power at the beginning of HVline
+reactive power at the beginning of HVline
+active power at the end of HVline
+reactive power at the end of HVline
+actual active resistance of HVline
+actual reactive resistance of HVline
+Active resistance of T-model
+Reactance of T-model
+Time of transformer disconnection
+Duration of transformer disconnection
+Degree of transformer disconnection
+D-axis current in the middle of HVline
+Q-axis current in the middle of HVline
+Full current in the middle of HVline
+Full voltage at the beginning of HVline
+Full voltage at the end of HVline
+active power at the beginning of HVline
+reactive power at the beginning of HVline
+active power at the end of HVline
+reactive power at the end of HVline
+actual active resistance of HVline
+actual reactive resistance of HVline
+Active resistance of Pi-model
+Reactance of Pi-model
+Reactive conductivity of Pi-model beginning
+Reactive conductivity of Pi-model end
+Time of line disconnection
+Duration of line disconnection
+Degree of line disconnection
+Time of line second disconnection
+Duration of line second disconnection
+Degree of line second disconnection
+D-axis current in the middle of HVline
+Q-axis current in the middle of HVline
+Full current in the middle of HVline
+Full voltage at the beginning of HVline
+Full voltage at the end of HVline
+D-axis current at the beginning of HVline
+Q-axis current at the beginning of HVline
+D-axis current at the end of HVline
+Q-axis current at the end of HVline
+D-axis capacitive current at the beginning of HVline
+Q-axis capacitive current at the beginning of HVline
+D-axis capacitive current at the end of HVline
+Q-axis capacitive current at the end of HVline
+angle at the beginning of HVline
+angle at the end of HVline
+active power at the beginning of HVline
+reactive power at the beginning of HVline
+active power at the end of HVline
+reactive power at the end of HVline
+actual active resistance of HVline
+actual reactive resistance of HVline
+capacitive conductivity at the beginning of HVline
+capacitive conductivity at the end of HVline
+Active resistance of Pi-model
+Reactance of Pi-model
+Reactive conductivity of Pi-model beginning
+Reactive conductivity of Pi-model end
+Time of line disconnection
+Duration of line disconnection
+Degree of line disconnection
+Time of line second disconnection
+Duration of line second disconnection
+Degree of line second disconnection
+D-axis current in the middle of HVline
+Q-axis current in the middle of HVline
+Full current in the middle of HVline
+Full voltage at the beginning of HVline
+Full voltage at the end of HVline
+D-axis current at the beginning of HVline
+Q-axis current at the beginning of HVline
+D-axis current at the end of HVline
+Q-axis current at the end of HVline
+D-axis capacitive current at the beginning of HVline
+Q-axis capacitive current at the beginning of HVline
+D-axis capacitive current at the end of HVline
+Q-axis capacitive current at the end of HVline
+angle at the beginning of HVline
+angle at the end of HVline
+active power at the beginning of HVline
+reactive power at the beginning of HVline
+active power at the end of HVline
+reactive power at the end of HVline
+actual active resistance of HVline
+actual reactive resistance of HVline
+capacitive conductivity at the beginning of HVline
+capacitive conductivity at the end of HVline
+Active resistance of T-model
+Reactance of T-model
+Time of transformer disconnection
+Duration of transformer disconnection
+Degree of transformer disconnection
+D-axis current in the middle of HVline
+Q-axis current in the middle of HVline
+Full current in the middle of HVline
+Full voltage at the beginning of HVline
+Full voltage at the end of HVline
+active power at the beginning of HVline
+reactive power at the beginning of HVline
+active power at the end of HVline
+reactive power at the end of HVline
+actual active resistance of HVline
+actual reactive resistance of HVline
+Active resistance of T-model
+Reactance of T-model
+Time of transformer disconnection
+Duration of transformer disconnection
+Degree of transformer disconnection
+D-axis current in the middle of HVline
+Q-axis current in the middle of HVline
+Full current in the middle of HVline
+Full voltage at the beginning of HVline
+Full voltage at the end of HVline
+active power at the beginning of HVline
+reactive power at the beginning of HVline
+active power at the end of HVline
+reactive power at the end of HVline
+actual active resistance of HVline
+actual reactive resistance of HVline
+Active resistance of T-model
+Reactance of T-model
+Time of transformer disconnection
+Duration of transformer disconnection
+Degree of transformer disconnection
+D-axis current in the middle of HVline
+Q-axis current in the middle of HVline
+Full current in the middle of HVline
+Full voltage at the beginning of HVline
+Full voltage at the end of HVline
+active power at the beginning of HVline
+reactive power at the beginning of HVline
+active power at the end of HVline
+reactive power at the end of HVline
+actual active resistance of HVline
+actual reactive resistance of HVline
+Active load
+Reactive load
+Time of load disconnection
+Duration of load disconnection
+Degree of load disconnection
+D-axis current of load
+Q-axis current of load
+Active power of load
+Reactive power of load
+Active resistance of Pi-model
+Reactance of Pi-model
+Reactive conductivity of Pi-model beginning
+Reactive conductivity of Pi-model end
+Time of line disconnection
+Duration of line disconnection
+Degree of line disconnection
+Time of line second disconnection
+Duration of line second disconnection
+Degree of line second disconnection
+D-axis current in the middle of HVline
+Q-axis current in the middle of HVline
+Full current in the middle of HVline
+Full voltage at the beginning of HVline
+Full voltage at the end of HVline
+D-axis current at the beginning of HVline
+Q-axis current at the beginning of HVline
+D-axis current at the end of HVline
+Q-axis current at the end of HVline
+D-axis capacitive current at the beginning of HVline
+Q-axis capacitive current at the beginning of HVline
+D-axis capacitive current at the end of HVline
+Q-axis capacitive current at the end of HVline
+angle at the beginning of HVline
+angle at the end of HVline
+active power at the beginning of HVline
+reactive power at the beginning of HVline
+active power at the end of HVline
+reactive power at the end of HVline
+actual active resistance of HVline
+actual reactive resistance of HVline
+capacitive conductivity at the beginning of HVline
+capacitive conductivity at the end of HVline
+Active resistance of Pi-model
+Reactance of Pi-model
+Reactive conductivity of Pi-model beginning
+Reactive conductivity of Pi-model end
+Time of line disconnection
+Duration of line disconnection
+Degree of line disconnection
+Time of line second disconnection
+Duration of line second disconnection
+Degree of line second disconnection
+D-axis current in the middle of HVline
+Q-axis current in the middle of HVline
+Full current in the middle of HVline
+Full voltage at the beginning of HVline
+Full voltage at the end of HVline
+D-axis current at the beginning of HVline
+Q-axis current at the beginning of HVline
+D-axis current at the end of HVline
+Q-axis current at the end of HVline
+D-axis capacitive current at the beginning of HVline
+Q-axis capacitive current at the beginning of HVline
+D-axis capacitive current at the end of HVline
+Q-axis capacitive current at the end of HVline
+angle at the beginning of HVline
+angle at the end of HVline
+active power at the beginning of HVline
+reactive power at the beginning of HVline
+active power at the end of HVline
+reactive power at the end of HVline
+actual active resistance of HVline
+actual reactive resistance of HVline
+capacitive conductivity at the beginning of HVline
+capacitive conductivity at the end of HVline
+Active resistance of Pi-model
+Reactance of Pi-model
+Reactive conductivity of Pi-model beginning
+Reactive conductivity of Pi-model end
+Time of line disconnection
+Duration of line disconnection
+Degree of line disconnection
+Time of line second disconnection
+Duration of line second disconnection
+Degree of line second disconnection
+D-axis current in the middle of HVline
+Q-axis current in the middle of HVline
+Full current in the middle of HVline
+Full voltage at the beginning of HVline
+Full voltage at the end of HVline
+D-axis current at the beginning of HVline
+Q-axis current at the beginning of HVline
+D-axis current at the end of HVline
+Q-axis current at the end of HVline
+D-axis capacitive current at the beginning of HVline
+Q-axis capacitive current at the beginning of HVline
+D-axis capacitive current at the end of HVline
+Q-axis capacitive current at the end of HVline
+angle at the beginning of HVline
+angle at the end of HVline
+active power at the beginning of HVline
+reactive power at the beginning of HVline
+active power at the end of HVline
+reactive power at the end of HVline
+actual active resistance of HVline
+actual reactive resistance of HVline
+capacitive conductivity at the beginning of HVline
+capacitive conductivity at the end of HVline
+Active resistance of Pi-model
+Reactance of Pi-model
+Reactive conductivity of Pi-model beginning
+Reactive conductivity of Pi-model end
+Time of line disconnection
+Duration of line disconnection
+Degree of line disconnection
+Time of line second disconnection
+Duration of line second disconnection
+Degree of line second disconnection
+D-axis current in the middle of HVline
+Q-axis current in the middle of HVline
+Full current in the middle of HVline
+Full voltage at the beginning of HVline
+Full voltage at the end of HVline
+D-axis current at the beginning of HVline
+Q-axis current at the beginning of HVline
+D-axis current at the end of HVline
+Q-axis current at the end of HVline
+D-axis capacitive current at the beginning of HVline
+Q-axis capacitive current at the beginning of HVline
+D-axis capacitive current at the end of HVline
+Q-axis capacitive current at the end of HVline
+angle at the beginning of HVline
+angle at the end of HVline
+active power at the beginning of HVline
+reactive power at the beginning of HVline
+active power at the end of HVline
+reactive power at the end of HVline
+actual active resistance of HVline
+actual reactive resistance of HVline
+capacitive conductivity at the beginning of HVline
+capacitive conductivity at the end of HVline
+Active resistance of T-model
+Reactance of T-model
+Time of transformer disconnection
+Duration of transformer disconnection
+Degree of transformer disconnection
+D-axis current in the middle of HVline
+Q-axis current in the middle of HVline
+Full current in the middle of HVline
+Full voltage at the beginning of HVline
+Full voltage at the end of HVline
+active power at the beginning of HVline
+reactive power at the beginning of HVline
+active power at the end of HVline
+reactive power at the end of HVline
+actual active resistance of HVline
+actual reactive resistance of HVline
+Active resistance of T-model
+Reactance of T-model
+Time of transformer disconnection
+Duration of transformer disconnection
+Degree of transformer disconnection
+D-axis current in the middle of HVline
+Q-axis current in the middle of HVline
+Full current in the middle of HVline
+Full voltage at the beginning of HVline
+Full voltage at the end of HVline
+active power at the beginning of HVline
+reactive power at the beginning of HVline
+active power at the end of HVline
+reactive power at the end of HVline
+actual active resistance of HVline
+actual reactive resistance of HVline
+Active load
+Reactive load
+Time of load disconnection
+Duration of load disconnection
+Degree of load disconnection
+D-axis current of load
+Q-axis current of load
+Active power of load
+Reactive power of load
+Active load
+Reactive load
+Time of load disconnection
+Duration of load disconnection
+Degree of load disconnection
+D-axis current of load
+Q-axis current of load
+Active power of load
+Reactive power of load
+Active resistance of T-model
+Reactance of T-model
+Time of transformer disconnection
+Duration of transformer disconnection
+Degree of transformer disconnection
+D-axis current in the middle of HVline
+Q-axis current in the middle of HVline
+Full current in the middle of HVline
+Full voltage at the beginning of HVline
+Full voltage at the end of HVline
+active power at the beginning of HVline
+reactive power at the beginning of HVline
+active power at the end of HVline
+reactive power at the end of HVline
+actual active resistance of HVline
+actual reactive resistance of HVline
+Active resistance of T-model
+Reactance of T-model
+Time of transformer disconnection
+Duration of transformer disconnection
+Degree of transformer disconnection
+D-axis current in the middle of HVline
+Q-axis current in the middle of HVline
+Full current in the middle of HVline
+Full voltage at the beginning of HVline
+Full voltage at the end of HVline
+active power at the beginning of HVline
+reactive power at the beginning of HVline
+active power at the end of HVline
+reactive power at the end of HVline
+actual active resistance of HVline
+actual reactive resistance of HVline
+Active resistance of T-model
+Reactance of T-model
+Time of transformer disconnection
+Duration of transformer disconnection
+Degree of transformer disconnection
+D-axis current in the middle of HVline
+Q-axis current in the middle of HVline
+Full current in the middle of HVline
+Full voltage at the beginning of HVline
+Full voltage at the end of HVline
+active power at the beginning of HVline
+reactive power at the beginning of HVline
+active power at the end of HVline
+reactive power at the end of HVline
+actual active resistance of HVline
+actual reactive resistance of HVline
+Active load
+Reactive load
+Time of load disconnection
+Duration of load disconnection
+Degree of load disconnection
+D-axis current of load
+Q-axis current of load
+Active power of load
+Reactive power of load
+Reactive conductivity of short sircuit
+Active conductivity of short sircuit
+Total conductivity of short sircuit
+Time of short sircuit
+Duration of short sircuit
+D-axis current of short-circuit
+Q-axis current of short-circuit
+Active resistance of electrical braking device
+Time of electrical braking
+Duration of electrical braking
+D-axis current of series electrical braking
+Q-axis current of series electrical braking
+Full current of series electrical braking
+Full voltage at the beginning of series electrical braking
+Full voltage at the end of series electrical braking
+Actual resistanse of series electrical braking
+Active resistance of electrical braking device
+Time of electrical braking
+Duration of electrical braking
+D-axis current of shunt electrical braking
+Q-axis current of shunt electrical braking
+Full current of shunt electrical braking
+Full voltage of shunt electrical braking
+Active resistance of electrical braking device
+Time of electrical braking
+Duration of electrical braking
+D-axis current of series electrical braking
+Q-axis current of series electrical braking
+Full current of series electrical braking
+Full voltage at the beginning of series electrical braking
+Full voltage at the end of series electrical braking
+Actual resistanse of series electrical braking
+Active resistance of electrical braking device
+Time of electrical braking
+Duration of electrical braking
+D-axis current of shunt electrical braking
+Q-axis current of shunt electrical braking
+Full current of shunt electrical braking
+Full voltage of shunt electrical braking
+Reactive conductivity of short sircuit
+Active conductivity of short sircuit
+Total conductivity of short sircuit
+Time of short sircuit
+Duration of short sircuit
+D-axis current of short-circuit
+Q-axis current of short-circuit
+Reactive conductivity of short sircuit
+Active conductivity of short sircuit
+Total conductivity of short sircuit
+Time of short sircuit
+Duration of short sircuit
+D-axis current of short-circuit
+Q-axis current of short-circuit
+Reactive conductivity of short sircuit
+Active conductivity of short sircuit
+Total conductivity of short sircuit
+Time of short sircuit
+Duration of short sircuit
+D-axis current of short-circuit
+Q-axis current of short-circuit
+Reactive conductivity of short sircuit
+Active conductivity of short sircuit
+Total conductivity of short sircuit
+Time of short sircuit
+Duration of short sircuit
+D-axis current of short-circuit
+Q-axis current of short-circuit
+Reactive conductivity of short sircuit
+Active conductivity of short sircuit
+Total conductivity of short sircuit
+Time of short sircuit
+Duration of short sircuit
+D-axis current of short-circuit
+Q-axis current of short-circuit
+Reactive conductivity of short sircuit
+Active conductivity of short sircuit
+Total conductivity of short sircuit
+Time of short sircuit
+Duration of short sircuit
+D-axis current of short-circuit
+Q-axis current of short-circuit
+Reactive conductivity of short sircuit
+Active conductivity of short sircuit
+Total conductivity of short sircuit
+Time of short sircuit
+Duration of short sircuit
+D-axis current of short-circuit
+Q-axis current of short-circuit
+Reactive conductivity of short sircuit
+Active conductivity of short sircuit
+Total conductivity of short sircuit
+Time of short sircuit
+Duration of short sircuit
+D-axis current of short-circuit
+Q-axis current of short-circuit
+Reactive conductivity of short sircuit
+Active conductivity of short sircuit
+Total conductivity of short sircuit
+Time of short sircuit
+Duration of short sircuit
+D-axis current of short-circuit
+Q-axis current of short-circuit
+Reactive conductivity of short sircuit
+Active conductivity of short sircuit
+Total conductivity of short sircuit
+Time of short sircuit
+Duration of short sircuit
+D-axis current of short-circuit
+Q-axis current of short-circuit
+Reactive conductivity of short sircuit
+Active conductivity of short sircuit
+Total conductivity of short sircuit
+Time of short sircuit
+Duration of short sircuit
+D-axis current of short-circuit
+Q-axis current of short-circuit
+Reactive conductivity of short sircuit
+Active conductivity of short sircuit
+Total conductivity of short sircuit
+Time of short sircuit
+Duration of short sircuit
+D-axis current of short-circuit
+Q-axis current of short-circuit
+Reactive conductivity of short sircuit
+Active conductivity of short sircuit
+Total conductivity of short sircuit
+Time of short sircuit
+Duration of short sircuit
+D-axis current of short-circuit
+Q-axis current of short-circuit
+Reactive conductivity of short sircuit
+Active conductivity of short sircuit
+Total conductivity of short sircuit
+Time of short sircuit
+Duration of short sircuit
+D-axis current of short-circuit
+Q-axis current of short-circuit
+Reactive conductivity of short sircuit
+Active conductivity of short sircuit
+Total conductivity of short sircuit
+Time of short sircuit
+Duration of short sircuit
+D-axis current of short-circuit
+Q-axis current of short-circuit
+Reactive conductivity of short sircuit
+Active conductivity of short sircuit
+Total conductivity of short sircuit
+Time of short sircuit
+Duration of short sircuit
+D-axis current of short-circuit
+Q-axis current of short-circuit
+Reactive conductivity of short sircuit
+Active conductivity of short sircuit
+Total conductivity of short sircuit
+Time of short sircuit
+Duration of short sircuit
+D-axis current of short-circuit
+Q-axis current of short-circuit
+Time of generator's disconnection
+Duration of generator's disconnection
+Active power
+Reactive power
+ARV voltage reference value
+D-axis synchronous reactance
+Q-axis synchronous reactance
+Leakage reactance of stator winding
+D-axis transient reactance
+D-axis subtransient reactance
+Q-axis subtransient reactance
+Active resistance of field winding
+Active resistance of d-axis damper winding
+Active resistance of q-axis damper winding
+Inertia coefficient
+Turbine statism coefficient
+Time constant of servo motor while valving control
+Turbine speed regulator off-time
+Turbine speed regulator on-time
+Turbine overloading coefficient
+Turbine minimum-loading coefficient
+Fast turbine valving control amplitude
+Fast turbine valving control on-time
+Fast turbine valving control duration
+Time constant of servo motor after valving control end
+HPP generators dropping on-time
+New power of HPP
+Multiplicity of forcing on
+Multiplicity of forcing off
+voltage deviation
+frequency deviation
+current deviation
+Electromotive force (EMF) deviation
+frequency deviation
+PI-constant
+frequency of electric current fluctuations
+resistance of step-up transformer
+active resistance of generator stator winding
+active resistance of transformer
+Auxiliaire EMF of salient-pole generator
+Generator power angle [rad]
+D-axis ARV voltage reference value
+Q-axis ARV voltage reference value
+D-axis stator current value
+Q-axis stator current value
+Turbine rotation moment
+
+field winding current
+field winding voltage
+EMF of generator
+EMF of generator initial value
+field winding flow coupling initial value
+D-axis damper winding flow coupling initial value
+Q-axis damper winding flow coupling initial value
+upper bound of EMF of generator
+lower bound of EMF of generator
+field winding voltage actual value
+D-axis resistance to mutual induction
+Q-axis resistance to mutual induction
+D-axis subtransient reactance of generator and transformer
+Q-axis subtransient reactance of generator and transformer
+Sum resistance of stator winding and step-up transformer
+Leakage reactance of field winding
+D-axis leakage reactance of damping winding
+Q-axis leakage reactance of damping winding
+interim reactance №1
+interim reactance №2
+interim reactance №3
+generator full voltage actual value
+Turbine rotation moment initial value
+
+
+
+Turbine rotation moment actual value
+Generator active power actual value
+Generator reactive power actual value
+field winding flow coupling actual value
+der(field winding flow coupling actual value)
+D-axis damper winding flow coupling actual value
+der(D-axis damper winding flow coupling actual value)
+Q-axis damper winding flow coupling actual value
+der(Q-axis damper winding flow coupling actual value)
+generator slip
+der(generator slip)
+Generator power angle initial value [rad]
+der(Generator power angle initial value) [rad/s]
+electrical moment
+D-axis flow coupling of mutual inductance
+Q-axis flow coupling of mutual inductance
+Q-axis generator stator winding current actual value
+D-axis generator stator winding current actual value
+D-axis generator field winding current actual value
+D-axis generator damper winding current actual value
+Q-axis generator damper winding current actual value
+D-axis generator voltage actual value
+Q-axis generator voltage actual value
+
+
+Time constant of servo motor actual value
+Turbine overloading coefficient actual value
+Turbine minimum-loading coefficient actual value
+D-axis synchronous reactance actual value
+Q-axis synchronous reactance actual value
+Leakage reactance actual value
+D-axis transient reactance actual value
+Active resistance of field winding actual value
+Active resistance of d-axis damper winding actual value
+Active resistance of q-axis damper winding actual value
+Inertia coefficient actual value
+frequency
+Voltage deviation control coefficient
+Voltage derivative control coefficient
+Frequency deviation control coefficient
+Frequency derivative control coefficient
+Rotor current derivative control coefficient
+Voltage of field forcing input
+Voltage of field forcing removing
+Delay of field forcing removing
+
+The main channel of regulation time constant
+Voltage deviation time constant
+Voltage derivative time constant
+Frequency block time constant
+Frequency deviation time constant
+Frequency derivative time constant
+Field current derivative time constant
+Numerator coefficients of transfer function.
+Denominator coefficients of transfer function.
+Denominator coefficients of transfer function.
+State of transfer function from controller canonical form
+der(State of transfer function from controller canonical form)
+Size of Denominator of transfer function. [:#(type=Integer)]
+Size of Numerator of transfer function. [:#(type=Integer)]
+[:#(type=Integer)]
+output variable
+Numerator coefficients of transfer function.
+Numerator coefficients of transfer function.
+Denominator coefficients of transfer function.
+Denominator coefficients of transfer function.
+State of transfer function from controller canonical form
+der(State of transfer function from controller canonical form)
+Size of Denominator of transfer function. [:#(type=Integer)]
+Size of Numerator of transfer function. [:#(type=Integer)]
+[:#(type=Integer)]
+output variable
+Numerator coefficients of transfer function.
+Denominator coefficients of transfer function.
+Denominator coefficients of transfer function.
+State of transfer function from controller canonical form
+der(State of transfer function from controller canonical form)
+Size of Denominator of transfer function. [:#(type=Integer)]
+Size of Numerator of transfer function. [:#(type=Integer)]
+[:#(type=Integer)]
+output variable
+Numerator coefficients of transfer function.
+Numerator coefficients of transfer function.
+Denominator coefficients of transfer function.
+Denominator coefficients of transfer function.
+State of transfer function from controller canonical form
+der(State of transfer function from controller canonical form)
+Size of Denominator of transfer function. [:#(type=Integer)]
+Size of Numerator of transfer function. [:#(type=Integer)]
+[:#(type=Integer)]
+output variable
+Numerator coefficients of transfer function.
+Numerator coefficients of transfer function.
+Denominator coefficients of transfer function.
+Denominator coefficients of transfer function.
+State of transfer function from controller canonical form
+der(State of transfer function from controller canonical form)
+Size of Denominator of transfer function. [:#(type=Integer)]
+Size of Numerator of transfer function. [:#(type=Integer)]
+[:#(type=Integer)]
+input variable
+output variable
+Numerator coefficients of transfer function.
+Numerator coefficients of transfer function.
+Denominator coefficients of transfer function.
+Denominator coefficients of transfer function.
+State of transfer function from controller canonical form
+der(State of transfer function from controller canonical form)
+Size of Denominator of transfer function. [:#(type=Integer)]
+Size of Numerator of transfer function. [:#(type=Integer)]
+[:#(type=Integer)]
+output variable
+Numerator coefficients of transfer function.
+Numerator coefficients of transfer function.
+Denominator coefficients of transfer function.
+Denominator coefficients of transfer function.
+State of transfer function from controller canonical form
+der(State of transfer function from controller canonical form)
+Size of Denominator of transfer function. [:#(type=Integer)]
+Size of Numerator of transfer function. [:#(type=Integer)]
+[:#(type=Integer)]
+output variable
+Numerator coefficients of transfer function.
+Denominator coefficients of transfer function.
+Denominator coefficients of transfer function.
+State of transfer function from controller canonical form
+der(State of transfer function from controller canonical form)
+Size of Denominator of transfer function. [:#(type=Integer)]
+Size of Numerator of transfer function. [:#(type=Integer)]
+[:#(type=Integer)]
+input variable
+Connector's signal
+Connector's signal
+Connector's signal
+Connector's signal
+Uforc, Voltage of field forcing input
+Udeforc, Voltage of field forcing removing
+K0U, Voltage deviation control coefficient
+Tforcedelay, Delay of field forcing removing
+moment of time, when forcing starts [s]
+Current Id
+Current Iq
+Time of generator's disconnection
+Duration of generator's disconnection
+Active power
+Reactive power
+ARV voltage reference value
+D-axis synchronous reactance
+Q-axis synchronous reactance
+Leakage reactance of stator winding
+D-axis transient reactance
+D-axis subtransient reactance
+Q-axis subtransient reactance
+Active resistance of field winding
+Active resistance of d-axis damper winding
+Active resistance of q-axis damper winding
+Inertia coefficient
+Turbine statism coefficient
+Time constant of servo motor while valving control
+Turbine speed regulator off-time
+Turbine speed regulator on-time
+Turbine overloading coefficient
+Turbine minimum-loading coefficient
+Fast turbine valving control amplitude
+Fast turbine valving control on-time
+Fast turbine valving control duration
+Time constant of servo motor after valving control end
+HPP generators dropping on-time
+New power of HPP
+Multiplicity of forcing on
+Multiplicity of forcing off
+voltage deviation
+frequency deviation
+current deviation
+Electromotive force (EMF) deviation
+frequency deviation
+PI-constant
+frequency of electric current fluctuations
+resistance of step-up transformer
+active resistance of generator stator winding
+active resistance of transformer
+Auxiliaire EMF of salient-pole generator
+Generator power angle [rad]
+D-axis ARV voltage reference value
+Q-axis ARV voltage reference value
+D-axis stator current value
+Q-axis stator current value
+Turbine rotation moment
+
+field winding current
+field winding voltage
+EMF of generator
+EMF of generator initial value
+field winding flow coupling initial value
+D-axis damper winding flow coupling initial value
+Q-axis damper winding flow coupling initial value
+upper bound of EMF of generator
+lower bound of EMF of generator
+field winding voltage actual value
+D-axis resistance to mutual induction
+Q-axis resistance to mutual induction
+D-axis subtransient reactance of generator and transformer
+Q-axis subtransient reactance of generator and transformer
+Sum resistance of stator winding and step-up transformer
+Leakage reactance of field winding
+D-axis leakage reactance of damping winding
+Q-axis leakage reactance of damping winding
+interim reactance №1
+interim reactance №2
+interim reactance №3
+generator full voltage actual value
+Turbine rotation moment initial value
+
+
+
+Turbine rotation moment actual value
+Generator active power actual value
+Generator reactive power actual value
+field winding flow coupling actual value
+der(field winding flow coupling actual value)
+D-axis damper winding flow coupling actual value
+der(D-axis damper winding flow coupling actual value)
+Q-axis damper winding flow coupling actual value
+der(Q-axis damper winding flow coupling actual value)
+generator slip
+der(generator slip)
+Generator power angle initial value [rad]
+der(Generator power angle initial value) [rad/s]
+electrical moment
+D-axis flow coupling of mutual inductance
+Q-axis flow coupling of mutual inductance
+Q-axis generator stator winding current actual value
+D-axis generator stator winding current actual value
+D-axis generator field winding current actual value
+D-axis generator damper winding current actual value
+Q-axis generator damper winding current actual value
+D-axis generator voltage actual value
+Q-axis generator voltage actual value
+
+
+Time constant of servo motor actual value
+Turbine overloading coefficient actual value
+Turbine minimum-loading coefficient actual value
+D-axis synchronous reactance actual value
+Q-axis synchronous reactance actual value
+Leakage reactance actual value
+D-axis transient reactance actual value
+Active resistance of field winding actual value
+Active resistance of d-axis damper winding actual value
+Active resistance of q-axis damper winding actual value
+Inertia coefficient actual value
+frequency
+Voltage deviation control coefficient
+Voltage derivative control coefficient
+Frequency deviation control coefficient
+Frequency derivative control coefficient
+Rotor current derivative control coefficient
+Voltage of field forcing input
+Voltage of field forcing removing
+Delay of field forcing removing
+
+The main channel of regulation time constant
+Voltage deviation time constant
+Voltage derivative time constant
+Frequency block time constant
+Frequency deviation time constant
+Frequency derivative time constant
+Field current derivative time constant
+Numerator coefficients of transfer function.
+Denominator coefficients of transfer function.
+Denominator coefficients of transfer function.
+State of transfer function from controller canonical form
+der(State of transfer function from controller canonical form)
+Size of Denominator of transfer function. [:#(type=Integer)]
+Size of Numerator of transfer function. [:#(type=Integer)]
+[:#(type=Integer)]
+output variable
+Numerator coefficients of transfer function.
+Numerator coefficients of transfer function.
+Denominator coefficients of transfer function.
+Denominator coefficients of transfer function.
+State of transfer function from controller canonical form
+der(State of transfer function from controller canonical form)
+Size of Denominator of transfer function. [:#(type=Integer)]
+Size of Numerator of transfer function. [:#(type=Integer)]
+[:#(type=Integer)]
+output variable
+Numerator coefficients of transfer function.
+Denominator coefficients of transfer function.
+Denominator coefficients of transfer function.
+State of transfer function from controller canonical form
+der(State of transfer function from controller canonical form)
+Size of Denominator of transfer function. [:#(type=Integer)]
+Size of Numerator of transfer function. [:#(type=Integer)]
+[:#(type=Integer)]
+output variable
+Numerator coefficients of transfer function.
+Numerator coefficients of transfer function.
+Denominator coefficients of transfer function.
+Denominator coefficients of transfer function.
+State of transfer function from controller canonical form
+der(State of transfer function from controller canonical form)
+Size of Denominator of transfer function. [:#(type=Integer)]
+Size of Numerator of transfer function. [:#(type=Integer)]
+[:#(type=Integer)]
+output variable
+Numerator coefficients of transfer function.
+Numerator coefficients of transfer function.
+Denominator coefficients of transfer function.
+Denominator coefficients of transfer function.
+State of transfer function from controller canonical form
+der(State of transfer function from controller canonical form)
+Size of Denominator of transfer function. [:#(type=Integer)]
+Size of Numerator of transfer function. [:#(type=Integer)]
+[:#(type=Integer)]
+input variable
+output variable
+Numerator coefficients of transfer function.
+Numerator coefficients of transfer function.
+Denominator coefficients of transfer function.
+Denominator coefficients of transfer function.
+State of transfer function from controller canonical form
+der(State of transfer function from controller canonical form)
+Size of Denominator of transfer function. [:#(type=Integer)]
+Size of Numerator of transfer function. [:#(type=Integer)]
+[:#(type=Integer)]
+output variable
+Numerator coefficients of transfer function.
+Numerator coefficients of transfer function.
+Denominator coefficients of transfer function.
+Denominator coefficients of transfer function.
+State of transfer function from controller canonical form
+der(State of transfer function from controller canonical form)
+Size of Denominator of transfer function. [:#(type=Integer)]
+Size of Numerator of transfer function. [:#(type=Integer)]
+[:#(type=Integer)]
+output variable
+Numerator coefficients of transfer function.
+Denominator coefficients of transfer function.
+Denominator coefficients of transfer function.
+State of transfer function from controller canonical form
+der(State of transfer function from controller canonical form)
+Size of Denominator of transfer function. [:#(type=Integer)]
+Size of Numerator of transfer function. [:#(type=Integer)]
+[:#(type=Integer)]
+input variable
+Connector's signal
+Connector's signal
+Connector's signal
+Connector's signal
+Uforc, Voltage of field forcing input
+Udeforc, Voltage of field forcing removing
+K0U, Voltage deviation control coefficient
+Tforcedelay, Delay of field forcing removing
+moment of time, when forcing starts [s]
+Current Id
+Current Iq
+Time of generator's disconnection
+Duration of generator's disconnection
+Active power
+Reactive power
+ARV voltage reference value
+D-axis synchronous reactance
+Q-axis synchronous reactance
+Leakage reactance of stator winding
+D-axis transient reactance
+D-axis subtransient reactance
+Q-axis subtransient reactance
+Active resistance of field winding
+Active resistance of d-axis damper winding
+Active resistance of q-axis damper winding
+Inertia coefficient
+Turbine statism coefficient
+Time constant of servo motor while valving control
+Turbine speed regulator off-time
+Turbine speed regulator on-time
+Turbine overloading coefficient
+Turbine minimum-loading coefficient
+Fast turbine valving control amplitude
+Fast turbine valving control on-time
+Fast turbine valving control duration
+Time constant of servo motor after valving control end
+HPP generators dropping on-time
+New power of HPP
+Multiplicity of forcing on
+Multiplicity of forcing off
+voltage deviation
+frequency deviation
+current deviation
+Electromotive force (EMF) deviation
+frequency deviation
+PI-constant
+frequency of electric current fluctuations
+resistance of step-up transformer
+active resistance of generator stator winding
+active resistance of transformer
+Auxiliaire EMF of salient-pole generator
+Generator power angle [rad]
+D-axis ARV voltage reference value
+Q-axis ARV voltage reference value
+D-axis stator current value
+Q-axis stator current value
+Turbine rotation moment
+
+field winding current
+field winding voltage
+EMF of generator
+EMF of generator initial value
+field winding flow coupling initial value
+D-axis damper winding flow coupling initial value
+Q-axis damper winding flow coupling initial value
+upper bound of EMF of generator
+lower bound of EMF of generator
+field winding voltage actual value
+D-axis resistance to mutual induction
+Q-axis resistance to mutual induction
+D-axis subtransient reactance of generator and transformer
+Q-axis subtransient reactance of generator and transformer
+Sum resistance of stator winding and step-up transformer
+Leakage reactance of field winding
+D-axis leakage reactance of damping winding
+Q-axis leakage reactance of damping winding
+interim reactance №1
+interim reactance №2
+interim reactance №3
+generator full voltage actual value
+Turbine rotation moment initial value
+
+
+
+Turbine rotation moment actual value
+Generator active power actual value
+Generator reactive power actual value
+[rad]
+field winding flow coupling actual value
+der(field winding flow coupling actual value)
+D-axis damper winding flow coupling actual value
+der(D-axis damper winding flow coupling actual value)
+Q-axis damper winding flow coupling actual value
+der(Q-axis damper winding flow coupling actual value)
+generator slip
+der(generator slip)
+Generator power angle initial value [rad]
+der(Generator power angle initial value) [rad/s]
+electrical moment
+D-axis flow coupling of mutual inductance
+Q-axis flow coupling of mutual inductance
+D-axis generator field winding current actual value
+D-axis generator damper winding current actual value
+Q-axis generator damper winding current actual value
+
+
+Time constant of servo motor actual value
+Turbine overloading coefficient actual value
+Turbine minimum-loading coefficient actual value
+D-axis synchronous reactance actual value
+Q-axis synchronous reactance actual value
+Leakage reactance actual value
+D-axis transient reactance actual value
+Active resistance of field winding actual value
+Active resistance of d-axis damper winding actual value
+Active resistance of q-axis damper winding actual value
+Inertia coefficient actual value
+frequency
+Voltage deviation control coefficient
+Voltage derivative control coefficient
+Frequency deviation control coefficient
+Frequency derivative control coefficient
+Rotor current derivative control coefficient
+Voltage of field forcing input
+Voltage of field forcing removing
+Delay of field forcing removing
+
+The main channel of regulation time constant
+Voltage deviation time constant
+Voltage derivative time constant
+Frequency block time constant
+Frequency deviation time constant
+Frequency derivative time constant
+Field current derivative time constant
+Numerator coefficients of transfer function.
+Denominator coefficients of transfer function.
+Denominator coefficients of transfer function.
+State of transfer function from controller canonical form
+der(State of transfer function from controller canonical form)
+Size of Denominator of transfer function. [:#(type=Integer)]
+Size of Numerator of transfer function. [:#(type=Integer)]
+[:#(type=Integer)]
+output variable
+Numerator coefficients of transfer function.
+Numerator coefficients of transfer function.
+Denominator coefficients of transfer function.
+Denominator coefficients of transfer function.
+State of transfer function from controller canonical form
+der(State of transfer function from controller canonical form)
+Size of Denominator of transfer function. [:#(type=Integer)]
+Size of Numerator of transfer function. [:#(type=Integer)]
+[:#(type=Integer)]
+output variable
+Numerator coefficients of transfer function.
+Denominator coefficients of transfer function.
+Denominator coefficients of transfer function.
+State of transfer function from controller canonical form
+der(State of transfer function from controller canonical form)
+Size of Denominator of transfer function. [:#(type=Integer)]
+Size of Numerator of transfer function. [:#(type=Integer)]
+[:#(type=Integer)]
+output variable
+Numerator coefficients of transfer function.
+Numerator coefficients of transfer function.
+Denominator coefficients of transfer function.
+Denominator coefficients of transfer function.
+State of transfer function from controller canonical form
+der(State of transfer function from controller canonical form)
+Size of Denominator of transfer function. [:#(type=Integer)]
+Size of Numerator of transfer function. [:#(type=Integer)]
+[:#(type=Integer)]
+output variable
+Numerator coefficients of transfer function.
+Numerator coefficients of transfer function.
+Denominator coefficients of transfer function.
+Denominator coefficients of transfer function.
+State of transfer function from controller canonical form
+der(State of transfer function from controller canonical form)
+Size of Denominator of transfer function. [:#(type=Integer)]
+Size of Numerator of transfer function. [:#(type=Integer)]
+[:#(type=Integer)]
+input variable
+output variable
+Numerator coefficients of transfer function.
+Numerator coefficients of transfer function.
+Denominator coefficients of transfer function.
+Denominator coefficients of transfer function.
+State of transfer function from controller canonical form
+der(State of transfer function from controller canonical form)
+Size of Denominator of transfer function. [:#(type=Integer)]
+Size of Numerator of transfer function. [:#(type=Integer)]
+[:#(type=Integer)]
+output variable
+Numerator coefficients of transfer function.
+Numerator coefficients of transfer function.
+Denominator coefficients of transfer function.
+Denominator coefficients of transfer function.
+State of transfer function from controller canonical form
+der(State of transfer function from controller canonical form)
+Size of Denominator of transfer function. [:#(type=Integer)]
+Size of Numerator of transfer function. [:#(type=Integer)]
+[:#(type=Integer)]
+output variable
+Numerator coefficients of transfer function.
+Denominator coefficients of transfer function.
+Denominator coefficients of transfer function.
+State of transfer function from controller canonical form
+der(State of transfer function from controller canonical form)
+Size of Denominator of transfer function. [:#(type=Integer)]
+Size of Numerator of transfer function. [:#(type=Integer)]
+[:#(type=Integer)]
+input variable
+Connector's signal
+Connector's signal
+Connector's signal
+Connector's signal
+Uforc, Voltage of field forcing input
+Udeforc, Voltage of field forcing removing
+K0U, Voltage deviation control coefficient
+Tforcedelay, Delay of field forcing removing
+moment of time, when forcing starts [s]
+Current Id
+Current Iq
+Potential Vd
+Potential Vq
+Current Id
+Current Iq
+Potential Vd
+Potential Vq
+Current Id
+Current Iq
+Potential Vd
+Potential Vq
+Current Id
+Current Iq
+Potential Vd
+Potential Vq
+Current Id
+Current Iq
+Potential Vd
+Potential Vq
+Current Id
+Current Iq
+Potential Vd
+Potential Vq
+Current Id
+Current Iq
+Potential Vd
+Potential Vq
+Current Id
+Current Iq
+Potential Vd
+Potential Vq
+Current Id
+Current Iq
+Potential Vd
+Potential Vq
+Current Id
+Current Iq
+Potential Vd
+Potential Vq
+Current Id
+Current Iq
+Potential Vd
+Potential Vq
+Current Id
+Current Iq
+Potential Vd
+Potential Vq
+Current Id
+Current Iq
+Potential Vd
+Potential Vq
+Current Id
+Current Iq
+Potential Vd
+Potential Vq
+Current Id
+Current Iq
+Potential Vd
+Potential Vq
+Current Id
+Current Iq
+Potential Vd
+Potential Vq
+Current Id
+Current Iq
+Potential Vd
+Potential Vq
+Current Id
+Current Iq
+Potential Vd
+Potential Vq
+Current Id
+Current Iq
+

@@ -1,0 +1,32 @@
+Log-file of program ./dymosim
+(generated: Sat May 16 12:39:39 2026)
+
+dymosim started
+... "LEPSE.Examples.three_maschine_scheme" simulating
+... "dsin.txt" loading (dymosim input file)
+... "SimulationResults.mat" creating (simulation result file)
+
+Integration started at T = 0 using integration method DASSL
+(DAE multi-step solver (dassl/dasslrt of Petzold modified by Dassault Systemes))
+
+Integration terminated successfully at T = 80
+   CPU-time for integration                : 0.197 seconds
+   CPU-time for one grid interval          : 0.394 milliseconds
+   CPU-time for initialization             : 0 seconds
+   Number of result points                 : 575
+   Number of grid points                   : 501
+   Number of accepted steps                : 1595
+   Number of f-evaluations (dynamics)      : 2929
+   Number of crossing function evaluations : 2337
+   Number of Jacobian-evaluations          : 373
+   Number of model time events             : 14
+   Number of input time events             : 0
+   Number of state events                  : 28
+   Number of step events                   : 0
+   Minimum integration stepsize            : 1.22e-006
+   Maximum integration stepsize            : 2
+   Maximum integration order               : 5
+Calling terminal section
+... "dsfinal.txt" creating (final states)
+
+SUCCESSFUL simulation of LEPSE.Examples.three_maschine_scheme
