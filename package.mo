@@ -48,6 +48,54 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 package LEPSE
 
   package UsersGuide
@@ -999,7 +1047,7 @@ package LEPSE
             Placement(transformation(extent={{90,-10},{110,10}},
                                                                rotation=0),
                 iconTransformation(extent={{90,-10},{110,10}})));
-          Turbines.ASR_Regulator ASC_Regulator_1(Sigma=Sigma, Tauc=Tauc)
+          Turbines.ASR_Regulator_IB ASC_Regulator_1(Sigma=Sigma, Tauc=Tauc)
             annotation (Placement(transformation(extent={{-86,-80},{-20,-32}})));
           Infinite_bus_Mashine G(
             TgenOff=TgenOff,
@@ -2095,6 +2143,1832 @@ package LEPSE
           annotation(Dialog(tab="Synchronous machine"));
           parameter Real T2q_p=0.05 "Q-axis subtransient time constant, s"
           annotation(Dialog(tab="Synchronous machine"));
+          parameter Real TregOff=50 "Turbine speed regulator off-time, s"
+          annotation(Dialog(tab="Turbine"));
+          parameter Real Mtmax=1.1 "Turbine overloading coefficient, p.u."
+          annotation(Dialog(tab="Turbine"));
+          parameter Real Mtmin=0 "Turbine minimum-loading coefficient, p.u."
+          annotation(Dialog(tab="Turbine"));
+          parameter Real TkzOn=1000 "Generators dropping on-time, s"
+          annotation(Dialog(tab="General"));
+          parameter Real Pg_new=100 "New power of power plant, MW"
+          annotation(Dialog(tab="General"));
+
+          //------------------------------------------------------------------------------------
+          Real dUtr "voltage deviation";
+          Real dWu "frequency deviation";
+          Real dIf "current deviation";
+          Real dWf "frequency deviation";
+          Real Er "exciter electromotive force";
+          constant Real PI=4*atan(1) "PI-constant";
+          parameter Real Wc=2*PI*fbaz "frequency of electric current fluctuations";
+          parameter Real Xt=0.0 "resistance of step-up transformer and line to IB";
+
+          // Parameters of power system elements
+          constant Real Ra=0 "active resistance of generator stator winding";
+          constant Real Rt=0 "active resistance of transformer";
+          parameter Real EQ(fixed=false) "Auxiliaire EMF of salient-pole generator";
+          parameter Real Dg(fixed=false) "Generator power angle";
+          parameter Real Uq(fixed=false) "D-axis ARV voltage reference value";
+          parameter Real Ud(fixed=false) "Q-axis ARV voltage reference value";
+          parameter Real Id(fixed=false) "D-axis stator current value";
+          parameter Real Iq(fixed=false) "Q-axis stator current value";
+          parameter Real Eiq(fixed=false) "synchronous stator EMF";
+          parameter Real Ir(fixed=false) "field winding current";
+          parameter Real Uf(fixed=false) "field winding voltage";
+          parameter Real Eq(fixed=false) "EMF of generator";
+          parameter Real Er0(fixed=false) "EMF of generator initial value";
+          parameter Real PsiR(fixed=false) "field winding flow coupling initial value";
+          parameter Real PsiRD(fixed=false) "D-axis damper winding flow coupling initial value";
+          parameter Real PsiRQ(fixed=false) "Q-axis damper winding flow coupling initial value";
+
+          Real Uf_full "field winding voltage actual value";
+          Real Xad "D-axis resistance to mutual induction";
+          Real Xaq "Q-axis resistance to mutual induction";
+          Real X2dt "D-axis subtransient reactance of generator and transformer";
+          Real X2qt "Q-axis subtransient reactance of generator and transformer";
+          Real Rs "Sum resistance of stator winding and step-up transformer";
+          Real Xsf "Leakage reactance of field winding";
+          Real Xs1d "D-axis leakage reactance of damping winding";
+          Real Xs1q "Q-axis leakage reactance of damping winding";
+          Real X1 "interim reactance в„–1";
+          Real X2 "interim reactance в„–2";
+          Real X3 "interim reactance в„–3";
+          Real Ugen "generator full voltage actual value, kV";
+          Real Igen "generator stator current value, kA";
+          parameter Real Mu0(fixed=false) "Turbine rotation moment initial value";
+          Real Mt_pp "Turbine rotation moment actual value";
+          Real Pgen "Generator active power actual value";
+          Real Qgen "Generator reactive power actual value";
+          Real UdG;
+          Real UqG;
+          Real IdG;
+          Real IqG;
+          input Real DeltaIJ;
+          input Real Ssys "system slip";
+
+          //------------------------------------------------------------------
+          // Integrated Variables
+          Real Yr "field winding flow coupling actual value";
+          Real Yrd "D-axis damper winding flow coupling actual value";
+          Real Yrq "Q-axis damper winding flow coupling actual value";
+          Real s "generator slip";
+          Real DGi "Generator power angle initial value";
+          Real Me "electrical moment";
+          Real Yad "D-axis flow coupling of mutual inductance";
+          Real Yaq "Q-axis flow coupling of mutual inductance";
+          Real iq "Q-axis generator stator winding current actual value";
+          Real id "D-axis generator stator winding current actual value";
+          Real ir "D-axis generator field winding current actual value";
+          Real ird "D-axis generator damper winding current actual value";
+          Real irq "Q-axis generator damper winding current actual value";
+          Real ud "D-axis generator voltage actual value";
+          Real uq "Q-axis generator voltage actual value";
+          Real E11d "EMF, connected with d-axis damper winding";
+          Real E11q "EMF, connected with q-axis damper winding";
+          Real MT_MAX "Turbine overloading coefficient actual value";
+          Real MT_MIN "Turbine minimum-loading coefficient actual value";
+          Real Xd "D-axis synchronous reactance actual value";
+          Real Xq "Q-axis synchronous reactance actual value";
+          Real Xs "Leakage reactance actual value";
+          Real X1d "D-axis transient reactance actual value";
+          Real X2d "D-axis subtransient reactance actual value";
+          Real X2q "Q-axis subtransient reactance actual value";
+          Real Rf "Active resistance of field winding actual value";
+          Real R1d "Active resistance of d-axis damper winding actual value";
+          Real R1q "Active resistance of q-axis damper winding actual value";
+          Real Tj "Inertia coefficient actual value";
+          Real f "frequency";
+          parameter Real Ut_pu(fixed=false) "stator voltage, p.u.";
+          parameter Real Pg_pu(fixed=false) "Active power, p.u.";
+          parameter Real Qg_pu(fixed=false) "Reactive power, p.u.";
+
+          LEPSE.Interfaces.Pin_v2 Stator_pin annotation (extent=[68,-8; 88,12],
+              Placement(transformation(extent={{90,-10},{110,10}},
+                                                                 rotation=0),
+                iconTransformation(extent={{90,-10},{110,10}})));
+          LEPSE.Interfaces.Signal_pin Ef_pin annotation (extent=[-90,-8; -70,12],
+              Placement(transformation(extent={{-110,-10},{-90,10}},
+                                                                   rotation=0),
+                iconTransformation(extent={{-110,-10},{-90,10}})));
+          LEPSE.Interfaces.Signal_pin dUtr_pin annotation (
+            extent=[-60,66; -40,86],
+            layer="icon",
+            Placement(transformation(extent={{-64,90},{-44,110}},rotation=0),
+                iconTransformation(extent={{-64,90},{-44,110}})));
+          LEPSE.Interfaces.Signal_pin dWu_pin annotation (
+            extent=[-26,66; -6,86],
+            layer="icon",
+            Placement(transformation(extent={{-36,90},{-16,110}},rotation=0),
+                iconTransformation(extent={{-36,90},{-16,110}})));
+          LEPSE.Interfaces.Signal_pin dWf_pin annotation (
+            extent=[6,66; 26,86],
+            layer="icon",
+            Placement(transformation(extent={{-10,90},{10,110}},
+                                                               rotation=0),
+                iconTransformation(extent={{-10,90},{10,110}})));
+          LEPSE.Interfaces.Signal_pin dIf_pin annotation (
+            extent=[40,66; 60,86],
+            layer="icon",
+            Placement(transformation(extent={{18,90},{38,110}},
+                                                              rotation=0),
+                iconTransformation(extent={{18,90},{38,110}})));
+          LEPSE.Interfaces.Signal_pin Ut_pin
+            annotation (Placement(transformation(extent={{46,90},{66,110}}),
+                iconTransformation(extent={{46,90},{66,110}})));
+          Interfaces.Signal_pin       Er0_pin
+            annotation (Placement(transformation(extent={{70,90},{90,110}}),
+                iconTransformation(extent={{70,90},{90,110}})));
+          Interfaces.Signal_pin       Ugen_pin
+            annotation (Placement(transformation(extent={{-90,90},{-70,110}}),
+                iconTransformation(extent={{-90,90},{-70,110}})));
+          Interfaces.Signal_pin dIg_pin annotation (Placement(transformation(extent={{94,90},
+                    {114,110}}),     iconTransformation(extent={{94,90},{114,110}})));
+          Interfaces.Signal_pin slip_pin annotation (Placement(transformation(extent={{-110,
+                    30},{-90,50}}), iconTransformation(extent={{-110,30},{-90,50}})));
+          Interfaces.Signal_pin Mu0_pin annotation (Placement(transformation(extent={{-110,66},
+                    {-90,86}}),       iconTransformation(extent={{-110,66},{-90,86}})));
+          Interfaces.Signal_pin Mt_pin annotation (Placement(transformation(extent={{-110,
+                    66},{-90,86}}), iconTransformation(extent={{-110,-48},{-90,-28}})));
+        initial equation
+          // additional variables in p.u.
+          Ut_pu = Ut/Ugnom;
+          Pg_pu = Pg/Sbaz;
+          Qg_pu = Qg/Sbaz;
+          Ignom = Pnom/cosfi_nom/sqrt(3)/Ugnom;
+
+          Pg=Pgen;
+          Qg=min(Qmax, max(Qmin, Qgen));
+
+          // equations of currents, voltages, and flux densities
+          s = 0;
+
+          EQ = sqrt((Ut_pu + ((Ra + Rt)*Pg_pu + (Xq + Xt)*Qg_pu)/Ut_pu)^2 + (((Xq + Xt)*Pg_pu - (Ra + Rt)*Qg_pu)/Ut_pu)^2);
+          Dg = atan((((Xq + Xt)*Pg_pu - (Ra + Rt)*Qg_pu)/Ut_pu)/(Ut_pu + ((Ra + Rt)*Pg_pu + (Xq + Xt)*Qg_pu)/Ut_pu));
+
+          Uq = Ut_pu*cos(Dg);
+          Ud = -Ut_pu*sin(Dg);
+
+          Id = ((Uq - EQ)*(Xq + Xt) - (Ra + Rt)*Ud)/((Ra + Rt)^2 + (Xq + Xt)^2);
+          Iq = (-Ud - (Ra + Rt)*Id)/(Xq + Xt);
+          Mu0 = EQ*Iq;
+
+          Eiq = Uq - Id*(Xs + Xt) + (Ra + Rt)*Iq;
+          Ir = -Id + Eiq/Xad;
+          Uf = Ir*Rf;
+          Eq = Ir*Xad;
+          Er0 = Eq;
+          PsiR = Eiq + Xsf*Ir;
+          PsiRQ = -Ud - Iq*(Xs + Xt) - Id*(Ra + Rt);
+          PsiRD = Eiq;
+
+          DGi = Dg;
+          Yr = PsiR;
+          Yrd = PsiRD;
+          Yrq = PsiRQ;
+
+        equation
+
+          // 1. EXTRAPOLATION PROTECTION (We limit Pgen to table boundaries so that math doesn't fly away)
+          P_clipped_max = max(pq_table.P_max[1], min(Pgen, pq_table.P_max[end]));
+          P_clipped_min = max(pq_table.P_min[1], min(Pgen, pq_table.P_min[end]));
+
+           // 2. AUTOMATIC INTERPOLATION AT EACH CALCULATION STEP
+          // The interpolate function returns a tuple (value of I, index_interval)
+          (Qmax, i_max_dummy) = Modelica.Math.Vectors.interpolate(
+            pq_table.P_max,
+            pq_table.Qmax,
+            P_clipped_max);
+
+          (Qmin, i_min_dummy) = Modelica.Math.Vectors.interpolate(
+            pq_table.P_min,
+            pq_table.Qmin,
+            P_clipped_min);
+
+          //-------------Calculated parameters of system----------------
+          Xad = Xd - Xs;
+          Xaq = Xq - Xs;
+          X2dt = X2d + Xt;
+          X2qt = X2q + Xt;
+          Rs = Ra + Rt;
+          Xsf = 1/(1/(X1d - Xs) - 1/Xad);
+          Xs1d = 1/(1/(X2d - Xs) - 1/Xad - 1/Xsf);
+          Xs1q = 1/(1/(X2q - Xs) - 1/Xaq);
+          X1 = (X2d - Xs)/Xsf;
+          X2 = (X2d - Xs)/Xs1d;
+          X3 = (X2q - Xs)/Xs1q;
+          //--------------------------------------------------------------------------------
+          Tj = if time < TkzOn then Tj_p*Pnom/Sbaz else Tj_p*Pnom/Sbaz*Pg_new/Pg;
+
+          Xd = if time < TkzOn then Xd_p*Sbaz/Pnom*cosfi_nom else Xd_p*Sbaz/Pnom*cosfi_nom*Pg/Pg_new;
+          Xq = if time < TkzOn then Xq_p*Sbaz/Pnom*cosfi_nom else Xq_p*Sbaz/Pnom*cosfi_nom*Pg/Pg_new;
+          Xs = if time < TkzOn then Xs_p*Sbaz/Pnom*cosfi_nom else Xs_p*Sbaz/Pnom*cosfi_nom*Pg/Pg_new;
+          X1d = if time < TkzOn then X1d_p*Sbaz/Pnom*cosfi_nom else X1d_p*Sbaz/Pnom*cosfi_nom*Pg/Pg_new;
+          X2d = if time < TkzOn then X2d_p*Sbaz/Pnom*cosfi_nom else X2d_p*Sbaz/Pnom*cosfi_nom*Pg/Pg_new;
+          X2q = if time < TkzOn then X2q_p*Sbaz/Pnom*cosfi_nom else X2q_p*Sbaz/Pnom*cosfi_nom*Pg/Pg_new;
+
+          Rf_p = (Xad+Xsf)/Wc/Td0;
+          R1d_p = (Xs1d+(1/((1/Xad)+(1/Xsf)+(1/Xs))))/Wc/T2d_p;
+          R1q_p = (Xs1q+(1/((1/Xaq)+(1/Xsf))))/Wc/T2q_p;
+          Rf = if time < TkzOn then Rf_p else Rf_p*Pg/Pg_new;
+          R1d = if time < TkzOn then R1d_p else R1d_p*Pg/Pg_new;
+          R1q = if time < TkzOn then R1q_p else R1q_p*Pg/Pg_new;
+          //--------------------------------------------------------------------------------
+          der(DGi) = Wc*s;
+
+          Uf_full = Rf*Er/Xad;
+
+          der(Yr) = Wc*(Uf_full - Rf*ir);
+          der(Yrd) = -Wc*R1d*ird;
+          der(Yrq) = -Wc*R1q*irq;
+          der(s) = (Mt_pp/(1+s) - Me/(1+s) - Kd/2*s)/Tj;
+
+          //--------------------------------------------------------------------------------
+          MT_MIN = if time < TkzOn then Mtmin*Pg_pu else Pg_new/Sbaz - 0.01;
+          MT_MAX = if time < TkzOn then Mtmax*Pg_pu else Pg_new/Sbaz + 0.01;
+
+          //--------------------------------------------------------------------------------
+
+          Me = Yad*iq - Yaq*id;
+          ir = (Yr - Yad)/Xsf;
+          ird = (Yrd - Yad)/Xs1d;
+          irq = (Yrq - Yaq)/Xs1q;
+          id = if time >= TgenOff and time < TgenOff + dTgenOff then 0 else ((uq -
+            E11q)*X2qt - Rs*(ud + E11d))/(X2dt*X2qt + Rs^2);
+          iq = if time >= TgenOff and time < TgenOff + dTgenOff then 0 else (-ud -
+            E11d - Rs*id)/X2qt;
+          E11d = X3*Yrq;
+          E11q = X1*Yr + X2*Yrd;
+          Yad = E11q + id*(X2d - Xs);
+          Yaq = E11d + iq*(X2q - Xs);
+          Ugen = (sqrt(ud^2 + uq^2))*Ugnom;
+          Igen = (sqrt(IqG^2 + IdG^2))*Sbaz/sqrt(3)/Ugnom;
+          dUtr = sqrt(ud^2 + uq^2) - Ut_pu;
+          dWu = Wc*Ssys;
+          dWf = if UqG <> 0.0 then atan2(UdG, UqG) else atan2(UdG, 0.001);
+          dIf = ir - Ir;
+          //----------------------------------------
+          Pgen = (uq*iq + ud*id)*Sbaz;
+          Qgen = (-uq*id + ud*iq)*Sbaz;
+          //-----------------------------------------------------------
+          uq = UqG*cos(DeltaIJ) - UdG*sin(DeltaIJ);
+          ud = UqG*sin(DeltaIJ) + UdG*cos(DeltaIJ);
+          //-----------------------------------------------------------
+          IqG = iq*cos(DeltaIJ) + id*sin(DeltaIJ);
+          IdG = id*cos(DeltaIJ) - iq*sin(DeltaIJ);
+          //-----------------------------------------------------------
+          f = Wc*(1-s)/2/PI;
+
+          //------connectors------
+
+          //--Stator--
+          Stator_pin.Vd = UdG;
+          Stator_pin.Vq = UqG;
+
+          Stator_pin.Id = IdG;
+          Stator_pin.Iq = IqG;
+
+          //---input-rotor--field--voltage---
+          Er = Ef_pin.Signal;
+
+          //----to--excitation--system---
+          dUtr_pin.Signal = dUtr;
+          dWu_pin.Signal = dWu;
+          dWf_pin.Signal = dWf;
+          dIf_pin.Signal = dIf;
+          Ut_pin.Signal = Ut_pu;
+          Er0_pin.Signal = Er0;
+          Ugen_pin.Signal = sqrt(ud^2 + uq^2);
+          dIg_pin.Signal = sqrt(IqG^2 + IdG^2) - sqrt(Id^2 + Iq^2);
+
+          Mt_pp = max(MT_MIN, min(MT_MAX,Mt_pin.Signal))  "таким хитрым образом выбирается сигнал с регулятора, если он не ограничен Mtmax, Mtmin";
+          slip_pin.Signal = if time >= TregOff then 0 else s;
+          Mu0 = Mu0_pin.Signal;
+
+          connect(dUtr_pin, dUtr_pin) annotation (Line(
+              points={{-54,100},{-54,100}},
+              color={255,255,0},
+              thickness=0.5));
+
+          annotation (
+            Coordsys(
+              extent=[-100, -100; 100, 100],
+              grid=[2, 2],
+              component=[20, 20]),
+            Window(
+              x=0.06,
+              y=0.07,
+              width=0.6,
+              height=0.77),
+            Diagram(coordinateSystem(
+                preserveAspectRatio=false,
+                preserveOrientation=false,
+                extent={{-100,-100},{100,100}},
+                grid={2,2},
+                initialScale=0), graphics),
+            Icon(
+              coordinateSystem(
+                preserveAspectRatio=false,
+                preserveOrientation=false,
+                extent={{-100,-100},{100,100}},
+                grid={2,2},
+                initialScale=0),
+              graphics={
+                Ellipse(
+                  extent={{-66,66},{70,-64}},
+                  lineColor={0,0,255},
+                  lineThickness=1),
+                Text(extent={{-36,36},{40,-38}},  textString=
+                                                       "SM"),
+                Text(extent={{-74,-56},{86,-98}},
+                  textColor={0,0,0},
+                  textString="%name"),
+                Line(
+                  points={{-66,0},{-94,0}},
+                  color={0,0,255},
+                  thickness=1),
+                Line(
+                  points={{96,0},{70,0}},
+                  color={0,0,255},
+                  thickness=1),
+                Line(
+                  points={{-46,48},{-54,60},{-54,94}},
+                  color={0,0,255},
+                  thickness=1),
+                Line(
+                  points={{-26,60},{-26,96}},
+                  color={0,0,255},
+                  thickness=1),
+                Line(
+                  points={{0,66},{0,98}},
+                  color={0,0,255},
+                  thickness=1),
+                Line(
+                  points={{48,48},{56,60},{56,94}},
+                  color={0,0,255},
+                  thickness=1),
+                Line(
+                  points={{28,62},{28,94}},
+                  color={0,0,255},
+                  thickness=1),
+                Line(
+                  points={{62,32},{80,58},{80,92}},
+                  color={0,0,255},
+                  thickness=1),
+                Line(
+                  points={{-60,30},{-80,58},{-80,92}},
+                  color={0,0,255},
+                  thickness=1),
+                Line(
+                  points={{70,12},{104,58},{104,92}},
+                  color={0,0,255},
+                  thickness=1),
+                Line(
+                  points={{-64,14},{-98,40}},
+                  color={0,0,255},
+                  thickness=1),
+                Line(
+                  points={{-64,-14},{-100,-42}},
+                  color={0,0,255},
+                  thickness=1),
+                Line(
+                  points={{-80,58},{-98,76}},
+                  color={0,0,255},
+                  thickness=1)},
+              Ellipse(extent=[-60, 62; 60, -58], style(thickness=2)),
+              Text(extent=[-38, 38; 38, -36], string="SM"),
+              Text(extent=[-80, -58; 80, -100], string="%name"),
+              Line(points=[-60, 2; -72, 2], style(thickness=2)),
+              Line(points=[70, 2; 60, 2], style(thickness=2))),
+                      __Dymola_Commands(editCall=plot(
+                    {"L0709_1.P1","L0709_1.U1m"},
+                    legends={"Calibration L0709_1.P1","Calibration L0709_1.U1m"},
+                    colors={{255,0,0},{255,0,0}}) "Calibration_U"), Documentation(
+                info="<html>
+<p>Synchronous generator without exciter model. </p>
+<p>Модель синхронного генератора с исключенным возбудителем. </p>
+</html>"));
+        end SM_without_exciter;
+
+        model SM_with_exciter_and_AVR_SD
+
+          LEPSE.Interfaces.Pin_v2 inp annotation (
+            extent=[78,-4; 98,16],
+            layer="icon",
+            Placement(transformation(extent={{90,-10},{110,10}},
+                                                               rotation=0),
+                iconTransformation(extent={{90,-10},{110,10}})));
+          parameter Real TgenOff=1000 "Time of generator's disconnection, s"
+          annotation(Dialog(tab="General"));
+          parameter Real dTgenOff=10 "Duration of generator's disconnection, s"
+          annotation(Dialog(tab="General"));
+          parameter Real Pg=100 "Active power, MW"
+          annotation(Dialog(tab="Synchronous machine"));
+          parameter Real Ut=20 "ARV voltage reference value, kV"
+          annotation(Dialog(tab="Synchronous machine"));
+          parameter Real Pnom=100 "Nominal maschine active power"
+          annotation(Dialog(tab="Synchronous machine"));
+          parameter Real Ugnom=20 "Nominal stator voltage, kV"
+          annotation(Dialog(tab="Synchronous machine"));
+          parameter Real Sbaz=1000 "Bazis power, MWA"
+          annotation(Dialog(tab="Synchronous machine"));
+          parameter Real Xd_p=1.869 "D-axis synchronous reactance, p.u."
+          annotation(Dialog(tab="Synchronous machine"));
+          parameter Real Xq_p=1.869 "Q-axis synchronous reactance, p.u."
+          annotation(Dialog(tab="Synchronous machine"));
+          parameter Real Xs_p=0.194 "Leakage reactance of stator winding, p.u."
+          annotation(Dialog(tab="Synchronous machine"));
+          parameter Real X1d_p=0.3016 "D-axis transient reactance, p.u."
+          annotation(Dialog(tab="Synchronous machine"));
+          parameter Real X2q_p=0.2337 "Q-axis subtransient reactance, p.u."
+          annotation(Dialog(tab="Synchronous machine"));
+          parameter Real X2d_p=0.2337 "D-axis subtransient reactance, p.u."
+          annotation(Dialog(tab="Synchronous machine"));
+          parameter Real Tj_p=7 "Inertia coefficient, s"
+          annotation(Dialog(tab="Synchronous machine"));
+          parameter Real Td0=10 "D-axis transient time constant, s"
+          annotation(Dialog(tab="Synchronous machine"));
+          parameter Real T2d_p=0.02 "D-axis subtransient time constant, s"
+          annotation(Dialog(tab="Synchronous machine"));
+          parameter Real T2q_p=0.05 "Q-axis subtransient time constant, s"
+          annotation(Dialog(tab="Synchronous machine"));
+          parameter Real Sigma=0.0475 "Turbine statism coefficient, p.u."
+          annotation(Dialog(tab="Turbine"));
+          parameter Real TregOff=50 "Turbine speed regulator off-time, s"
+          annotation(Dialog(tab="Turbine"));
+          parameter Real Mtmax=1.1 "Turbine overloading coefficient, p.u."
+          annotation(Dialog(tab="Turbine"));
+          parameter Real Mtmin=0 "Turbine minimum-loading coefficient, p.u."
+          annotation(Dialog(tab="Turbine"));
+          parameter Real TkzOn=1000 "Generators dropping on-time, s"
+          annotation(Dialog(tab="General"));
+          parameter Real Pg_new=100 "New power of HPP, MW"
+          annotation(Dialog(tab="General"));
+          parameter Real Kemax=2.0 "Multiplicity of forcing on, p.u."
+          annotation(Dialog(tab="Exciter"));
+          parameter Real Kemin=-0.6 "Multiplicity of forcing off, p.u."
+          annotation(Dialog(tab="Exciter"));
+          parameter Real K0u=-10 "Voltage deviation control coefficient"
+          annotation(Dialog(tab="AVR"));
+          parameter Real K1u=0 "Voltage derivative control coefficient"
+          annotation(Dialog(tab="AVR"));
+          parameter Real K0w=0 "Frequency deviation control coefficient"
+          annotation(Dialog(tab="AVR"));
+          parameter Real K1if=0 "Rotor current derivative control coefficient"
+          annotation(Dialog(tab="AVR"));
+          parameter Real K1w=0 "Frequency derivative control coefficient"
+          annotation(Dialog(tab="AVR"));
+          parameter Real Uforc=0.85 "Voltage of field forcing input"
+          annotation(Dialog(tab="Forcing"));
+          parameter Real Udeforc=0.9 "Voltage of field forcing removing"
+          annotation(Dialog(tab="Forcing"));
+          parameter Real Tforcedelay=0.1 "Delay of field forcing removing"
+          annotation(Dialog(tab="Forcing"));
+          parameter Real DL0=0
+          annotation(Dialog(tab="AVR"));
+          parameter Real Tokp=0.05 "The main channel of regulation time constant"
+          annotation(Dialog(tab="AVR"));
+          parameter Real cosfi_nom=0.85 "Nominal maschine power coefficient, p.u."
+          annotation(Dialog(tab="Synchronous machine"));
+          parameter Real n_gen=1 "Number of generators"
+          annotation(Dialog(tab="General"));
+
+          parameter Boolean displayPowerFlow=true "Display power flow"
+          annotation(Dialog(tab="General"));
+
+          parameter Real fbaz=G.sysData.fbaz "Bazic frequency, Hz"
+           annotation(Dialog(tab="General"));
+          parameter Data.PQ_CapabilityTable pq_table=LEPSE.Data.TVV_500_2
+           annotation(Dialog(tab="Synchronous machine"));
+          Excitation_systems.Regulators.AVR_SD AVR(
+            K0u=K0u,
+            K1u=K1u,
+            K0w=K0w,
+            K1w=K1w,
+            K1if=K1if,
+            Uforc=Uforc,
+            Udeforc=Udeforc,
+            Tforcedelay=Tforcedelay,
+            DL0=DL0,
+            Umax=Umax,
+            Umin=Umin,
+            Tokp=Tokp,
+            Qgen=G.Qgen,
+            Qmax=G.Qmax,
+            Qmin=G.Qmin,
+            inService=inService,
+            inService_1=inService_1)
+            annotation (Placement(transformation(extent={{-174,-32},{-96,44}})));
+          parameter Boolean inService=true "Reactive power limiter condition"
+          annotation(Dialog(tab="AVR"));
+          Excitation_systems.Exciters.Exciter exciter(
+            Te=Te,
+            Kemax=Kemax,
+            Kemin=Kemin,
+            selfExcitation=selfExcitation,
+            Kig_exc=Kig_exc,
+            Kif_exc=Kif_exc,
+            Ku_exc=Ku_exc)
+            annotation (Placement(transformation(extent={{-78,-20},{-24,18}})));
+          SM_without_exciter G(
+            TgenOff=TgenOff,
+            dTgenOff=dTgenOff,
+            Kd=Kd,
+            Sbaz=Sbaz,
+            fbaz=fbaz,
+            Pg=Pg,
+            Ut=Ut,
+            Pnom=Pnom,
+            Ugnom=Ugnom,
+            cosfi_nom=cosfi_nom,
+            Xd_p=Xd_p,
+            Xq_p=Xq_p,
+            Xs_p=Xs_p,
+            X1d_p=X1d_p,
+            X2d_p=X2d_p,
+            X2q_p=X2q_p,
+            Tj_p=Tj_p,
+            Td0=Td0,
+            T2d_p=T2d_p,
+            T2q_p=T2q_p,
+            TregOff=TregOff,
+            Mtmax=Mtmax,
+            Mtmin=Mtmin,
+            TkzOn=TkzOn,
+            Pg_new=Pg_new)
+            annotation (Placement(transformation(extent={{-18,-46},{74,46}})));
+          parameter Real Te=0.02 "Exciter time constant, s"
+          annotation(Dialog(tab="Exciter"));
+          parameter Boolean selfExcitation=true "Sign of self‑excitation (dependence on Ut)"
+          annotation(Dialog(tab="Exciter"));
+          parameter Real Umax=6 "AVR upper limit"
+          annotation(Dialog(tab="AVR"));
+          parameter Real Umin=-6 "AVR lower limit"
+          annotation(Dialog(tab="AVR"));
+          parameter Boolean inService_1=true "AVR_signal limiter condition"
+          annotation(Dialog(tab="AVR"));
+          parameter Real Kd=0 "damping coefficient"
+          annotation(Dialog(tab="Synchronous machine"));
+          parameter Real Kig_exc=1.0
+          annotation(Dialog(tab="Exciter"));
+          parameter Real Kif_exc=1.0
+          annotation(Dialog(tab="Exciter"));
+          parameter Real Ku_exc=1.0
+          annotation(Dialog(tab="Exciter"));
+          Turbines.ASR_Regulator_ ASR(Sigma=Sigma, Tauc=Tauc)
+            annotation (Placement(transformation(extent={{-80,-86},{-20,-42}})));
+          parameter Real Tauc=0.15 "Slip deviation time constant"
+           annotation(Dialog(tab="Turbine"));
+        equation
+
+          connect(AVR.dV1_pin, AVR.dV_pin) annotation (Line(
+              points={{-174.325,13.6},{-174.325,25}},
+              color={255,255,0},
+              thickness=0.5));
+          connect(exciter.dEr_pin, AVR.out_pin) annotation (Line(
+              points={{-78,3.94},{-92,3.94},{-92,2.96},{-95.675,2.96}},
+              color={255,255,0},
+              thickness=0.5));
+          connect(exciter.Er_pin, G.Ef_pin) annotation (Line(
+              points={{-24,-1},{-24,0},{-18,0}},
+              color={255,255,0},
+              thickness=0.5));
+          connect(G.Stator_pin, inp) annotation (Line(points={{74,0},{100,0}},
+                               color={28,108,200}));
+
+          connect(G.dIg_pin, exciter.dIg_pin) annotation (Line(
+              points={{75.84,46},{76,46},{76,54},{-84,54},{-84,8.88},{-78,8.88}},
+              color={255,255,0},
+              thickness=0.5));
+          connect(G.Er0_pin, exciter.Er0_pin) annotation (Line(
+              points={{64.8,46},{64.8,56},{-86,56},{-86,-1},{-78,-1}},
+              color={255,255,0},
+              thickness=0.5));
+          connect(G.dIf_pin, exciter.dIf_pin) annotation (Line(
+              points={{40.88,46},{40.88,58},{-88,58},{-88,-11.26},{-78,-11.26}},
+              color={255,255,0},
+              thickness=0.5));
+          connect(G.Ugen_pin, exciter.Ut_pin) annotation (Line(
+              points={{-8.8,46},{-80,46},{-80,22},{-82,22},{-82,-5.56},{-78,-5.56}},
+              color={255,255,0},
+              thickness=0.5));
+          connect(G.Ut_pin, AVR.Ut_pin) annotation (Line(
+              points={{53.76,46},{53.76,62},{-180,62},{-180,-25.92},{-174,-25.92}},
+              color={255,255,0},
+              thickness=0.5));
+          connect(G.dUtr_pin, AVR.dV_pin) annotation (Line(
+              points={{3.16,46},{3.16,60},{-176,60},{-176,48},{-178,48},{-178,25},{-174.325,
+                  25}},
+              color={255,255,0},
+              thickness=0.5));
+          connect(G.dWf_pin, AVR.dfU_pin) annotation (Line(
+              points={{28,46},{28,64},{-182,64},{-182,-9.2},{-174.325,-9.2}},
+              color={255,255,0},
+              thickness=0.5));
+          connect(G.dIf_pin, AVR.dif1_pin) annotation (Line(
+              points={{40.88,46},{40.88,58},{-88,58},{-88,-38},{-178,-38},{-178,-18.32},
+                  {-174.325,-18.32}},
+              color={255,255,0},
+              thickness=0.5));
+          connect(G.dWu_pin, AVR.dfsys_pin) annotation (Line(
+              points={{16.04,46},{16.04,66},{-184,66},{-184,-12},{-178,-12},{-178,2.2},{
+                  -174.325,2.2}},
+              color={255,255,0},
+              thickness=0.5));
+          connect(G.Mu0_pin, ASR.Mu0_pin) annotation (Line(
+              points={{-18,34.96},{-92,34.96},{-92,-55.64},{-80.25,-55.64}},
+              color={255,255,0},
+              thickness=0.5));
+          connect(G.slip_pin, ASR.ds_pin) annotation (Line(
+              points={{-18,18.4},{-18,50},{-90,50},{-90,-65.76},{-80.25,-65.76}},
+              color={255,255,0},
+              thickness=0.5));
+          connect(ASR.out_pin, G.Mt_pin) annotation (Line(
+              points={{-20.25,-64},{-12,-64},{-12,-17.48},{-18,-17.48}},
+              color={255,255,0},
+              thickness=0.5));
+          annotation (
+            Coordsys(
+              extent=[-100, -100; 100, 100],
+              grid=[2, 2],
+              component=[20, 20]),
+            Icon(
+              coordinateSystem(
+                preserveAspectRatio=false,
+                preserveOrientation=false,
+                extent={{-180,-100},{100,100}},
+                grid={2,2},
+                initialScale=0),
+              graphics={
+                Text(extent={{-78,96},{74,70}},
+                  textColor={0,0,0},
+                  textString="%name"),
+                Line(points={{94,0},{60,0}}, color={0,0,0},
+                  thickness=1),
+                Text(
+                  textString=DynamicSelect("P MW", String(G.Pgen, significantDigits=3) + " MW"),
+                  visible=displayPowerFlow,
+                  extent={{-96,-70},{102,-108}},
+                  textColor={0,168,6}),
+                Text(
+                  textString=DynamicSelect("Q MVar", String(G.Qgen, significantDigits=3) + " MVar"),
+                  visible=displayPowerFlow,
+                  extent={{-94,-100},{104,-138}},
+                  textColor={102,44,145}),
+                Line(
+                  points={{-52,20},{-52,-20},{-20,-40}},
+                  color={0,0,255},
+                  thickness=1),
+                Line(
+                  points={{-52,20},{-20,40}},
+                  color={0,0,255},
+                  thickness=1),
+                Line(
+                  points={{-20,40},{-20,-40}},
+                  color={0,0,255},
+                  thickness=1),
+                Line(
+                  points={{-20,0},{20,0}},
+                  color={0,0,0},
+                  thickness=1),
+                Ellipse(
+                  extent={{20,20},{60,-20}},
+                  lineColor={0,0,255},
+                  lineThickness=1,
+                  fillColor={28,108,200},
+                  fillPattern=FillPattern.None),
+                Ellipse(
+                  extent={{-5,6},{5,-6}},
+                  lineColor={0,0,255},
+                  lineThickness=1,
+                  fillColor={28,108,200},
+                  fillPattern=FillPattern.None,
+                  closure=EllipseClosure.None,
+                  startAngle=0,
+                  endAngle=180,
+                  origin={35,-8.88178e-16},
+                  rotation=180),
+                Ellipse(
+                  extent={{-5,6},{5,-6}},
+                  lineColor={0,0,255},
+                  lineThickness=1,
+                  fillColor={28,108,200},
+                  fillPattern=FillPattern.None,
+                  closure=EllipseClosure.None,
+                  startAngle=0,
+                  endAngle=180,
+                  origin={45,0},
+                  rotation=360),
+                Line(
+                  points={{-52,0},{-78,0}},
+                  color={0,0,0},
+                  thickness=1),
+                Rectangle(
+                  extent={{-80,60},{80,-60}},
+                  lineColor={28,108,200},
+                  lineThickness=1,
+                  pattern=LinePattern.Dash)},
+              Ellipse(extent=[-74, 72; 72, -58]),
+              Text(extent=[-44, 54; 46, 20], string="Gen."),
+              Text(extent=[-50, 22; 50, -4], string="with ARV"),
+              Text(extent=[-78, -58; 74, -84], string="%name"),
+              Line(points=[80, 6; 72, 6]),
+              Text(extent=[-50, -4; 50, -30], string="control")),
+            Window(
+              x=0.28,
+              y=0.01,
+              width=0.6,
+              height=0.88),
+            Documentation(info="<html>
+<p>Generator model with automatic excitation (SD) control. </p>
+<p>Модель синхронного генератора с подключенным АРВ сильного действия. </p>
+</html>"),  Diagram(coordinateSystem(extent={{-180,-100},{100,100}})));
+        end SM_with_exciter_and_AVR_SD;
+
+        model Infinite_bus_Mashine_simple
+          outer SysData sysData;
+
+          //------------------------------------------------------------------------------------
+          parameter Real Sbaz=sysData.Sbaz "Bazis power, MWA";
+          parameter Real fbaz=sysData.fbaz "Bazic frequency, Hz";
+          parameter Real Pg(fixed=false) "Active power";
+          parameter Real Qg(fixed=false) "Reactive power";
+          parameter Real Ut=330 "ARV voltage reference value";
+          parameter Real Pnom=10000 "Set PV-generator power";
+          parameter Real Ugnom=330 "Nominal voltage";
+          parameter Real cosfi_nom=0.9 "Nominal maschine power coefficient, p.u.";
+
+          parameter Real Qmax=9999 "Текущий предел перевозбуждения, МВар";
+          parameter Real Qmin=-9999 "Текущий предел недовозбуждения, МВар";
+
+          //------------------------------------------------------------------------------------
+
+          parameter Real X1d_p=0.05 "D-axis transient reactance";
+
+          parameter Real Tj_p=7 "Inertia coefficient";
+
+          parameter Real Mtmax=1.1 "Turbine overloading coefficient";
+          parameter Real Mtmin=0 "Turbine minimum-loading coefficient";
+
+
+          //------------------------------------------------------------------------------------
+          constant Real PI=4*atan(1) "PI-constant";
+          parameter Real Wc=2*PI*fbaz "frequency of electric current fluctuations";
+
+          // Parameters of power system elements
+          parameter Real EQ(fixed=false) "Auxiliaire EMF of salient-pole generator";
+          parameter Real Dg(fixed=false) "Generator power angle";
+          parameter Real Uq(fixed=false) "D-axis ARV voltage reference value";
+          parameter Real Ud(fixed=false) "Q-axis ARV voltage reference value";
+          parameter Real Id(fixed=false) "D-axis stator current value";
+          parameter Real Iq(fixed=false) "Q-axis stator current value";
+          parameter Real Mu0(fixed=false);
+         parameter Real TregOff=50 "Turbine speed regulator off-time, s"
+          annotation(Dialog(tab="Turbine"));
+
+          Real Ugen "generator full voltage actual value";
+          Real Igen "generator stator current value, kA";
+          Real Mt_pp "Turbine rotation moment actual value";
+          Real Pgen "Generator active power actual value";
+          Real Qgen "Generator reactive power actual value";
+          Real UdG;
+          Real UqG;
+          Real IdG;
+          Real IqG;
+          input Real DeltaIJ;
+          input Real Ssys "system slip";
+          //------------------------------------------------------------------
+          // Integrated Variables
+
+          Real s "generator slip";
+          Real DGi "Generator power angle initial value";
+          Real Me "electrical moment";
+          Real iq "Q-axis generator stator winding current actual value";
+          Real id "D-axis generator stator winding current actual value";
+          Real ud "D-axis generator voltage actual value";
+          Real uq "Q-axis generator voltage actual value";
+          Real X1d "D-axis transient reactance actual value";
+
+          Real Tj "Inertia coefficient actual value";
+          Real f "frequency";
+          parameter Real Ut_pu(fixed=false) "stator voltage, p.u.";
+          parameter Real Pg_pu(fixed=false) "Active power, p.u.";
+          parameter Real Qg_pu(fixed=false) "Reactive power, p.u.";
+          LEPSE.Interfaces.Pin_v2 Stator_pin annotation (extent=[68,-8; 88,12],
+              Placement(transformation(extent={{90,-10},{110,10}},
+                                                                 rotation=0),
+                iconTransformation(extent={{90,-10},{110,10}})));
+          Interfaces.Signal_pin Mt_pin annotation (Placement(transformation(extent={{-112,
+                    -10},{-92,10}}),  iconTransformation(extent={{-112,-10},{-92,10}})));
+          Interfaces.Signal_pin slip_pin annotation (Placement(transformation(extent={{-10,92},
+                    {10,112}}),     iconTransformation(extent={{-10,92},{10,112}})));
+
+          Interfaces.Signal_pin Mu0_pin annotation (Placement(transformation(extent={{32,92},
+                    {52,112}}),     iconTransformation(extent={{32,92},{52,112}})));
+        initial equation
+          // additional variables in p.u.
+          Ut_pu = Ut/Ugnom;
+          Pg_pu = Pg/Sbaz;
+          Qg_pu = Qg/Sbaz;
+
+          // equations of currents, voltages, and flux densities
+          s = 0;
+          DGi = Dg;
+          Mu0 = EQ*Iq;
+
+          Pg = Pgen;
+          Qg=min(Qmax, max(Qmin, Qgen));
+
+          EQ = sqrt((Ut_pu + X1d*Qg_pu/Ut_pu)^2 + (X1d*Pg_pu/Ut_pu)^2);
+          Dg = atan(X1d*Pg_pu/(Ut_pu^2 + X1d*Qg_pu));
+            //----------------------
+          Uq = Ut_pu*cos(Dg);
+          Ud = -Ut_pu*sin(Dg);
+            //----------------------
+          Id = (Uq - EQ)/X1d;
+          Iq = (-Ud)/X1d;
+
+        equation
+
+          Tj = Tj_p*Pnom/Sbaz;
+
+          X1d = X1d_p*Sbaz/Pnom*cosfi_nom;
+          //--------------------------------------------------------------------------------
+          der(DGi) = Wc*s;
+          der(s) = (Mt_pp/(1+s) - Me/(1+s))/Tj;
+
+          //--------------------------------------------------------------------------------
+
+          Me = (uq*iq + ud*id);
+
+          id = (uq-EQ)/X1d;
+          iq = -ud/X1d;
+
+          //----------------------------------------
+          Pgen = (uq*iq + ud*id)*Sbaz;
+          Qgen = (-uq*id + ud*iq)*Sbaz;
+
+          Ugen = (sqrt(ud^2 + uq^2))*Ugnom;
+          Igen = (sqrt(IqG^2 + IdG^2))*Sbaz/sqrt(3)/Ugnom;
+          //-----------------------------------------------------------
+          uq = UqG*cos(DeltaIJ) - UdG*sin(DeltaIJ);
+          ud = UqG*sin(DeltaIJ) + UdG*cos(DeltaIJ);
+          //-----------------------------------------------------------
+          IqG = iq*cos(DeltaIJ) + id*sin(DeltaIJ);
+          IdG = id*cos(DeltaIJ) - iq*sin(DeltaIJ);
+          //-----------------------------------------------------------
+          f = Wc*(1-s)/2/PI;
+
+          //--Stator--
+          Stator_pin.Vd = UdG;
+          Stator_pin.Vq = UqG;
+
+          Stator_pin.Id = IdG;
+          Stator_pin.Iq = IqG;
+
+          //---input-rotor--field--voltage---
+          Mt_pp = max(Mtmin, min(Mtmax,Mt_pin.Signal))  "таким хитрым образом выбирается сигнал с регулятора, если он не ограничен Mtmax, Mtmin";
+          Mu0 = Mu0_pin.Signal;
+          slip_pin.Signal = if time >= TregOff then 0 else s;
+
+          annotation (
+            Coordsys(
+              extent=[-100, -100; 100, 100],
+              grid=[2, 2],
+              component=[20, 20]),
+            Window(
+              x=0.06,
+              y=0.07,
+              width=0.6,
+              height=0.77),
+            Diagram(coordinateSystem(
+                preserveAspectRatio=false,
+                preserveOrientation=false,
+                extent={{-100,-100},{100,100}},
+                grid={2,2},
+                initialScale=0), graphics),
+            Icon(
+              coordinateSystem(
+                preserveAspectRatio=false,
+                preserveOrientation=false,
+                extent={{-100,-100},{100,100}},
+                grid={2,2},
+                initialScale=0),
+              graphics={
+                Ellipse(
+                  extent={{-66,66},{70,-64}},
+                  lineColor={0,0,255},
+                  lineThickness=1),
+                Text(extent={{-36,36},{40,-38}},  textString=
+                                                       "SM"),
+                Text(extent={{-74,-56},{86,-98}},
+                  textColor={0,0,0},
+                  textString="%name"),
+                Line(
+                  points={{96,0},{70,0}},
+                  color={0,0,255},
+                  thickness=1),
+                Line(
+                  points={{0,66},{0,100}},
+                  color={0,0,255},
+                  thickness=1),
+                Line(
+                  points={{-66,0},{-102,0}},
+                  color={0,0,255},
+                  thickness=1),
+                Line(
+                  points={{32,60},{42,96}},
+                  color={0,0,255},
+                  thickness=1)},
+              Ellipse(extent=[-60, 62; 60, -58], style(thickness=2)),
+              Text(extent=[-38, 38; 38, -36], string="SM"),
+              Text(extent=[-80, -58; 80, -100], string="%name"),
+              Line(points=[-60, 2; -72, 2], style(thickness=2)),
+              Line(points=[70, 2; 60, 2], style(thickness=2))),
+                      __Dymola_Commands(editCall=plot(
+                    {"L0709_1.P1","L0709_1.U1m"},
+                    legends={"Calibration L0709_1.P1","Calibration L0709_1.U1m"},
+                    colors={{255,0,0},{255,0,0}}) "Calibration_U"), Documentation(
+                info="<html>
+<p>Infinite bus mashine model. </p>
+<p>Модель генератора шин бесконечной мощности. </p>
+</html>"));
+        end Infinite_bus_Mashine_simple;
+
+        model Infinite_bus_simple
+
+          LEPSE.Interfaces.Pin_v2 inp annotation (
+            extent=[78,-4; 98,16],
+            layer="icon",
+            Placement(transformation(extent={{90,-10},{110,10}},
+                                                               rotation=0),
+                iconTransformation(extent={{90,-10},{110,10}})));
+          Turbines.ASR_Regulator_   ASC_Regulator_1(Sigma=Sigma, Tauc=Tauc)
+            annotation (Placement(transformation(extent={{-86,-20},{-20,28}})));
+
+
+          parameter Real Ut=1 "ARV voltage reference value";
+
+
+          parameter Real X1d_p=0.3016 "D-axis transient reactance";
+
+
+          parameter Real Mtmax=1.1 "Turbine overloading coefficient";
+          parameter Real Mtmin=0 "Turbine minimum-loading coefficient";
+
+
+          parameter Real Sigma=0.0001 "Slip deviation control coefficient";
+          parameter Real Tauc=0.0001 "Slip deviation time constant";
+
+
+          parameter Boolean displayPowerFlow=true "Display power flow";
+
+          parameter Real Sbaz=1000 "Bazis power, MWA";
+          parameter Real fbaz=G.sysData.fbaz "Bazic frequency, Hz";
+          parameter Real Qmax=9999
+            "Текущий предел перевозбуждения, МВар";
+          parameter Real Qmin=-9999
+            "Текущий предел недовозбуждения, МВар";
+          parameter Real cosfi_nom=0.9
+            "Nominal maschine power coefficient, p.u.";
+          parameter Real Pnom=10000 "Set PV-generator power";
+          Infinite_bus_Mashine_simple G(
+            Sbaz=Sbaz,
+            fbaz=fbaz,
+            Ut=Ut,
+            Pnom=Pnom,
+            Ugnom=Ugnom,
+            cosfi_nom=cosfi_nom,
+            Qmax=Qmax,
+            Qmin=Qmin,
+            X1d_p=X1d_p,
+            Tj_p=Tj_p,
+            Mtmax=Mtmax,
+            Mtmin=Mtmin,
+            TregOff=TregOff)
+            annotation (Placement(transformation(extent={{-2,-32},{70,40}})));
+          parameter Real Ugnom=330 "Nominal voltage";
+          parameter Real Tj_p=7 "Inertia coefficient";
+
+          parameter Real TregOff=50 "Turbine speed regulator off-time, s";
+        initial equation
+            ASC_Regulator_1.out_pin.Signal = G.Me;
+
+        equation
+
+          connect(G.Stator_pin, inp) annotation (Line(points={{70,4},{86,4},{86,0},{100,
+                  0}}, color={28,108,200}));
+          connect(G.slip_pin, ASC_Regulator_1.ds_pin) annotation (Line(
+              points={{34,40.72},{34,48},{-92,48},{-92,2.08},{-86.275,2.08}},
+              color={255,255,0},
+              thickness=0.5));
+          connect(ASC_Regulator_1.out_pin, G.Mt_pin) annotation (Line(
+              points={{-20.275,4},{-2.72,4}},
+              color={255,255,0},
+              thickness=0.5));
+          connect(G.Mu0_pin, ASC_Regulator_1.Mu0_pin) annotation (Line(
+              points={{49.12,40.72},{49.12,52},{26,52},{26,46},{-88,46},{-88,32},
+                  {-90,32},{-90,13.12},{-86.275,13.12}},
+              color={255,255,0},
+              thickness=0.5));
+          annotation (
+            Coordsys(
+              extent=[-100, -100; 100, 100],
+              grid=[2, 2],
+              component=[20, 20]),
+            Icon(
+              coordinateSystem(
+                preserveAspectRatio=false,
+                preserveOrientation=false,
+                extent={{-120,-100},{100,100}},
+                grid={2,2},
+                initialScale=0),
+              graphics={
+                Ellipse(extent={{-74,68},{72,-68}}, lineColor={0,0,255},
+                  lineThickness=1),
+                Text(extent={{-78,96},{74,70}},
+                  textColor={0,0,0},
+                  textString="%name"),
+                Line(points={{94,0},{72,0}}, color={0,0,255},
+                  thickness=1),
+                  Text(
+                  textString=DynamicSelect("P MW", String(G.Pgen, significantDigits=3) + " MW"),
+                  visible=displayPowerFlow,
+                  extent={{-96,-70},{102,-108}},
+                  textColor={0,168,6}),
+                Text(
+                  textString=DynamicSelect("Q MVar", String(G.Qgen, significantDigits=3) + " MVar"),
+                  visible=displayPowerFlow,
+                  extent={{-94,-100},{104,-138}},
+                  textColor={102,44,145}),
+                Ellipse(
+                  extent={{-25,26},{25,-26}},
+                  lineColor={0,0,255},
+                  lineThickness=1,
+                  fillColor={28,108,200},
+                  fillPattern=FillPattern.None,
+                  closure=EllipseClosure.None,
+                  startAngle=0,
+                  endAngle=180,
+                  origin={-25,-3.55271e-15},
+                  rotation=180),
+                Ellipse(
+                  extent={{-25,26},{25,-26}},
+                  lineColor={0,0,255},
+                  lineThickness=1,
+                  fillColor={28,108,200},
+                  fillPattern=FillPattern.None,
+                  closure=EllipseClosure.None,
+                  startAngle=0,
+                  endAngle=180,
+                  origin={25,0},
+                  rotation=360)},
+              Ellipse(extent=[-74, 72; 72, -58]),
+              Text(extent=[-44, 54; 46, 20], string="Gen."),
+              Text(extent=[-50, 22; 50, -4], string="with ARV"),
+              Text(extent=[-78, -58; 74, -84], string="%name"),
+              Line(points=[80, 6; 72, 6]),
+              Text(extent=[-50, -4; 50, -30], string="control")),
+            Window(
+              x=0.28,
+              y=0.01,
+              width=0.6,
+              height=0.88),
+            Documentation(info="<html>
+<p>Infinite bus model. </p>
+<p>Модель шин бесконечной мощности. </p>
+</html>"),  Diagram(coordinateSystem(extent={{-120,-100},{100,100}})));
+        end Infinite_bus_simple;
+
+        model Equation_motion_prototype
+          outer SysData sysData;
+
+          // PQ-diagram parameter
+          parameter LEPSE.Data.PQ_CapabilityTable
+          pq_table = LEPSE.Data.TVV_500_2;
+
+           parameter Real TgenOff=1000 "Time of generator's disconnection, s"
+           annotation(Dialog(tab="General"));
+          parameter Real dTgenOff=10 "Duration of generator's disconnection, s"
+           annotation(Dialog(tab="General"));
+           parameter Real Kd=5 "damping coefficient"
+          annotation(Dialog(tab="Synchronous machine"));
+
+          //------------------------------------------------------------------------------------
+          parameter Real Sbaz=sysData.Sbaz "Bazis power, MWA"
+          annotation(Dialog(tab="General"));
+          parameter Real fbaz=sysData.fbaz "Bazic frequency, Hz"
+          annotation(Dialog(tab="General"));
+          parameter Real Pg = 500 "Active power, MW"
+          annotation(Dialog(tab="General"));
+          parameter Real Qg(fixed=false) "Reactive power";
+          parameter Real Ut=20 "ARV voltage reference value"
+          annotation(Dialog(tab="General"));
+          parameter Real Pnom=500 "Set PV-generator power"
+          annotation(Dialog(tab="General"));
+          parameter Real Ugnom=20 "Nominal voltage"
+          annotation(Dialog(tab="General"));
+          parameter Real cosfi_nom=0.85 "Nominal maschine power coefficient, p.u."
+          annotation(Dialog(tab="General"));
+          parameter Real Ignom(fixed=false) "stator nomunal current, kA";
+
+            // Limitation variables
+          Real Qmax "Current limit of overexcitation, MVar";
+          Real Qmin "Current limit of underexcitation, MVar";
+
+          // Auxiliary variables for the interpolator (Modelica syntax requirement)
+          Real P_clipped_max "Sliced P for Qmax interpolation";
+          Real P_clipped_min "Sliced P for Qmin interpolation";
+          Integer i_max_dummy;
+          Integer i_min_dummy;
+
+          parameter Real X1d_p=0.05 "D-axis transient reactance"
+          annotation(Dialog(tab="Synchronous machine"));
+          parameter Real Tj_p=7 "Inertia coefficient"
+          annotation(Dialog(tab="Synchronous machine"));
+          parameter Real Mtmax=1.1 "Turbine overloading coefficient"
+          annotation(Dialog(tab="Turbine"));
+          parameter Real Mtmin=0 "Turbine minimum-loading coefficient"
+          annotation(Dialog(tab="Turbine"));
+          parameter Real TregOff=50 "Turbine speed regulator off-time, s"
+          annotation(Dialog(tab="Turbine"));
+
+          //------------------------------------------------------------------------------------
+          constant Real PI=4*atan(1) "PI-constant";
+          parameter Real Wc=2*PI*fbaz "frequency of electric current fluctuations";
+
+          // Parameters of power system elements
+          parameter Real EQ(fixed=false) "Auxiliaire EMF of salient-pole generator";
+          parameter Real Dg(fixed=false) "Generator power angle";
+          parameter Real Uq(fixed=false) "D-axis ARV voltage reference value";
+          parameter Real Ud(fixed=false) "Q-axis ARV voltage reference value";
+          parameter Real Id(fixed=false) "D-axis stator current value";
+          parameter Real Iq(fixed=false) "Q-axis stator current value";
+
+          Real Ugen "generator full voltage actual value";
+          Real Igen "generator stator current value, kA";
+          Real Mt_pp "Turbine rotation moment actual value";
+          Real Pgen "Generator active power actual value";
+          Real Qgen "Generator reactive power actual value";
+          Real UdG;
+          Real UqG;
+          Real IdG;
+          Real IqG;
+          parameter Real Mu0(fixed=false);
+          input Real DeltaIJ;
+          input Real Ssys "system slip";
+          //------------------------------------------------------------------
+          // Integrated Variables
+
+          Real s "generator slip";
+          Real su;
+          Real DGi "Generator power angle initial value";
+          Real Me "electrical moment";
+          Real iq "Q-axis generator stator winding current actual value";
+          Real id "D-axis generator stator winding current actual value";
+          Real ud "D-axis generator voltage actual value";
+          Real uq "Q-axis generator voltage actual value";
+          Real X1d "D-axis transient reactance actual value";
+
+          Real Tj "Inertia coefficient actual value";
+          Real f "frequency";
+          parameter Real Ut_pu(fixed=false) "stator voltage, p.u.";
+          parameter Real Pg_pu(fixed=false) "Active power, p.u.";
+          parameter Real Qg_pu(fixed=false) "Reactive power, p.u.";
+          LEPSE.Interfaces.Pin_v2 Stator_pin annotation (extent=[68,-8; 88,12],
+              Placement(transformation(extent={{90,-10},{110,10}},
+                                                                 rotation=0),
+                iconTransformation(extent={{90,-10},{110,10}})));
+          Interfaces.Signal_pin Mt_pin annotation (Placement(transformation(extent={{-112,
+                    -10},{-92,10}}),  iconTransformation(extent={{-112,-10},{-92,10}})));
+          Interfaces.Signal_pin slip_pin annotation (Placement(transformation(extent={{-10,92},
+                    {10,112}}),     iconTransformation(extent={{-10,92},{10,112}})));
+
+          Interfaces.Signal_pin Mu0_pin annotation (Placement(transformation(extent={{30,
+                    92},{50,112}}), iconTransformation(extent={{32,90},{52,110}})));
+        initial equation
+          // additional variables in p.u.
+          Ut_pu = Ut/Ugnom;
+          Pg_pu = Pg/Sbaz;
+          Qg_pu = Qg/Sbaz;
+          Ignom = Pnom/cosfi_nom/sqrt(3)/Ugnom;
+
+          Pg = Pgen;
+          Qg=min(Qmax, max(Qmin, Qgen));
+
+          // equations of currents, voltages, and flux densities
+          DGi = Dg;
+          s = 0;
+          Mu0 = EQ*Iq;
+
+
+          EQ = sqrt((Ut_pu + X1d*Qg_pu/Ut_pu)^2 + (X1d*Pg_pu/Ut_pu)^2);
+          Dg = atan(X1d*Pg_pu/(Ut_pu^2 + X1d*Qg_pu));
+            //----------------------
+          Uq = Ut_pu*cos(Dg);
+          Ud = -Ut_pu*sin(Dg);
+            //----------------------
+          Id = (Uq - EQ)/X1d;
+          Iq = (-Ud)/X1d;
+
+        equation
+
+            // 1. EXTRAPOLATION PROTECTION (We limit Pgen to table boundaries so that math doesn't fly away)
+          P_clipped_max = max(pq_table.P_max[1], min(Pgen, pq_table.P_max[end]));
+          P_clipped_min = max(pq_table.P_min[1], min(Pgen, pq_table.P_min[end]));
+
+           // 2. AUTOMATIC INTERPOLATION AT EACH CALCULATION STEP
+          // The interpolate function returns a tuple (value of I, index_interval)
+          (Qmax, i_max_dummy) = Modelica.Math.Vectors.interpolate(
+            pq_table.P_max,
+            pq_table.Qmax,
+            P_clipped_max);
+
+          (Qmin, i_min_dummy) = Modelica.Math.Vectors.interpolate(
+            pq_table.P_min,
+            pq_table.Qmin,
+            P_clipped_min);
+
+          Tj = Tj_p*Pnom/Sbaz;
+
+          X1d = X1d_p*Sbaz/Pnom*cosfi_nom;
+          //--------------------------------------------------------------------------------
+          der(DGi) = Wc*s;
+          der(-DeltaIJ-DGi) = Wc*su;
+          der(s) = (Mt_pp/(1+s) - Me/(1+s) - Kd/2*s)/Tj;
+
+          //--------------------------------------------------------------------------------
+
+          Me = (uq*iq + ud*id);
+
+          id = if time >= TgenOff and time < TgenOff + dTgenOff then 0 else (uq-EQ)/X1d;
+          iq = if time >= TgenOff and time < TgenOff + dTgenOff then 0 else -ud/X1d;
+
+          //----------------------------------------
+          Pgen = (uq*iq + ud*id)*Sbaz;
+          Qgen = (-uq*id + ud*iq)*Sbaz;
+
+          Ugen = (sqrt(ud^2 + uq^2))*Ugnom;
+          Igen = (sqrt(IqG^2 + IdG^2))*Sbaz/sqrt(3)/Ugnom;
+          //-----------------------------------------------------------
+          uq = UqG*cos(DeltaIJ) - UdG*sin(DeltaIJ);
+          ud = UqG*sin(DeltaIJ) + UdG*cos(DeltaIJ);
+          //-----------------------------------------------------------
+          IqG = iq*cos(DeltaIJ) + id*sin(DeltaIJ);
+          IdG = id*cos(DeltaIJ) - iq*sin(DeltaIJ);
+          //-----------------------------------------------------------
+          f = Wc*(1-s)/2/PI;
+
+          //--Stator--
+          Stator_pin.Vd = UdG;
+          Stator_pin.Vq = UqG;
+
+          Stator_pin.Id = IdG;
+          Stator_pin.Iq = IqG;
+
+          //---input-rotor--field--voltage---
+          Mt_pp = max(Mtmin, min(Mtmax,Mt_pin.Signal))  "таким хитрым образом выбирается сигнал с регулятора, если он не ограничен Mtmax, Mtmin";
+          Mu0 = Mu0_pin.Signal;
+
+          slip_pin.Signal = if time >= TregOff then 0 else s;
+
+          annotation (
+            Coordsys(
+              extent=[-100, -100; 100, 100],
+              grid=[2, 2],
+              component=[20, 20]),
+            Window(
+              x=0.06,
+              y=0.07,
+              width=0.6,
+              height=0.77),
+            Diagram(coordinateSystem(
+                preserveAspectRatio=false,
+                preserveOrientation=false,
+                extent={{-100,-100},{100,100}},
+                grid={2,2},
+                initialScale=0), graphics),
+            Icon(
+              coordinateSystem(
+                preserveAspectRatio=false,
+                preserveOrientation=false,
+                extent={{-100,-100},{100,100}},
+                grid={2,2},
+                initialScale=0),
+              graphics={
+                Ellipse(
+                  extent={{-66,66},{70,-64}},
+                  lineColor={0,0,255},
+                  lineThickness=1),
+                Text(extent={{-36,36},{40,-38}},  textString=
+                                                       "SM"),
+                Text(extent={{-74,-56},{86,-98}},
+                  textColor={0,0,0},
+                  textString="%name"),
+                Line(
+                  points={{96,0},{70,0}},
+                  color={0,0,255},
+                  thickness=1),
+                Line(
+                  points={{0,66},{0,100}},
+                  color={0,0,255},
+                  thickness=1),
+                Line(
+                  points={{-66,0},{-102,0}},
+                  color={0,0,255},
+                  thickness=1),
+                Line(
+                  points={{28,62},{40,98}},
+                  color={0,0,255},
+                  thickness=1)},
+              Ellipse(extent=[-60, 62; 60, -58], style(thickness=2)),
+              Text(extent=[-38, 38; 38, -36], string="SM"),
+              Text(extent=[-80, -58; 80, -100], string="%name"),
+              Line(points=[-60, 2; -72, 2], style(thickness=2)),
+              Line(points=[70, 2; 60, 2], style(thickness=2))),
+                      __Dymola_Commands(editCall=plot(
+                    {"L0709_1.P1","L0709_1.U1m"},
+                    legends={"Calibration L0709_1.P1","Calibration L0709_1.U1m"},
+                    colors={{255,0,0},{255,0,0}}) "Calibration_U"), Documentation(
+                info="<html>
+<p>Infinite bus mashine model. </p>
+<p>Модель генератора шин бесконечной мощности. </p>
+</html>"));
+        end Equation_motion_prototype;
+
+        model Equation_motion_grid
+
+          LEPSE.Interfaces.Pin_v2 inp annotation (
+            extent=[78,-4; 98,16],
+            layer="icon",
+            Placement(transformation(extent={{90,-10},{110,10}},
+                                                               rotation=0),
+                iconTransformation(extent={{90,-10},{110,10}})));
+          Turbines.ASR_Regulator_ ASC_Regulator_1(Sigma=Sigma, Tauc=Tauc)
+            annotation (Placement(transformation(extent={{-86,-20},{-20,28}})));
+
+          parameter Real Ut=1 "ARV voltage reference value"
+          annotation(Dialog(tab="General"));
+
+          parameter Real X1d_p=0.3016 "D-axis transient reactance"
+          annotation(Dialog(tab="Synchronous machine"));
+
+          parameter Real Mtmax=1.1 "Turbine overloading coefficient";
+          parameter Real Mtmin=0 "Turbine minimum-loading coefficient";
+
+          parameter Real Sigma=0.0001 "Slip deviation control coefficient";
+          parameter Real Tauc=0.0001 "Slip deviation time constant";
+
+          parameter Boolean displayPowerFlow=true "Display power flow"
+          annotation(Dialog(tab="General"));
+
+          parameter Real Sbaz=G.sysData.Sbaz "Bazis power, MWA"
+          annotation(Dialog(tab="General"));
+          parameter Real fbaz=G.sysData.fbaz "Bazic frequency, Hz"
+          annotation(Dialog(tab="General"));
+          parameter Real cosfi_nom=0.9 "Nominal maschine power coefficient, p.u."
+          annotation(Dialog(tab="Synchronous machine"));
+          parameter Real Pnom=500 "Set PV-generator power"
+          annotation(Dialog(tab="Synchronous machine"));
+          parameter Real Ugnom=20 "Nominal voltage"
+          annotation(Dialog(tab="Synchronous machine"));
+          parameter Real Tj_p=7 "Inertia coefficient"
+          annotation(Dialog(tab="Synchronous machine"));
+
+          Equation_motion_prototype G(
+            pq_table=pq_table,
+            TgenOff=TgenOff,
+            dTgenOff=dTgenOff,
+            Sbaz=Sbaz,
+            fbaz=fbaz,
+            Pg=Pg,
+            Ut=Ut,
+            Pnom=Pnom,
+            Ugnom=Ugnom,
+            cosfi_nom=cosfi_nom,
+            Kd=Kd,
+            X1d_p=X1d_p,
+            Tj_p=Tj_p,
+            Mtmax=Mtmax,
+            Mtmin=Mtmin,
+            TregOff=TregOff)
+            annotation (Placement(transformation(extent={{8,-22},{64,32}})));
+          parameter Data.PQ_CapabilityTable pq_table=LEPSE.Data.TVV_500_2
+          annotation(Dialog(tab="Synchronous machine"));
+          parameter Real Pg=500 "Active power, MW"
+          annotation(Dialog(tab="General"));
+          parameter Real Kd=5 "Damping coefficient"
+          annotation(Dialog(tab="Synchronous machine"));
+          parameter Real TgenOff=1000 "Time of generator's disconnection, s";
+          parameter Real dTgenOff=10 "Duration of generator's disconnection, s";
+          parameter Real TregOff=50 "Turbine speed regulator off-time, s";
+        initial equation
+            ASC_Regulator_1.out_pin.Signal = G.Me;
+
+        equation
+
+          connect(G.slip_pin, ASC_Regulator_1.ds_pin) annotation (Line(
+              points={{36,32.54},{36,34},{-90,34},{-90,2.08},{-86.275,2.08}},
+              color={255,255,0},
+              thickness=0.5));
+          connect(ASC_Regulator_1.out_pin, G.Mt_pin) annotation (Line(
+              points={{-20.275,4},{-2,4},{-2,5},{7.44,5}},
+              color={255,255,0},
+              thickness=0.5));
+          connect(G.Stator_pin, inp) annotation (Line(points={{64,5},{84,5},{84,0},{100,
+                  0}}, color={28,108,200}));
+          connect(G.Mu0_pin, ASC_Regulator_1.Mu0_pin) annotation (Line(
+              points={{47.76,32},{47.76,40},{-92,40},{-92,13.12},{-86.275,13.12}},
+              color={255,255,0},
+              thickness=0.5));
+
+          annotation (
+            Coordsys(
+              extent=[-100, -100; 100, 100],
+              grid=[2, 2],
+              component=[20, 20]),
+            Icon(
+              coordinateSystem(
+                preserveAspectRatio=false,
+                preserveOrientation=false,
+                extent={{-120,-100},{100,100}},
+                grid={2,2},
+                initialScale=0),
+              graphics={
+                Ellipse(extent={{-74,68},{72,-68}}, lineColor={0,0,255},
+                  lineThickness=1),
+                Text(extent={{-78,96},{74,70}},
+                  textColor={0,0,0},
+                  textString="%name"),
+                Line(points={{94,0},{72,0}}, color={0,0,255},
+                  thickness=1),
+                  Text(
+                  textString=DynamicSelect("P MW", String(G.Pgen, significantDigits=3) + " MW"),
+                  visible=displayPowerFlow,
+                  extent={{-96,-70},{102,-108}},
+                  textColor={0,168,6}),
+                Text(
+                  textString=DynamicSelect("Q MVar", String(G.Qgen, significantDigits=3) + " MVar"),
+                  visible=displayPowerFlow,
+                  extent={{-94,-100},{104,-138}},
+                  textColor={102,44,145}),
+                Ellipse(
+                  extent={{-25,26},{25,-26}},
+                  lineColor={0,0,255},
+                  lineThickness=1,
+                  fillColor={28,108,200},
+                  fillPattern=FillPattern.None,
+                  closure=EllipseClosure.None,
+                  startAngle=0,
+                  endAngle=180,
+                  origin={-25,-3.55271e-15},
+                  rotation=180),
+                Ellipse(
+                  extent={{-25,26},{25,-26}},
+                  lineColor={0,0,255},
+                  lineThickness=1,
+                  fillColor={28,108,200},
+                  fillPattern=FillPattern.None,
+                  closure=EllipseClosure.None,
+                  startAngle=0,
+                  endAngle=180,
+                  origin={25,0},
+                  rotation=360)},
+              Ellipse(extent=[-74, 72; 72, -58]),
+              Text(extent=[-44, 54; 46, 20], string="Gen."),
+              Text(extent=[-50, 22; 50, -4], string="with ARV"),
+              Text(extent=[-78, -58; 74, -84], string="%name"),
+              Line(points=[80, 6; 72, 6]),
+              Text(extent=[-50, -4; 50, -30], string="control")),
+            Window(
+              x=0.28,
+              y=0.01,
+              width=0.6,
+              height=0.88),
+            Documentation(info="<html>
+<p>Infinite bus model. </p>
+<p>Модель шин бесконечной мощности. </p>
+</html>"),  Diagram(coordinateSystem(extent={{-120,-100},{100,100}})));
+        end Equation_motion_grid;
+
+        model Equation_motion_prototype_1
+          outer SysData sysData;
+
+          // PQ-diagram parameter
+          parameter LEPSE.Data.PQ_CapabilityTable
+          pq_table = LEPSE.Data.TVV_500_2;
+
+           parameter Real TgenOff=1000 "Time of generator's disconnection, s"
+           annotation(Dialog(tab="General"));
+          parameter Real dTgenOff=10 "Duration of generator's disconnection, s"
+           annotation(Dialog(tab="General"));
+           parameter Real Kd=5 "damping coefficient"
+          annotation(Dialog(tab="Synchronous machine"));
+
+          //------------------------------------------------------------------------------------
+          parameter Real Sbaz=sysData.Sbaz "Bazis power, MWA"
+          annotation(Dialog(tab="General"));
+          parameter Real fbaz=sysData.fbaz "Bazic frequency, Hz"
+          annotation(Dialog(tab="General"));
+          parameter Real Pg = 500 "Active power, MW"
+          annotation(Dialog(tab="General"));
+          parameter Real Qg(fixed=false) "Reactive power";
+          parameter Real Ut=20 "ARV voltage reference value"
+          annotation(Dialog(tab="General"));
+          parameter Real Pnom=500 "Set PV-generator power"
+          annotation(Dialog(tab="General"));
+          parameter Real Ugnom=20 "Nominal voltage"
+          annotation(Dialog(tab="General"));
+          parameter Real cosfi_nom=0.85 "Nominal maschine power coefficient, p.u."
+          annotation(Dialog(tab="General"));
+          parameter Real Ignom(fixed=false) "stator nomunal current, kA";
+
+            // Limitation variables
+          Real Qmax "Current limit of overexcitation, MVar";
+          Real Qmin "Current limit of underexcitation, MVar";
+
+          // Auxiliary variables for the interpolator (Modelica syntax requirement)
+          Real P_clipped_max "Sliced P for Qmax interpolation";
+          Real P_clipped_min "Sliced P for Qmin interpolation";
+          Integer i_max_dummy;
+          Integer i_min_dummy;
+
+          parameter Real X1d_p=0.05 "D-axis transient reactance"
+          annotation(Dialog(tab="Synchronous machine"));
+          parameter Real Tj_p=7 "Inertia coefficient"
+          annotation(Dialog(tab="Synchronous machine"));
+          parameter Real Mtmax=1.1 "Turbine overloading coefficient"
+          annotation(Dialog(tab="Turbine"));
+          parameter Real Mtmin=0 "Turbine minimum-loading coefficient"
+          annotation(Dialog(tab="Turbine"));
+          parameter Real TregOff=50 "Turbine speed regulator off-time, s"
+          annotation(Dialog(tab="Turbine"));
+
+          //------------------------------------------------------------------------------------
+          constant Real PI=4*atan(1) "PI-constant";
+          parameter Real Wc=2*PI*fbaz "frequency of electric current fluctuations";
+
+          // Parameters of power system elements
+          parameter Real EQ(fixed=false) "Auxiliaire EMF of salient-pole generator";
+          parameter Real Dg(fixed=false) "Generator power angle";
+          parameter Real Uq(fixed=false) "D-axis ARV voltage reference value";
+          parameter Real Ud(fixed=false) "Q-axis ARV voltage reference value";
+          parameter Real Id(fixed=false) "D-axis stator current value";
+          parameter Real Iq(fixed=false) "Q-axis stator current value";
+
+          Real Ugen "generator full voltage actual value";
+          Real Igen "generator stator current value, kA";
+          Real Mt_pp "Turbine rotation moment actual value";
+          Real Pgen "Generator active power actual value";
+          Real Qgen "Generator reactive power actual value";
+          Real UdG;
+          Real UqG;
+          Real IdG;
+          Real IqG;
+          input Real DeltaIJ;
+          input Real Ssys "system slip";
+          //------------------------------------------------------------------
+          // Integrated Variables
+
+          Real s "generator slip";
+          Real DGi "Generator power angle initial value";
+          Real Me "electrical moment";
+          Real iq "Q-axis generator stator winding current actual value";
+          Real id "D-axis generator stator winding current actual value";
+          Real ud "D-axis generator voltage actual value";
+          Real uq "Q-axis generator voltage actual value";
+          Real X1d "D-axis transient reactance actual value";
+
+          parameter Real Mu0(fixed=false) "Turbine rotation moment initial value";
+          Real Ro;
+          Real Mu "Turbine valve position / moment";
+          parameter Real Sigma=0.0475 "Turbine statism coefficient, p.u.";
+          parameter Real TauC =0.8 "Time constant of servo motor while valving control, s";
+          Real MT_MAX "Turbine overloading coefficient actual value";
+          Real MT_MIN "Turbine minimum-loading coefficient actual value";
+
+          Real Tj "Inertia coefficient actual value";
+          Real f "frequency";
+          parameter Real Ut_pu(fixed=false) "stator voltage, p.u.";
+          parameter Real Pg_pu(fixed=false) "Active power, p.u.";
+          parameter Real Qg_pu(fixed=false) "Reactive power, p.u.";
+          LEPSE.Interfaces.Pin_v2 Stator_pin annotation (extent=[68,-8; 88,12],
+              Placement(transformation(extent={{90,-10},{110,10}},
+                                                                 rotation=0),
+                iconTransformation(extent={{90,-10},{110,10}})));
+
+        initial equation
+          // additional variables in p.u.
+          Ut_pu = Ut/Ugnom;
+          Pg_pu = Pg/Sbaz;
+          Qg_pu = Qg/Sbaz;
+          Ignom = Pnom/cosfi_nom/sqrt(3)/Ugnom;
+
+          Pg = Pgen;
+          Qg=min(Qmax, max(Qmin, Qgen));
+
+          // equations of currents, voltages, and flux densities
+          DGi = Dg;
+          s = 0;
+
+          EQ = sqrt(((Ut_pu + X1d*Qg_pu)/Ut_pu)^2 + (X1d*Pg_pu/Ut_pu)^2);
+          Dg = atan(X1d*Pg_pu/(Ut_pu^2 + X1d*Qg_pu));
+            //----------------------
+          Uq = Ut_pu*cos(Dg);
+          Ud = -Ut_pu*sin(Dg);
+            //----------------------
+          Id = (Uq - EQ)/X1d;
+          Iq = (-Ud)/X1d;
+
+          Mu0 = EQ*Iq;
+          Mu = Mu0;
+
+        equation
+
+            // 1. EXTRAPOLATION PROTECTION (We limit Pgen to table boundaries so that math doesn't fly away)
+          P_clipped_max = max(pq_table.P_max[1], min(Pgen, pq_table.P_max[end]));
+          P_clipped_min = max(pq_table.P_min[1], min(Pgen, pq_table.P_min[end]));
+
+           // 2. AUTOMATIC INTERPOLATION AT EACH CALCULATION STEP
+          // The interpolate function returns a tuple (value of I, index_interval)
+          (Qmax, i_max_dummy) = Modelica.Math.Vectors.interpolate(
+            pq_table.P_max,
+            pq_table.Qmax,
+            P_clipped_max);
+
+          (Qmin, i_min_dummy) = Modelica.Math.Vectors.interpolate(
+            pq_table.P_min,
+            pq_table.Qmin,
+            P_clipped_min);
+
+          Tj = Tj_p*Pnom/Sbaz;
+
+          X1d = X1d_p*Sbaz/Pnom*cosfi_nom;
+          //--------------------------------------------------------------------------------
+          der(DGi) = Wc*s;
+          der(s) = (Mt_pp - Me - Kd*s)/Tj;
+
+          //--------------------------------------------------------------------------------
+
+          Me = (uq*iq + ud*id)/(1 - s);
+
+          id = if time >= TgenOff and time < TgenOff + dTgenOff then 0 else (uq-EQ)/X1d;
+          iq = if time >= TgenOff and time < TgenOff + dTgenOff then 0 else -ud/X1d;
+
+          Ro = -Mu + Mu0 - s/Sigma;
+
+          der(Mu) = if time >= TregOff then Ro/10e6 else Ro/TauC;
+          //--------------------------------------------------------------------------------
+          MT_MIN = Mtmin*Pg_pu;
+          MT_MAX = Mtmax*Pg_pu;
+
+          Mt_pp = if Mu >= MT_MIN and Mu <= MT_MAX then Mu else if Mu > MT_MAX then
+            MT_MAX else MT_MIN;
+
+          //----------------------------------------
+          Pgen = (uq*iq + ud*id)*Sbaz;
+          Qgen = (-uq*id + ud*iq)*Sbaz;
+
+          Ugen = (sqrt(ud^2 + uq^2))*Ugnom;
+          Igen = (sqrt(IqG^2 + IdG^2))*Sbaz/sqrt(3)/Ugnom;
+          //-----------------------------------------------------------
+          uq = UqG*cos(DeltaIJ) - UdG*sin(DeltaIJ);
+          ud = UqG*sin(DeltaIJ) + UdG*cos(DeltaIJ);
+          //-----------------------------------------------------------
+          IqG = iq*cos(DeltaIJ) + id*sin(DeltaIJ);
+          IdG = id*cos(DeltaIJ) - iq*sin(DeltaIJ);
+          //-----------------------------------------------------------
+          f = Wc*(1-s)/2/PI;
+
+          //--Stator--
+          Stator_pin.Vd = UdG;
+          Stator_pin.Vq = UqG;
+
+          Stator_pin.Id = IdG;
+          Stator_pin.Iq = IqG;
+
+
+
+
+
+          annotation (
+            Coordsys(
+              extent=[-100, -100; 100, 100],
+              grid=[2, 2],
+              component=[20, 20]),
+            Window(
+              x=0.06,
+              y=0.07,
+              width=0.6,
+              height=0.77),
+            Diagram(coordinateSystem(
+                preserveAspectRatio=false,
+                preserveOrientation=false,
+                extent={{-100,-100},{100,100}},
+                grid={2,2},
+                initialScale=0), graphics),
+            Icon(
+              coordinateSystem(
+                preserveAspectRatio=false,
+                preserveOrientation=false,
+                extent={{-100,-100},{100,100}},
+                grid={2,2},
+                initialScale=0),
+              graphics={
+                Ellipse(
+                  extent={{-66,66},{70,-64}},
+                  lineColor={0,0,255},
+                  lineThickness=1),
+                Text(extent={{-36,36},{40,-38}},  textString=
+                                                       "SM"),
+                Text(extent={{-74,-56},{86,-98}},
+                  textColor={0,0,0},
+                  textString="%name"),
+                Line(
+                  points={{96,0},{70,0}},
+                  color={0,0,255},
+                  thickness=1)},
+              Ellipse(extent=[-60, 62; 60, -58], style(thickness=2)),
+              Text(extent=[-38, 38; 38, -36], string="SM"),
+              Text(extent=[-80, -58; 80, -100], string="%name"),
+              Line(points=[-60, 2; -72, 2], style(thickness=2)),
+              Line(points=[70, 2; 60, 2], style(thickness=2))),
+                      __Dymola_Commands(editCall=plot(
+                    {"L0709_1.P1","L0709_1.U1m"},
+                    legends={"Calibration L0709_1.P1","Calibration L0709_1.U1m"},
+                    colors={{255,0,0},{255,0,0}}) "Calibration_U"), Documentation(
+                info="<html>
+<p>Infinite bus mashine model. </p>
+<p>Модель генератора шин бесконечной мощности. </p>
+</html>"));
+        end Equation_motion_prototype_1;
+
+        model SM_without_exciter_old
+          outer SysData sysData;
+
+          // PQ-diagram parameter
+          parameter LEPSE.Data.PQ_CapabilityTable
+          pq_table = LEPSE.Data.TVV_500_2;
+
+          parameter Real TgenOff=1000 "Time of generator's disconnection, s"
+           annotation(Dialog(tab="General"));
+          parameter Real dTgenOff=10 "Duration of generator's disconnection, s"
+           annotation(Dialog(tab="General"));
+          parameter Real Kd=0 "damping coefficient"
+          annotation(Dialog(tab="Synchronous machine"));
+
+          //------------------------------------------------------------------------------------
+          parameter Real Sbaz=sysData.Sbaz "Bazic power, MWA"
+          annotation(Dialog(tab="General"));
+          parameter Real fbaz=sysData.fbaz "Bazic frequency, Hz"
+          annotation(Dialog(tab="General"));
+          parameter Real Pg=500 "Active power, MW"
+          annotation(Dialog(tab="General"));
+          parameter Real Qg(fixed=false) "Reactive power, MVAR";
+          parameter Real Ut=20 "ARV voltage reference value, kV"
+          annotation(Dialog(tab="General"));
+          parameter Real Pnom=500 "Nominal maschine active power, MW"
+          annotation(Dialog(tab="General"));
+          parameter Real Ugnom=20 "Nominal stator voltage, kV"
+          annotation(Dialog(tab="General"));
+          parameter Real cosfi_nom=0.85 "Nominal maschine power coefficient, p.u."
+          annotation(Dialog(tab="General"));
+          parameter Real Ignom(fixed=false) "stator nomunal current, kA";
+
+           // Limitation variables
+          Real Qmax "Current limit of overexcitation, MVar";
+          Real Qmin "Current limit of underexcitation, MVar";
+
+          // Auxiliary variables for the interpolator (Modelica syntax requirement)
+          Real P_clipped_max "Sliced P for Qmax interpolation";
+          Real P_clipped_min "Sliced P for Qmin interpolation";
+          Integer i_max_dummy;
+          Integer i_min_dummy;
+
+          //------------------------------------------------------------------------------------
+          parameter Real Xd_p=1.869 "D-axis synchronous reactance, p.u."
+          annotation(Dialog(tab="Synchronous machine"));
+          parameter Real Xq_p=1.869 "Q-axis synchronous reactance, p.u."
+          annotation(Dialog(tab="Synchronous machine"));
+          parameter Real Xs_p=0.194 "Leakage reactance of stator winding, p.u."
+          annotation(Dialog(tab="Synchronous machine"));
+          parameter Real X1d_p=0.3016 "D-axis transient reactance, p.u."
+          annotation(Dialog(tab="Synchronous machine"));
+          parameter Real X2d_p=0.2337 "D-axis subtransient reactance, p.u."
+          annotation(Dialog(tab="Synchronous machine"));
+          parameter Real X2q_p=0.2337 "Q-axis subtransient reactance, p.u."
+          annotation(Dialog(tab="Synchronous machine"));
+          Real Rf_p "Active resistance of field winding, p.u.";
+          Real R1d_p "Active resistance of d-axis damper winding, p.u.";
+          Real R1q_p "Active resistance of q-axis damper winding, p.u.";
+          parameter Real Tj_p=7 "Inertia coefficient, s"
+          annotation(Dialog(tab="Synchronous machine"));
+          parameter Real Td0=10 "D-axis transient time constant, s"
+          annotation(Dialog(tab="Synchronous machine"));
+          parameter Real T2d_p=0.02 "D-axis subtransient time constant, s"
+          annotation(Dialog(tab="Synchronous machine"));
+          parameter Real T2q_p=0.05 "Q-axis subtransient time constant, s"
+          annotation(Dialog(tab="Synchronous machine"));
 
           parameter Real Sigma=0.0475 "Turbine statism coefficient, p.u."
           annotation(Dialog(tab="Turbine"));
@@ -2349,7 +4223,7 @@ package LEPSE
           der(Yr) = Wc*(Uf_full - Rf*ir);
           der(Yrd) = -Wc*R1d*ird;
           der(Yrq) = -Wc*R1q*irq;
-          der(s) = (Mt_pp - Me - Kd*s)/Tj;
+          der(s) = (Mt_pp/(1+s) - Me/(1+s) - Kd*s)/Tj;
 
           Ro = if time >= Timp and time < Timp + dTimp then -Aimp else -Mu + Mu0 - s
             /Sigma;
@@ -2507,9 +4381,9 @@ package LEPSE
 <p>Synchronous generator without exciter model. </p>
 <p>Модель синхронного генератора с исключенным возбудителем. </p>
 </html>"));
-        end SM_without_exciter;
+        end SM_without_exciter_old;
 
-        model SM_with_exciter_and_AVR_SD
+        model SM_with_exciter_and_AVR_SD_old
 
           LEPSE.Interfaces.Pin_v2 inp annotation (
             extent=[78,-4; 98,16],
@@ -2845,549 +4719,7 @@ package LEPSE
 <p>Generator model with automatic excitation (SD) control. </p>
 <p>Модель синхронного генератора с подключенным АРВ сильного действия. </p>
 </html>"),  Diagram(coordinateSystem(extent={{-180,-100},{100,100}})));
-        end SM_with_exciter_and_AVR_SD;
-
-        model Infinite_bus_Mashine_simple
-          outer SysData sysData;
-
-          //------------------------------------------------------------------------------------
-          parameter Real Sbaz=sysData.Sbaz "Bazis power, MWA";
-          parameter Real fbaz=sysData.fbaz "Bazic frequency, Hz";
-          parameter Real Pg(fixed=false) "Active power";
-          parameter Real Qg(fixed=false) "Reactive power";
-          parameter Real Ut=330 "ARV voltage reference value";
-          parameter Real Pnom=10000 "Set PV-generator power";
-          parameter Real Ugnom=330 "Nominal voltage";
-          parameter Real cosfi_nom=0.9 "Nominal maschine power coefficient, p.u.";
-
-          parameter Real Qmax=9999 "Текущий предел перевозбуждения, МВар";
-          parameter Real Qmin=-9999 "Текущий предел недовозбуждения, МВар";
-
-          //------------------------------------------------------------------------------------
-
-          parameter Real X1d_p=0.05 "D-axis transient reactance";
-
-          parameter Real Tj_p=7 "Inertia coefficient";
-
-          parameter Real Mtmax=1.1 "Turbine overloading coefficient";
-          parameter Real Mtmin=0 "Turbine minimum-loading coefficient";
-
-
-          //------------------------------------------------------------------------------------
-          constant Real PI=4*atan(1) "PI-constant";
-          parameter Real Wc=2*PI*fbaz "frequency of electric current fluctuations";
-
-          // Parameters of power system elements
-          parameter Real EQ(fixed=false) "Auxiliaire EMF of salient-pole generator";
-          parameter Real Dg(fixed=false) "Generator power angle";
-          parameter Real Uq(fixed=false) "D-axis ARV voltage reference value";
-          parameter Real Ud(fixed=false) "Q-axis ARV voltage reference value";
-          parameter Real Id(fixed=false) "D-axis stator current value";
-          parameter Real Iq(fixed=false) "Q-axis stator current value";
-
-
-          Real Ugen "generator full voltage actual value";
-          Real Igen "generator stator current value, kA";
-          Real Mt_pp "Turbine rotation moment actual value";
-          Real Pgen "Generator active power actual value";
-          Real Qgen "Generator reactive power actual value";
-          Real UdG;
-          Real UqG;
-          Real IdG;
-          Real IqG;
-          input Real DeltaIJ;
-          input Real Ssys "system slip";
-          //------------------------------------------------------------------
-          // Integrated Variables
-
-          Real s "generator slip";
-          Real DGi "Generator power angle initial value";
-          Real Me "electrical moment";
-          Real iq "Q-axis generator stator winding current actual value";
-          Real id "D-axis generator stator winding current actual value";
-          Real ud "D-axis generator voltage actual value";
-          Real uq "Q-axis generator voltage actual value";
-          Real X1d "D-axis transient reactance actual value";
-
-          Real Tj "Inertia coefficient actual value";
-          Real f "frequency";
-          parameter Real Ut_pu(fixed=false) "stator voltage, p.u.";
-          parameter Real Pg_pu(fixed=false) "Active power, p.u.";
-          parameter Real Qg_pu(fixed=false) "Reactive power, p.u.";
-          LEPSE.Interfaces.Pin_v2 Stator_pin annotation (extent=[68,-8; 88,12],
-              Placement(transformation(extent={{90,-10},{110,10}},
-                                                                 rotation=0),
-                iconTransformation(extent={{90,-10},{110,10}})));
-          Interfaces.Signal_pin Mt_pin annotation (Placement(transformation(extent={{-112,
-                    -10},{-92,10}}),  iconTransformation(extent={{-112,-10},{-92,10}})));
-          Interfaces.Signal_pin slip_pin annotation (Placement(transformation(extent={{-10,92},
-                    {10,112}}),     iconTransformation(extent={{-10,92},{10,112}})));
-
-        initial equation
-          // additional variables in p.u.
-          Ut_pu = Ut/Ugnom;
-          Pg_pu = Pg/Sbaz;
-          Qg_pu = Qg/Sbaz;
-
-          // equations of currents, voltages, and flux densities
-          s = 0;
-          DGi = Dg;
-
-          Pg = Pgen;
-          Qg=min(Qmax, max(Qmin, Qgen));
-
-          EQ = sqrt(((Ut_pu + X1d*Qg_pu)/Ut_pu)^2 + (X1d*Pg_pu/Ut_pu)^2);
-          Dg = atan(X1d*Pg_pu/(Ut_pu^2 + X1d*Qg_pu));
-            //----------------------
-          Uq = Ut_pu*cos(Dg);
-          Ud = -Ut_pu*sin(Dg);
-            //----------------------
-          Id = (Uq - EQ)/X1d;
-          Iq = (-Ud)/X1d;
-
-        equation
-
-          Tj = Tj_p*Pnom/Sbaz;
-
-          X1d = X1d_p*Sbaz/Pnom*cosfi_nom;
-          //--------------------------------------------------------------------------------
-          der(DGi) = Wc*s;
-          der(s) = (Mt_pp - Me)/Tj;
-
-          //--------------------------------------------------------------------------------
-
-          Me = (uq*iq + ud*id)/(1 - s);
-
-          id = (uq-EQ)/X1d;
-          iq = -ud/X1d;
-
-          //----------------------------------------
-          Pgen = (uq*iq + ud*id)*Sbaz;
-          Qgen = (-uq*id + ud*iq)*Sbaz;
-
-          Ugen = (sqrt(ud^2 + uq^2))*Ugnom;
-          Igen = (sqrt(IqG^2 + IdG^2))*Sbaz/sqrt(3)/Ugnom;
-          //-----------------------------------------------------------
-          uq = UqG*cos(DeltaIJ) - UdG*sin(DeltaIJ);
-          ud = UqG*sin(DeltaIJ) + UdG*cos(DeltaIJ);
-          //-----------------------------------------------------------
-          IqG = iq*cos(DeltaIJ) + id*sin(DeltaIJ);
-          IdG = id*cos(DeltaIJ) - iq*sin(DeltaIJ);
-          //-----------------------------------------------------------
-          f = Wc*(1-s)/2/PI;
-
-          //--Stator--
-          Stator_pin.Vd = UdG;
-          Stator_pin.Vq = UqG;
-
-          Stator_pin.Id = IdG;
-          Stator_pin.Iq = IqG;
-
-          //---input-rotor--field--voltage---
-          Mt_pp = max(Mtmin, min(Mtmax,Mt_pin.Signal))  "таким хитрым образом выбирается сигнал с регулятора, если он не ограничен Mtmax, Mtmin";
-
-          slip_pin.Signal = s;
-
-          annotation (
-            Coordsys(
-              extent=[-100, -100; 100, 100],
-              grid=[2, 2],
-              component=[20, 20]),
-            Window(
-              x=0.06,
-              y=0.07,
-              width=0.6,
-              height=0.77),
-            Diagram(coordinateSystem(
-                preserveAspectRatio=false,
-                preserveOrientation=false,
-                extent={{-100,-100},{100,100}},
-                grid={2,2},
-                initialScale=0), graphics),
-            Icon(
-              coordinateSystem(
-                preserveAspectRatio=false,
-                preserveOrientation=false,
-                extent={{-100,-100},{100,100}},
-                grid={2,2},
-                initialScale=0),
-              graphics={
-                Ellipse(
-                  extent={{-66,66},{70,-64}},
-                  lineColor={0,0,255},
-                  lineThickness=1),
-                Text(extent={{-36,36},{40,-38}},  textString=
-                                                       "SM"),
-                Text(extent={{-74,-56},{86,-98}},
-                  textColor={0,0,0},
-                  textString="%name"),
-                Line(
-                  points={{96,0},{70,0}},
-                  color={0,0,255},
-                  thickness=1),
-                Line(
-                  points={{0,66},{0,100}},
-                  color={0,0,255},
-                  thickness=1),
-                Line(
-                  points={{-66,0},{-102,0}},
-                  color={0,0,255},
-                  thickness=1)},
-              Ellipse(extent=[-60, 62; 60, -58], style(thickness=2)),
-              Text(extent=[-38, 38; 38, -36], string="SM"),
-              Text(extent=[-80, -58; 80, -100], string="%name"),
-              Line(points=[-60, 2; -72, 2], style(thickness=2)),
-              Line(points=[70, 2; 60, 2], style(thickness=2))),
-                      __Dymola_Commands(editCall=plot(
-                    {"L0709_1.P1","L0709_1.U1m"},
-                    legends={"Calibration L0709_1.P1","Calibration L0709_1.U1m"},
-                    colors={{255,0,0},{255,0,0}}) "Calibration_U"), Documentation(
-                info="<html>
-<p>Infinite bus mashine model. </p>
-<p>Модель генератора шин бесконечной мощности. </p>
-</html>"));
-        end Infinite_bus_Mashine_simple;
-
-        model Infinite_bus_simple
-
-          LEPSE.Interfaces.Pin_v2 inp annotation (
-            extent=[78,-4; 98,16],
-            layer="icon",
-            Placement(transformation(extent={{90,-10},{110,10}},
-                                                               rotation=0),
-                iconTransformation(extent={{90,-10},{110,10}})));
-          Turbines.ASR_Regulator ASC_Regulator_1(Sigma=Sigma, Tauc=Tauc)
-            annotation (Placement(transformation(extent={{-86,-20},{-20,28}})));
-
-
-          parameter Real Ut=1 "ARV voltage reference value";
-
-
-          parameter Real X1d_p=0.3016 "D-axis transient reactance";
-
-
-          parameter Real Mtmax=1.1 "Turbine overloading coefficient";
-          parameter Real Mtmin=0 "Turbine minimum-loading coefficient";
-
-
-          parameter Real Sigma=0.0001 "Slip deviation control coefficient";
-          parameter Real Tauc=0.0001 "Slip deviation time constant";
-
-
-          parameter Boolean displayPowerFlow=true "Display power flow";
-
-          parameter Real Sbaz=1000 "Bazis power, MWA";
-          parameter Real fbaz=G.sysData.fbaz "Bazic frequency, Hz";
-          parameter Real Qmax=9999
-            "Текущий предел перевозбуждения, МВар";
-          parameter Real Qmin=-9999
-            "Текущий предел недовозбуждения, МВар";
-          parameter Real cosfi_nom=0.9
-            "Nominal maschine power coefficient, p.u.";
-          parameter Real Pnom=10000 "Set PV-generator power";
-          Infinite_bus_Mashine_simple G(
-            Sbaz=Sbaz,
-            fbaz=fbaz,
-            Ut=Ut,
-            Pnom=Pnom,
-            Ugnom=Ugnom,
-            cosfi_nom=cosfi_nom,
-            Qmax=Qmax,
-            Qmin=Qmin,
-            X1d_p=X1d_p,
-            Tj_p=Tj_p,
-            Mtmax=Mtmax,
-            Mtmin=Mtmin)
-            annotation (Placement(transformation(extent={{-2,-32},{70,40}})));
-          parameter Real Ugnom=330 "Nominal voltage";
-          parameter Real Tj_p=7 "Inertia coefficient";
-
-        initial equation
-            ASC_Regulator_1.out_pin.Signal = G.Me;
-
-        equation
-
-          connect(G.Stator_pin, inp) annotation (Line(points={{70,4},{86,4},{86,0},{100,
-                  0}}, color={28,108,200}));
-          connect(G.slip_pin, ASC_Regulator_1.ds_pin) annotation (Line(
-              points={{34,40.72},{34,48},{-92,48},{-92,2.08},{-86.275,2.08}},
-              color={255,255,0},
-              thickness=0.5));
-          connect(ASC_Regulator_1.out_pin, G.Mt_pin) annotation (Line(
-              points={{-20.275,4},{-2.72,4}},
-              color={255,255,0},
-              thickness=0.5));
-          annotation (
-            Coordsys(
-              extent=[-100, -100; 100, 100],
-              grid=[2, 2],
-              component=[20, 20]),
-            Icon(
-              coordinateSystem(
-                preserveAspectRatio=false,
-                preserveOrientation=false,
-                extent={{-120,-100},{100,100}},
-                grid={2,2},
-                initialScale=0),
-              graphics={
-                Ellipse(extent={{-74,68},{72,-68}}, lineColor={0,0,255},
-                  lineThickness=1),
-                Text(extent={{-78,96},{74,70}},
-                  textColor={0,0,0},
-                  textString="%name"),
-                Line(points={{94,0},{72,0}}, color={0,0,255},
-                  thickness=1),
-                  Text(
-                  textString=DynamicSelect("P MW", String(G.Pgen, significantDigits=3) + " MW"),
-                  visible=displayPowerFlow,
-                  extent={{-96,-70},{102,-108}},
-                  textColor={0,168,6}),
-                Text(
-                  textString=DynamicSelect("Q MVar", String(G.Qgen, significantDigits=3) + " MVar"),
-                  visible=displayPowerFlow,
-                  extent={{-94,-100},{104,-138}},
-                  textColor={102,44,145}),
-                Ellipse(
-                  extent={{-25,26},{25,-26}},
-                  lineColor={0,0,255},
-                  lineThickness=1,
-                  fillColor={28,108,200},
-                  fillPattern=FillPattern.None,
-                  closure=EllipseClosure.None,
-                  startAngle=0,
-                  endAngle=180,
-                  origin={-25,-3.55271e-15},
-                  rotation=180),
-                Ellipse(
-                  extent={{-25,26},{25,-26}},
-                  lineColor={0,0,255},
-                  lineThickness=1,
-                  fillColor={28,108,200},
-                  fillPattern=FillPattern.None,
-                  closure=EllipseClosure.None,
-                  startAngle=0,
-                  endAngle=180,
-                  origin={25,0},
-                  rotation=360)},
-              Ellipse(extent=[-74, 72; 72, -58]),
-              Text(extent=[-44, 54; 46, 20], string="Gen."),
-              Text(extent=[-50, 22; 50, -4], string="with ARV"),
-              Text(extent=[-78, -58; 74, -84], string="%name"),
-              Line(points=[80, 6; 72, 6]),
-              Text(extent=[-50, -4; 50, -30], string="control")),
-            Window(
-              x=0.28,
-              y=0.01,
-              width=0.6,
-              height=0.88),
-            Documentation(info="<html>
-<p>Infinite bus model. </p>
-<p>Модель шин бесконечной мощности. </p>
-</html>"),  Diagram(coordinateSystem(extent={{-120,-100},{100,100}})));
-        end Infinite_bus_simple;
-
-        model Equation_motion_prototype
-          outer SysData sysData;
-
-          //------------------------------------------------------------------------------------
-          parameter Real Sbaz=sysData.Sbaz "Bazis power, MWA";
-          parameter Real fbaz=sysData.fbaz "Bazic frequency, Hz";
-          parameter Real Pg(fixed=false) "Active power";
-          parameter Real Qg(fixed=false) "Reactive power";
-          parameter Real Ut=330 "ARV voltage reference value";
-          parameter Real Pnom=10000 "Set PV-generator power";
-          parameter Real Ugnom=330 "Nominal voltage";
-          parameter Real cosfi_nom=0.9 "Nominal maschine power coefficient, p.u.";
-          parameter Real Kd=50 "Damping coefficient";
-
-          parameter Real Qmax=9999 "Текущий предел перевозбуждения, МВар";
-          parameter Real Qmin=-9999 "Текущий предел недовозбуждения, МВар";
-
-          //------------------------------------------------------------------------------------
-
-          parameter Real X1d_p=0.05 "D-axis transient reactance";
-          parameter Real Xq_p=0.05 "Q-axis synchronous reactance, p.u.";
-
-          parameter Real Tj_p=7 "Inertia coefficient";
-
-          parameter Real Mtmax=1.1 "Turbine overloading coefficient";
-          parameter Real Mtmin=0 "Turbine minimum-loading coefficient";
-
-          //------------------------------------------------------------------------------------
-          constant Real PI=4*atan(1) "PI-constant";
-          parameter Real Wc=2*PI*fbaz "frequency of electric current fluctuations";
-
-          // Parameters of power system elements
-          parameter Real EQ(fixed=false) "Auxiliaire EMF of salient-pole generator";
-          parameter Real Dg(fixed=false) "Generator power angle";
-          parameter Real Uq(fixed=false) "D-axis ARV voltage reference value";
-          parameter Real Ud(fixed=false) "Q-axis ARV voltage reference value";
-          parameter Real Id(fixed=false) "D-axis stator current value";
-          parameter Real Iq(fixed=false) "Q-axis stator current value";
-
-          Real Ugen "generator full voltage actual value";
-          Real Igen "generator stator current value, kA";
-          Real Mt_pp "Turbine rotation moment actual value";
-          Real Pgen "Generator active power actual value";
-          Real Qgen "Generator reactive power actual value";
-          Real UdG;
-          Real UqG;
-          Real IdG;
-          Real IqG;
-          input Real DeltaIJ;
-          input Real Ssys "system slip";
-          //------------------------------------------------------------------
-          // Integrated Variables
-
-          Real s "generator slip";
-          Real DGi "Generator power angle initial value";
-          Real Me "electrical moment";
-          Real iq "Q-axis generator stator winding current actual value";
-          Real id "D-axis generator stator winding current actual value";
-          Real ud "D-axis generator voltage actual value";
-          Real uq "Q-axis generator voltage actual value";
-          Real Xq "Q-axis synchronous reactance actual value";
-          Real X1d "D-axis transient reactance actual value";
-
-          Real Tj "Inertia coefficient actual value";
-          Real f "frequency";
-          parameter Real Ut_pu(fixed=false) "stator voltage, p.u.";
-          parameter Real Pg_pu(fixed=false) "Active power, p.u.";
-          parameter Real Qg_pu(fixed=false) "Reactive power, p.u.";
-          LEPSE.Interfaces.Pin_v2 Stator_pin annotation (extent=[68,-8; 88,12],
-              Placement(transformation(extent={{90,-10},{110,10}},
-                                                                 rotation=0),
-                iconTransformation(extent={{90,-10},{110,10}})));
-          Interfaces.Signal_pin Mt_pin annotation (Placement(transformation(extent={{-112,
-                    -10},{-92,10}}),  iconTransformation(extent={{-112,-10},{-92,10}})));
-          Interfaces.Signal_pin slip_pin annotation (Placement(transformation(extent={{-10,92},
-                    {10,112}}),     iconTransformation(extent={{-10,92},{10,112}})));
-
-        initial equation
-          // additional variables in p.u.
-          Ut_pu = Ut/Ugnom;
-          Pg_pu = Pg/Sbaz;
-          Qg_pu = Qg/Sbaz;
-
-          // equations of currents, voltages, and flux densities
-          s = 0;
-          DGi = Dg;
-
-          Pg = Pgen;
-          Qg=min(Qmax, max(Qmin, Qgen));
-
-          EQ = sqrt(((Ut_pu + Xq*Qg_pu)/Ut_pu)^2 + (Xq*Pg_pu/Ut_pu)^2);
-          Dg = atan(Xq*Pg_pu/(Ut_pu^2 + Xq*Qg_pu));
-            //----------------------
-          Uq = Ut_pu*cos(Dg);
-          Ud = -Ut_pu*sin(Dg);
-            //----------------------
-          Id = (Uq - EQ)/Xq;
-          Iq = (-Ud)/Xq;
-
-        equation
-
-          Tj = Tj_p*Pnom/Sbaz;
-
-          X1d = X1d_p*Sbaz/Pnom*cosfi_nom;
-          Xq = Xq_p*Sbaz/Pnom*cosfi_nom;
-          //--------------------------------------------------------------------------------
-          der(DGi) = Wc*s;
-          der(s) = (Mt_pp - Me - Kd*s)/Tj;
-
-          //--------------------------------------------------------------------------------
-
-          Me = (uq*iq + ud*id)/(1 - s);
-
-          id = (uq-EQ)/X1d;
-          iq = -ud/Xq;
-
-          //----------------------------------------
-          Pgen = (uq*iq + ud*id)*Sbaz;
-          Qgen = (-uq*id + ud*iq)*Sbaz;
-
-          Ugen = (sqrt(ud^2 + uq^2))*Ugnom;
-          Igen = (sqrt(IqG^2 + IdG^2))*Sbaz/sqrt(3)/Ugnom;
-          //-----------------------------------------------------------
-          uq = UqG*cos(DeltaIJ) - UdG*sin(DeltaIJ);
-          ud = UqG*sin(DeltaIJ) + UdG*cos(DeltaIJ);
-          //-----------------------------------------------------------
-          IqG = iq*cos(DeltaIJ) + id*sin(DeltaIJ);
-          IdG = id*cos(DeltaIJ) - iq*sin(DeltaIJ);
-          //-----------------------------------------------------------
-          f = Wc*(1-s)/2/PI;
-
-          //--Stator--
-          Stator_pin.Vd = UdG;
-          Stator_pin.Vq = UqG;
-
-          Stator_pin.Id = IdG;
-          Stator_pin.Iq = IqG;
-
-          //---input-rotor--field--voltage---
-          Mt_pp = max(Mtmin, min(Mtmax,Mt_pin.Signal))  "таким хитрым образом выбирается сигнал с регулятора, если он не ограничен Mtmax, Mtmin";
-
-          slip_pin.Signal = s;
-
-          annotation (
-            Coordsys(
-              extent=[-100, -100; 100, 100],
-              grid=[2, 2],
-              component=[20, 20]),
-            Window(
-              x=0.06,
-              y=0.07,
-              width=0.6,
-              height=0.77),
-            Diagram(coordinateSystem(
-                preserveAspectRatio=false,
-                preserveOrientation=false,
-                extent={{-100,-100},{100,100}},
-                grid={2,2},
-                initialScale=0), graphics),
-            Icon(
-              coordinateSystem(
-                preserveAspectRatio=false,
-                preserveOrientation=false,
-                extent={{-100,-100},{100,100}},
-                grid={2,2},
-                initialScale=0),
-              graphics={
-                Ellipse(
-                  extent={{-66,66},{70,-64}},
-                  lineColor={0,0,255},
-                  lineThickness=1),
-                Text(extent={{-36,36},{40,-38}},  textString=
-                                                       "SM"),
-                Text(extent={{-74,-56},{86,-98}},
-                  textColor={0,0,0},
-                  textString="%name"),
-                Line(
-                  points={{96,0},{70,0}},
-                  color={0,0,255},
-                  thickness=1),
-                Line(
-                  points={{0,66},{0,100}},
-                  color={0,0,255},
-                  thickness=1),
-                Line(
-                  points={{-66,0},{-102,0}},
-                  color={0,0,255},
-                  thickness=1)},
-              Ellipse(extent=[-60, 62; 60, -58], style(thickness=2)),
-              Text(extent=[-38, 38; 38, -36], string="SM"),
-              Text(extent=[-80, -58; 80, -100], string="%name"),
-              Line(points=[-60, 2; -72, 2], style(thickness=2)),
-              Line(points=[70, 2; 60, 2], style(thickness=2))),
-                      __Dymola_Commands(editCall=plot(
-                    {"L0709_1.P1","L0709_1.U1m"},
-                    legends={"Calibration L0709_1.P1","Calibration L0709_1.U1m"},
-                    colors={{255,0,0},{255,0,0}}) "Calibration_U"), Documentation(
-                info="<html>
-<p>Infinite bus mashine model. </p>
-<p>Модель генератора шин бесконечной мощности. </p>
-</html>"));
-        end Equation_motion_prototype;
+        end SM_with_exciter_and_AVR_SD_old;
       end Numerical_units;
 
       package Per_units
@@ -9503,7 +10835,7 @@ package LEPSE
     end Compensating_devices;
 
     package Turbines
-      model ASR_Regulator
+      model ASR_Regulator_IB
 
         parameter Real Sigma=0.0475 "Slip deviation control coefficient";
         parameter Real Tauc=0.15 "Slip deviation time constant";
@@ -9621,7 +10953,128 @@ package LEPSE
 <p>Automatic Slip Regulator (ASR) model. </p>
 <p>Модель автоматического регулятора скольжения. </p>
 </html>"));
-      end ASR_Regulator;
+      end ASR_Regulator_IB;
+
+      model ASR_Regulator_
+
+        parameter Real Sigma=0.0475 "Slip deviation control coefficient";
+        parameter Real Tauc=0.15 "Slip deviation time constant";
+
+        Excitation_systems.Logic.Transfer_Function SlipDeviation(b={-1/Sigma},
+            a={1})      annotation (extent=[-74,57.3333; -27.3333,104],
+            Placement(transformation(extent={{-64,-32},{-11.3333,16}}, rotation
+                =0)));
+        LEPSE.Interfaces.Signal_pin ds_pin annotation (
+          extent=[-96,64; -86,76],
+          layer="icon",
+          Placement(transformation(extent={{-106,-14},{-96,-2}},
+                                                               rotation=0),
+              iconTransformation(extent={{-106,-14},{-96,-2}})));
+        LEPSE.Interfaces.Signal_pin out_pin annotation (
+          extent=[86,2; 96,22],
+          layer="icon",
+          Placement(transformation(extent={{134,-10},{144,10}},
+                                                              rotation=0),
+              iconTransformation(extent={{134,-10},{144,10}})));
+
+        Excitation_systems.Logic.Transfer_Function Time_constant(b={1}, a={Tauc,
+              1})
+          annotation (Placement(transformation(extent={{64,-24},{118,22}})));
+        Interfaces.Signal_pin       Mu0_pin
+                                           annotation (
+          extent=[-96,64; -86,76],
+          layer="icon",
+          Placement(transformation(extent={{-106,34},{-96,46}},rotation=0),
+              iconTransformation(extent={{-106,32},{-96,44}})));
+        Excitation_systems.Logic.Summator_2 summator_2_1
+          annotation (Placement(transformation(extent={{16,-10},{36,10}})));
+      equation
+
+        connect(SlipDeviation.inp,ds_pin)  annotation (points=[-69.8,80.6667; -91,70],
+            Line(points={{-64,-8},{-101,-8}},                   thickness=0.5));
+
+        connect(Time_constant.out, out_pin) annotation (Line(
+            points={{118,-1},{118,-2},{130,-2},{130,0},{139,0}},
+            color={255,255,0},
+            thickness=0.5));
+        connect(Mu0_pin, summator_2_1.inp1) annotation (Line(
+            points={{-101,40},{10,40},{10,4.2},{16,4.2}},
+            color={255,255,0},
+            thickness=0.5));
+        connect(SlipDeviation.out, summator_2_1.inp2) annotation (Line(
+            points={{-11.3333,-8},{10,-8},{10,-4},{16,-4}},
+            color={255,255,0},
+            thickness=0.5));
+        connect(summator_2_1.out, Time_constant.inp) annotation (Line(
+            points={{36,0},{56,0},{56,-1},{64,-1}},
+            color={255,255,0},
+            thickness=0.5));
+        annotation (
+          Coordsys(
+            extent=[-100, -100; 100, 100],
+            grid=[2, 2],
+            component=[20, 20]),
+          Window(
+            x=0.32,
+            y=0.06,
+            width=0.6,
+            height=0.82),
+          Icon(
+            coordinateSystem(
+              preserveAspectRatio=false,
+              preserveOrientation=false,
+              extent={{-100,-100},{140,100}},
+              grid={2,2},
+              initialScale=0),
+            graphics={
+              Rectangle(
+                extent={{-68,72},{104,-94}},
+                lineColor={0,0,255},
+                lineThickness=1),
+              Text(extent={{-6,26},{38,-10}},
+                textString="Slip",
+                textColor={0,0,0}),
+              Text(extent={{-14,20},{56,-46}}, textString=
+                                                   "regulator"),
+              Text(extent={{-64,106},{96,74}},
+                textColor={0,0,0},
+                textString="%name"),
+              Line(
+                points={{138,-2},{104,-2}},
+                color={0,0,255},
+                thickness=1),
+              Line(
+                points={{-68,-8},{-100,-8}},
+                color={0,0,255},
+                thickness=1),
+              Line(
+                points={{-68,38},{-100,38}},
+                color={0,0,255},
+                thickness=1)},
+            Rectangle(extent=[-68, 80; 66, -60], style(thickness=2)),
+            Text(extent=[-42, 60; 40, -18], string="Excitation"),
+            Text(extent=[-36, 34; 34, -32], string="regulator"),
+            Line(points=[-68, 10; -88, 10], style(thickness=2)),
+            Line(points=[-68, -20; -88, -20], style(thickness=2)),
+            Line(points=[-68, -50; -88, -50], style(thickness=2)),
+            Line(points=[-68, 40; -88, 40], style(thickness=2)),
+            Line(points=[-68, 70; -88, 70], style(thickness=2)),
+            Text(extent=[-84, -62; 76, -94], string="%name"),
+            Line(points=[86, 12; 66, 12], style(thickness=2))),
+          Diagram(coordinateSystem(extent={{-100,-100},{140,100}}), graphics={
+              Text(
+                extent={{-90,10},{-80,0}},
+                textColor={0,0,0},
+                textString="s"),
+              Text(
+                extent={{-94,66},{-82,54}},
+                textColor={0,0,0},
+                textString="Mu0")}),
+          Documentation(info="<html>
+<p>Automatic Slip Regulator (ASR) model. </p>
+<p>Модель автоматического регулятора скольжения. </p>
+</html>"));
+      end ASR_Regulator_;
     end Turbines;
 
     package FACTS

@@ -1,4 +1,4 @@
-﻿within ;
+﻿within Numerical_units;
 model Equation_of_motion_mashine
  outer LEPSE.Basic.SysData sysData;
 

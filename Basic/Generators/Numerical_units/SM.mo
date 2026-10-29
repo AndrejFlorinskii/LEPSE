@@ -1,4 +1,4 @@
-﻿within ;
+﻿within Numerical_units;
 model SM
   outer LEPSE.Basic.SysData sysData;
 
@@ -423,6 +423,5 @@ equation
         info="<html>
 <p>Synchronous generator model. </p>
 <p>Модель синхронного генератора</p>
-</html>"),
-    uses(Modelica(version="4.0.0")));
+</html>"));
 end SM;

@@ -1,4 +1,4 @@
-﻿within ;
+﻿within Regulators;
 model Excitation_Regulator_Q_limit
   parameter Real K0u=20 "Voltage deviation control coefficient";
   parameter Real K1u=0 "Voltage derivative control coefficient";
@@ -112,37 +112,39 @@ equation
   connect(dfsys_pin, FrequencyBlockD.inp) annotation (points=[-91, 10; -
         79.5467, 0.666667], Line(points={{-101,-10},{-86.6667,10.6666}}));
   connect(dfU_pin, FrequencyBlockU.inp) annotation (points=[-91, -20; -
-        78.94, -39.6667], Line(points={{-101,-40},{-101,-19.6667},{-86,-19.6667}}));
+        78.94, -39.6667], Line(points={{-101,-40},{-101,-19.6667},{-86,
+          -19.6667}}));
   connect(FrequencyBlockD.out, Summator1.inp1) annotation (points=[-
-        51.4667, 0.666667; -42.88, -18], Line(points={{-52,10.6666},{-52,10.2},
-          {-50,10.2}}));
+        51.4667, 0.666667; -42.88, -18], Line(points={{-52,10.6666},{-52,
+          10.2},{-50,10.2}}));
   connect(FrequencyBlockU.out, Summator1.inp2) annotation (points=[-51.4,
-        -39.6667; -42.88, -26], Line(points={{-52,-19.6667},{-50,-19.6667},{-50,
-          2}}));
+        -39.6667; -42.88, -26], Line(points={{-52,-19.6667},{-50,-19.6667},
+          {-50,2}}));
   connect(dif1_pin, ExcitationCurrent.inp) annotation (points=[-91, -50; -
-        69.8, -78.6667], Line(points={{-101,-64},{-101,-44.6667},{-86,-44.6667}}));
+        69.8, -78.6667], Line(points={{-101,-64},{-101,-44.6667},{-86,
+          -44.6667}}));
   connect(Summator1.out, FrequencyDeviation.inp) annotation (points=[-
         31.12, -22; -24.58, -22], Line(points={{-36,6},{-32,6},{-32,-20},{
           -32,-20}}));
   connect(FrequencyDerivative.inp, FrequencyDeviation.inp) annotation (
-      points=[-21.5467, 4.33333; -24.58, -22], Line(points={{-30.6667,18.3333},
-          {-30.6667,18},{-32,18},{-32,-20},{-32,-20}}));
+      points=[-21.5467, 4.33333; -24.58, -22], Line(points={{-30.6667,
+          18.3333},{-30.6667,18},{-32,18},{-32,-20},{-32,-20}}));
   connect(Summator2.inp2, FrequencyDeviation.out) annotation (points=[
         13.12, -12; 6.2, -22], Line(points={{10,-20},{6,-20}}));
   connect(FrequencyDerivative.out, Summator2.inp1) annotation (points=[
-        6.53333, 4.33333; 13.12, -4], Line(points={{4,18.3333},{6,18.3333},{6,
-          -11.8},{10,-11.8}}));
+        6.53333, 4.33333; 13.12, -4], Line(points={{4,18.3333},{6,18.3333},
+          {6,-11.8},{10,-11.8}}));
   connect(VoltageDerivative.inp, dV1_pin) annotation (points=[-69.1333,
-        40.6667; -91, 40], Line(points={{-85.3333,38.6666},{-85.3333,20},{-101,
-          20}}));
+        40.6667; -91, 40], Line(points={{-85.3333,38.6666},{-85.3333,20},
+          {-101,20}}));
   connect(VoltageDeviation.inp, dV_pin) annotation (points=[-69.8, 80.6667;
           -91, 70], Line(points={{-86,60.6667},{-86,50},{-101,50}}));
   connect(VoltageDeviation.out, Summator3.inp1) annotation (points=[-32,
-        80.6667; 9.12, 62], Line(points={{-39.3333,60.6667},{-18,60.6667},{-18,
-          46.2},{-12,46.2}}));
+        80.6667; 9.12, 62], Line(points={{-39.3333,60.6667},{-18,60.6667},
+          {-18,46.2},{-12,46.2}}));
   connect(VoltageDerivative.out, Summator3.inp2) annotation (points=[-
-        31.3333, 40.6667; 9.12, 54], Line(points={{-38.6667,38.6666},{-38.6667,
-          38},{-12,38}}));
+        31.3333, 40.6667; 9.12, 54], Line(points={{-38.6667,38.6666},{
+          -38.6667,38},{-12,38}}));
   connect(Summator5.inp1, Summator3.out) annotation (points=[27.12, 32;
         20.88, 58], Line(points={{12,32.2},{6,32.2},{6,42},{2,42}}));
   connect(Summator5.inp2, Summator2.out) annotation (points=[27.12, 24;
@@ -151,8 +153,8 @@ equation
   connect(Summator6.inp1, Summator5.out) annotation (points=[41.12, 4;
         38.88, 28], Line(points={{30,28.2},{29.12,28.2},{29.12,28},{26,28}}));
   connect(Summator6.inp2, ExcitationCurrent.out) annotation (points=[41.12,
-          -4; -32, -78.6667], Line(points={{30,20},{30,-44.6667},{-39.3333,
-          -44.6667}}));
+          -4; -32, -78.6667], Line(points={{30,20},{30,-44.6667},{
+          -39.3333,-44.6667}}));
   when initial() then
     reinit(FrequencyBlockU.x[1], DL0);
     //     reinit(FrequencyDeviation.x[1],DL0);
@@ -162,8 +164,8 @@ equation
   connect(logical_switch1.out, SimpleExciter.inp) annotation (Line(points={{80,
           27.3333},{86,27.3333},{86,29.3333},{90,29.3333}},         color={0,
           0,0}));
-  connect(Ut_pin, logical_switch1.inp2inf) annotation (Line(points={{-100,-84},
-          {56,-84},{56,18.1667},{70.2,18.1667}},
+  connect(Ut_pin, logical_switch1.inp2inf) annotation (Line(points={{-100,
+          -84},{56,-84},{56,18.1667},{70.2,18.1667}},
                                                color={0,0,0}));
   connect(Summator6.out, logical_switch1.inp2) annotation (Line(points={{44,24},
           {52,24},{52,25},{60,25}},                       color={0,0,0}));

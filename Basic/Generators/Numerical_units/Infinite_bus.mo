@@ -1,4 +1,4 @@
-﻿within ;
+﻿within Numerical_units;
 model Infinite_bus
 
   LEPSE.Interfaces.Pin_v2 inp annotation (
@@ -7,9 +7,9 @@ model Infinite_bus
     Placement(transformation(extent={{90,-10},{110,10}},
                                                        rotation=0),
         iconTransformation(extent={{90,-10},{110,10}})));
-  LEPSE.Basic.Turbines.ASR_Regulator ASC_Regulator_1(Sigma=Sigma, Tauc=Tauc)
+  LEPSE.Basic.Turbines.ASR_Regulator_IB ASC_Regulator_1(Sigma=Sigma, Tauc=Tauc)
     annotation (Placement(transformation(extent={{-86,-80},{-20,-32}})));
-  LEPSE.Basic.Generators.Numerical_units.Infinite_bus_Mashine G(
+  Infinite_bus_Mashine G(
     TgenOff=TgenOff,
     dTgenOff=dTgenOff,
     Sbaz=Sbaz,

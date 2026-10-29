@@ -1,4 +1,4 @@
-﻿within ;
+﻿within Regulators;
 model AVR_M
   parameter Real K0u=10 "Voltage deviation control coefficient";
   parameter Real K1u=0 "Voltage derivative control coefficient";
@@ -124,8 +124,8 @@ equation
   connect(dfsys_pin, FrequencyBlockD.inp) annotation (points=[-91, 10; -
         79.5467, 0.666667], Line(points={{-141,0},{-141,0.66665},{-128.667,0.66665}}));
   connect(VoltageDeviation.inp, dV_pin) annotation (points=[-69.8, 80.6667;
-          -91, 70], Line(points={{-102,86.6667},{-130,86.6667},{-130,80},{-141,
-          80}}));
+          -91, 70], Line(points={{-102,86.6667},{-130,86.6667},{-130,80},
+          {-141,80}}));
   when initial() then
     //     reinit(FrequencyBlockD2.x[1], DL0);
     //     reinit(FrequencyDeviation.x[1],DL0);
@@ -138,8 +138,8 @@ equation
           -55.3333,86.6667},{54,86.6667},{54,56},{118,56},{118,2.83333}},
                      color={0,0,0}));
   connect(VoltageDeviation.inp, logical_switch1.inp1inf) annotation (Line(
-        points={{-102,86.6667},{-110,86.6667},{-110,64},{128.1,64},{128.1,10}},
-                                                                      color={
+        points={{-102,86.6667},{-110,86.6667},{-110,64},{128.1,64},{128.1,
+          10}},                                                       color={
           0,0,0}));
   connect(FrequencyBlockD.out, FrequencyBlockD1.inp) annotation (Line(
       points={{-94,0.66665},{-74.6667,0.66665}},
@@ -154,7 +154,8 @@ equation
   connect(dfU_pin, delayed_Derivative1.inp) annotation (Line(points={{-141,-40},
           {-140,-39},{-126,-39}}, color={0,0,0}));
   connect(delayed_Derivative1.out, FrequencyBlockD2.inp) annotation (Line(
-        points={{-84,-39},{-84,-34},{-64,-34},{-64,-35.3333},{-64.6667,-35.3333}},
+        points={{-84,-39},{-84,-34},{-64,-34},{-64,-35.3333},{-64.6667,
+          -35.3333}},
         color={0,0,0}));
   connect(dif1_pin, delayed_Derivative2.inp) annotation (Line(points={{-141,-64},
           {-140,-65},{-124,-65}}, color={0,0,0}));

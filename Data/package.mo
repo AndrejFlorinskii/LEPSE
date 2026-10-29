@@ -1,4 +1,4 @@
-﻿within ;
+﻿within LEPSE;
 package Data
   // Пример готовых пресетов типов генераторов:
 

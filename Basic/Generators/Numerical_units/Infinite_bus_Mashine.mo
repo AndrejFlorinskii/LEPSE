@@ -1,4 +1,4 @@
-﻿within ;
+﻿within Numerical_units;
 model Infinite_bus_Mashine
   outer LEPSE.Basic.SysData sysData;
 

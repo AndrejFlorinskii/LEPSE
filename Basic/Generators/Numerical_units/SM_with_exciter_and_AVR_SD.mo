@@ -1,4 +1,4 @@
-﻿within ;
+﻿within Numerical_units;
 model SM_with_exciter_and_AVR_SD
 
   LEPSE.Interfaces.Pin_v2 inp annotation (
@@ -43,23 +43,11 @@ model SM_with_exciter_and_AVR_SD
   annotation(Dialog(tab="Synchronous machine"));
   parameter Real Sigma=0.0475 "Turbine statism coefficient, p.u."
   annotation(Dialog(tab="Turbine"));
-  parameter Real TauC_up=0.8 "Time constant of servo motor while valving control, s"
-  annotation(Dialog(tab="Turbine"));
   parameter Real TregOff=50 "Turbine speed regulator off-time, s"
-  annotation(Dialog(tab="Turbine"));
-  parameter Real TregOn=1000 "Turbine speed regulator on-time, s"
   annotation(Dialog(tab="Turbine"));
   parameter Real Mtmax=1.1 "Turbine overloading coefficient, p.u."
   annotation(Dialog(tab="Turbine"));
-  parameter Real Aimp=1 "Fast turbine valving control amplitude, p.u."
-  annotation(Dialog(tab="Turbine"));
   parameter Real Mtmin=0 "Turbine minimum-loading coefficient, p.u."
-  annotation(Dialog(tab="Turbine"));
-  parameter Real Timp=1000 "Fast turbine valving control on-time, s"
-  annotation(Dialog(tab="Turbine"));
-  parameter Real dTimp=0.2 "Fast turbine valving control duration, s"
-  annotation(Dialog(tab="Turbine"));
-  parameter Real TauC_down=5 "Time constant of servo motor after valving control end, s"
   annotation(Dialog(tab="Turbine"));
   parameter Real TkzOn=1000 "Generators dropping on-time, s"
   annotation(Dialog(tab="General"));
@@ -131,7 +119,7 @@ model SM_with_exciter_and_AVR_SD
     Kif_exc=Kif_exc,
     Ku_exc=Ku_exc)
     annotation (Placement(transformation(extent={{-78,-20},{-24,18}})));
-  LEPSE.Basic.Generators.Numerical_units.SM_without_exciter G(
+  SM_without_exciter G(
     TgenOff=TgenOff,
     dTgenOff=dTgenOff,
     Kd=Kd,
@@ -152,16 +140,9 @@ model SM_with_exciter_and_AVR_SD
     Td0=Td0,
     T2d_p=T2d_p,
     T2q_p=T2q_p,
-    Sigma=Sigma,
-    TauC_up=TauC_up,
     TregOff=TregOff,
-    TregOn=TregOn,
     Mtmax=Mtmax,
     Mtmin=Mtmin,
-    Aimp=Aimp,
-    Timp=Timp,
-    dTimp=dTimp,
-    TauC_down=TauC_down,
     TkzOn=TkzOn,
     Pg_new=Pg_new)
     annotation (Placement(transformation(extent={{-18,-46},{74,46}})));
@@ -183,6 +164,10 @@ model SM_with_exciter_and_AVR_SD
   annotation(Dialog(tab="Exciter"));
   parameter Real Ku_exc=1.0
   annotation(Dialog(tab="Exciter"));
+  LEPSE.Basic.Turbines.ASR_Regulator_ ASR(Sigma=Sigma, Tauc=Tauc)
+    annotation (Placement(transformation(extent={{-80,-86},{-20,-42}})));
+  parameter Real Tauc=0.15 "Slip deviation time constant"
+   annotation(Dialog(tab="Turbine"));
 equation
 
   connect(AVR.dV1_pin, AVR.dV_pin) annotation (Line(
@@ -237,6 +222,18 @@ equation
   connect(G.dWu_pin, AVR.dfsys_pin) annotation (Line(
       points={{16.04,46},{16.04,66},{-184,66},{-184,-12},{-178,-12},{-178,2.2},{
           -174.325,2.2}},
+      color={255,255,0},
+      thickness=0.5));
+  connect(G.Mu0_pin, ASR.Mu0_pin) annotation (Line(
+      points={{-18,34.96},{-92,34.96},{-92,-55.64},{-80.25,-55.64}},
+      color={255,255,0},
+      thickness=0.5));
+  connect(G.slip_pin, ASR.ds_pin) annotation (Line(
+      points={{-18,18.4},{-18,50},{-90,50},{-90,-65.76},{-80.25,-65.76}},
+      color={255,255,0},
+      thickness=0.5));
+  connect(ASR.out_pin, G.Mt_pin) annotation (Line(
+      points={{-20.25,-64},{-12,-64},{-12,-17.48},{-18,-17.48}},
       color={255,255,0},
       thickness=0.5));
   annotation (

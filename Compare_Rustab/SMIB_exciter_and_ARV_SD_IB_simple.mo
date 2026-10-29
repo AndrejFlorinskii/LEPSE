@@ -1,6 +1,6 @@
-﻿within ;
+﻿within LEPSE.Compare_Rustab;
 model SMIB_exciter_and_ARV_SD_IB_simple
-  Real delta_G1_G2(start=-7.362938404083252)
+  Real delta_G1_G2(start=-7.296201229095459)
                    "Mutual angle";
   parameter Boolean globalDisplay_U = true;
   parameter Boolean globalDisplay_S = true;
@@ -21,9 +21,8 @@ model SMIB_exciter_and_ARV_SD_IB_simple
     cosfi_nom=0.9,
     Ugnom=330,
     Tj_p=500,
-    ASC_Regulator_1(SlipDeviation(x(start={4.3473974642438407E-08})), SlipI_Dif(
-          x(start={-0.492626816034317}))),
-    G(Pg(start=-495.3849792480469), Qgen(start=-0.7352029085159302)))
+    G(Pg(start=-495.3849792480469), Qgen(start=-70.7728500366211)),
+    TregOff=9)
     annotation (Placement(transformation(extent={{98,-6},{68,26}})));
   LEPSE.Basic.Transformers.Transformers_numerical_units.Transformer Transformer(
     Sbaz=Transformer.sysData.Sbaz,
@@ -32,8 +31,8 @@ model SMIB_exciter_and_ARV_SD_IB_simple
     Xtrans=20,
     Btrans=10,
     displayPowerFlow=globalDisplay_S,
-    I2d(start=0.04732172191143036),
-    I2q(start=0.4915044605731964))
+    I2d(start=0.014678911305963993),
+    I2q(start=0.4927635192871094))
     annotation (Placement(transformation(extent={{-36,-6},{-10,24}})));
   LEPSE.Basic.Branches.Branches_numerical_units.HVline Line_1(
     Rline=2.5,
@@ -44,10 +43,10 @@ model SMIB_exciter_and_ARV_SD_IB_simple
     dTLineOff=10000,
     Koff=1000,
     displayPowerFlow=globalDisplay_S,
-    I12d(start=2.8756017854902893E-05),
-    I12q(start=0.0004938726779073477),
-    Idc2(start=1.8450302377459593E-05),
-    Iqc2(start=-4.1219308855033887E-07))
+    I12d(start=-0.011330422013998032),
+    I12q(start=0.24801357090473175),
+    Idc2(start=0.018508613109588623),
+    Iqc2(start=-0.0004139224474783987))
     annotation (Placement(transformation(extent={{14,-10},{40,26}})));
   LEPSE.Basic.Buses.Bus node_1(Unom=20, displayVoltage=globalDisplay_U)
     annotation (Placement(transformation(extent={{-56,-2},{-36,22}})));
@@ -69,7 +68,6 @@ model SMIB_exciter_and_ARV_SD_IB_simple
     annotation (Placement(transformation(extent={{-18,-42},{0,-18}})));
 
   LEPSE.Basic.Generators.Numerical_units.SM_with_exciter_and_AVR_SD G1(
-    TauC_up=0.04,
     TregOff=9,
     Kemax=2.5,
     Kemin=-2,
@@ -101,27 +99,30 @@ model SMIB_exciter_and_ARV_SD_IB_simple
     Te=0.12,
     selfExcitation=true,
     AVR(
-      ExcitationCurrent(x(start={0.000955859781242907})),
-      FrequencyBlockD(x(start={1.6055728337960318E-06})),
-      FrequencyBlockU(x(start={0.24151237308979034})),
-      SimpleExciter(x(start={0.00142754300031811})),
-      VoltageDerivative(x(start={-7.174623169703409E-05}))),
-    G(E11d(start=0.6918363571166992), E11q(start=0.7937282919883728)),
-    exciter(Excitation_delay(x(start={1.8285093307495117}))),
+      ExcitationCurrent(x(start={0.00015167768287938088})),
+      FrequencyBlockD(x(start={-5.035034860156884E-07})),
+      FrequencyBlockU(x(start={0.17527152597904205})),
+      SimpleExciter(x(start={-0.0020785972010344267})),
+      VoltageDerivative(x(start={0.00010366331844124943}))),
+    G(E11d(start=0.6916213035583496), E11q(start=0.7940600514411926)),
+    exciter(Excitation_delay(x(start={1.8242878913879395}))),
     Umax=6,
     Umin=-6,
     inService_1=true,
-    Kd=0) annotation (Placement(transformation(extent={{-104,-6},{-58,26}})));
+    Kd=0,
+    ASR(Time_constant(x(start={0.4999999403953552}))),
+    Tauc=0.08)
+          annotation (Placement(transformation(extent={{-104,-6},{-58,26}})));
   LEPSE.Basic.Branches.Branches_numerical_units.HVline Line_2(
     Rline=2.5,
     Xline=29,
     Bline1=170,
     Bline2=170,
     displayPowerFlow=globalDisplay_S,
-    I12d(start=0.028756018728017807),
-    I12q(start=0.49387267231941223),
-    Idc2(start=0.0184503011405468),
-    Iqc2(start=-0.0004121930687688291))
+    I12d(start=-0.011330422013998032),
+    I12q(start=0.24801357090473175),
+    Idc2(start=0.018508613109588623),
+    Iqc2(start=-0.0004139224474783987))
     annotation (Placement(transformation(extent={{14,-46},{40,-10}})));
 equation
   // the formula of the derivative of the angle

@@ -1,30 +1,56 @@
-﻿within ;
+﻿within Numerical_units;
 model Equation_motion_prototype
   outer LEPSE.Basic.SysData sysData;
 
+  // PQ-diagram parameter
+  parameter LEPSE.Data.PQ_CapabilityTable
+  pq_table = LEPSE.Data.TVV_500_2;
+
+   parameter Real TgenOff=1000 "Time of generator's disconnection, s"
+   annotation(Dialog(tab="General"));
+  parameter Real dTgenOff=10 "Duration of generator's disconnection, s"
+   annotation(Dialog(tab="General"));
+   parameter Real Kd=5 "damping coefficient"
+  annotation(Dialog(tab="Synchronous machine"));
+
   //------------------------------------------------------------------------------------
-  parameter Real Sbaz=sysData.Sbaz "Bazis power, MWA";
-  parameter Real fbaz=sysData.fbaz "Bazic frequency, Hz";
-  parameter Real Pg(fixed=false) "Active power";
+  parameter Real Sbaz=sysData.Sbaz "Bazis power, MWA"
+  annotation(Dialog(tab="General"));
+  parameter Real fbaz=sysData.fbaz "Bazic frequency, Hz"
+  annotation(Dialog(tab="General"));
+  parameter Real Pg = 500 "Active power, MW"
+  annotation(Dialog(tab="General"));
   parameter Real Qg(fixed=false) "Reactive power";
-  parameter Real Ut=330 "ARV voltage reference value";
-  parameter Real Pnom=10000 "Set PV-generator power";
-  parameter Real Ugnom=330 "Nominal voltage";
-  parameter Real cosfi_nom=0.9 "Nominal maschine power coefficient, p.u.";
-  parameter Real Kd=50 "Damping coefficient";
+  parameter Real Ut=20 "ARV voltage reference value"
+  annotation(Dialog(tab="General"));
+  parameter Real Pnom=500 "Set PV-generator power"
+  annotation(Dialog(tab="General"));
+  parameter Real Ugnom=20 "Nominal voltage"
+  annotation(Dialog(tab="General"));
+  parameter Real cosfi_nom=0.85 "Nominal maschine power coefficient, p.u."
+  annotation(Dialog(tab="General"));
+  parameter Real Ignom(fixed=false) "stator nomunal current, kA";
 
-  parameter Real Qmax=9999 "Текущий предел перевозбуждения, МВар";
-  parameter Real Qmin=-9999 "Текущий предел недовозбуждения, МВар";
+    // Limitation variables
+  Real Qmax "Current limit of overexcitation, MVar";
+  Real Qmin "Current limit of underexcitation, MVar";
 
-  //------------------------------------------------------------------------------------
+  // Auxiliary variables for the interpolator (Modelica syntax requirement)
+  Real P_clipped_max "Sliced P for Qmax interpolation";
+  Real P_clipped_min "Sliced P for Qmin interpolation";
+  Integer i_max_dummy;
+  Integer i_min_dummy;
 
-  parameter Real X1d_p=0.05 "D-axis transient reactance";
-  parameter Real Xq_p=0.05 "Q-axis synchronous reactance, p.u.";
-
-  parameter Real Tj_p=7 "Inertia coefficient";
-
-  parameter Real Mtmax=1.1 "Turbine overloading coefficient";
-  parameter Real Mtmin=0 "Turbine minimum-loading coefficient";
+  parameter Real X1d_p=0.05 "D-axis transient reactance"
+  annotation(Dialog(tab="Synchronous machine"));
+  parameter Real Tj_p=7 "Inertia coefficient"
+  annotation(Dialog(tab="Synchronous machine"));
+  parameter Real Mtmax=1.1 "Turbine overloading coefficient"
+  annotation(Dialog(tab="Turbine"));
+  parameter Real Mtmin=0 "Turbine minimum-loading coefficient"
+  annotation(Dialog(tab="Turbine"));
+  parameter Real TregOff=50 "Turbine speed regulator off-time, s"
+  annotation(Dialog(tab="Turbine"));
 
   //------------------------------------------------------------------------------------
   constant Real PI=4*atan(1) "PI-constant";
@@ -47,19 +73,20 @@ model Equation_motion_prototype
   Real UqG;
   Real IdG;
   Real IqG;
+  parameter Real Mu0(fixed=false);
   input Real DeltaIJ;
   input Real Ssys "system slip";
   //------------------------------------------------------------------
   // Integrated Variables
 
   Real s "generator slip";
+  Real su;
   Real DGi "Generator power angle initial value";
   Real Me "electrical moment";
   Real iq "Q-axis generator stator winding current actual value";
   Real id "D-axis generator stator winding current actual value";
   Real ud "D-axis generator voltage actual value";
   Real uq "Q-axis generator voltage actual value";
-  Real Xq "Q-axis synchronous reactance actual value";
   Real X1d "D-axis transient reactance actual value";
 
   Real Tj "Inertia coefficient actual value";
@@ -78,44 +105,65 @@ model Equation_motion_prototype
           extent={{-10,92},{10,112}}), iconTransformation(extent={{-10,92},{10,
             112}})));
 
+  LEPSE.Interfaces.Signal_pin Mu0_pin annotation (Placement(transformation(
+          extent={{30,92},{50,112}}), iconTransformation(extent={{32,90},{52,
+            110}})));
 initial equation
   // additional variables in p.u.
   Ut_pu = Ut/Ugnom;
   Pg_pu = Pg/Sbaz;
   Qg_pu = Qg/Sbaz;
-
-  // equations of currents, voltages, and flux densities
-  s = 0;
-  DGi = Dg;
+  Ignom = Pnom/cosfi_nom/sqrt(3)/Ugnom;
 
   Pg = Pgen;
   Qg=min(Qmax, max(Qmin, Qgen));
 
-  EQ = sqrt(((Ut_pu + Xq*Qg_pu)/Ut_pu)^2 + (Xq*Pg_pu/Ut_pu)^2);
-  Dg = atan(Xq*Pg_pu/(Ut_pu^2 + Xq*Qg_pu));
+  // equations of currents, voltages, and flux densities
+  DGi = Dg;
+  s = 0;
+  Mu0 = EQ*Iq;
+
+  EQ = sqrt((Ut_pu + X1d*Qg_pu/Ut_pu)^2 + (X1d*Pg_pu/Ut_pu)^2);
+  Dg = atan(X1d*Pg_pu/(Ut_pu^2 + X1d*Qg_pu));
     //----------------------
   Uq = Ut_pu*cos(Dg);
   Ud = -Ut_pu*sin(Dg);
     //----------------------
-  Id = (Uq - EQ)/Xq;
-  Iq = (-Ud)/Xq;
+  Id = (Uq - EQ)/X1d;
+  Iq = (-Ud)/X1d;
 
 equation
+
+    // 1. EXTRAPOLATION PROTECTION (We limit Pgen to table boundaries so that math doesn't fly away)
+  P_clipped_max = max(pq_table.P_max[1], min(Pgen, pq_table.P_max[end]));
+  P_clipped_min = max(pq_table.P_min[1], min(Pgen, pq_table.P_min[end]));
+
+   // 2. AUTOMATIC INTERPOLATION AT EACH CALCULATION STEP
+  // The interpolate function returns a tuple (value of I, index_interval)
+  (Qmax, i_max_dummy) = Modelica.Math.Vectors.interpolate(
+    pq_table.P_max,
+    pq_table.Qmax,
+    P_clipped_max);
+
+  (Qmin, i_min_dummy) = Modelica.Math.Vectors.interpolate(
+    pq_table.P_min,
+    pq_table.Qmin,
+    P_clipped_min);
 
   Tj = Tj_p*Pnom/Sbaz;
 
   X1d = X1d_p*Sbaz/Pnom*cosfi_nom;
-  Xq = Xq_p*Sbaz/Pnom*cosfi_nom;
   //--------------------------------------------------------------------------------
   der(DGi) = Wc*s;
-  der(s) = (Mt_pp - Me - Kd*s)/Tj;
+  der(-DeltaIJ-DGi) = Wc*su;
+  der(s) = (Mt_pp/(1+s) - Me/(1+s) - Kd/2*s)/Tj;
 
   //--------------------------------------------------------------------------------
 
-  Me = (uq*iq + ud*id)/(1 - s);
+  Me = (uq*iq + ud*id);
 
-  id = (uq-EQ)/X1d;
-  iq = -ud/Xq;
+  id = if time >= TgenOff and time < TgenOff + dTgenOff then 0 else (uq-EQ)/X1d;
+  iq = if time >= TgenOff and time < TgenOff + dTgenOff then 0 else -ud/X1d;
 
   //----------------------------------------
   Pgen = (uq*iq + ud*id)*Sbaz;
@@ -141,8 +189,9 @@ equation
 
   //---input-rotor--field--voltage---
   Mt_pp = max(Mtmin, min(Mtmax,Mt_pin.Signal))  "таким хитрым образом выбирается сигнал с регулятора, если он не ограничен Mtmax, Mtmin";
+  Mu0 = Mu0_pin.Signal;
 
-  slip_pin.Signal = s;
+  slip_pin.Signal = if time >= TregOff then 0 else s;
 
   annotation (
     Coordsys(
@@ -187,6 +236,10 @@ equation
           thickness=1),
         Line(
           points={{-66,0},{-102,0}},
+          color={0,0,255},
+          thickness=1),
+        Line(
+          points={{28,62},{40,98}},
           color={0,0,255},
           thickness=1)},
       Ellipse(extent=[-60, 62; 60, -58], style(thickness=2)),

@@ -1,4 +1,4 @@
-﻿within ;
+﻿within Numerical_units;
 model Infinite_bus_simple
 
   LEPSE.Interfaces.Pin_v2 inp annotation (
@@ -7,7 +7,7 @@ model Infinite_bus_simple
     Placement(transformation(extent={{90,-10},{110,10}},
                                                        rotation=0),
         iconTransformation(extent={{90,-10},{110,10}})));
-  LEPSE.Basic.Turbines.ASR_Regulator ASC_Regulator_1(Sigma=Sigma, Tauc=Tauc)
+  LEPSE.Basic.Turbines.ASR_Regulator_ ASC_Regulator_1(Sigma=Sigma, Tauc=Tauc)
     annotation (Placement(transformation(extent={{-86,-20},{-20,28}})));
 
   parameter Real Ut=1 "ARV voltage reference value";
@@ -31,7 +31,7 @@ model Infinite_bus_simple
   parameter Real cosfi_nom=0.9
     "Nominal maschine power coefficient, p.u.";
   parameter Real Pnom=10000 "Set PV-generator power";
-  LEPSE.Basic.Generators.Numerical_units.Infinite_bus_Mashine_simple G(
+  Infinite_bus_Mashine_simple G(
     Sbaz=Sbaz,
     fbaz=fbaz,
     Ut=Ut,
@@ -43,11 +43,13 @@ model Infinite_bus_simple
     X1d_p=X1d_p,
     Tj_p=Tj_p,
     Mtmax=Mtmax,
-    Mtmin=Mtmin)
+    Mtmin=Mtmin,
+    TregOff=TregOff)
     annotation (Placement(transformation(extent={{-2,-32},{70,40}})));
   parameter Real Ugnom=330 "Nominal voltage";
   parameter Real Tj_p=7 "Inertia coefficient";
 
+  parameter Real TregOff=50 "Turbine speed regulator off-time, s";
 initial equation
     ASC_Regulator_1.out_pin.Signal = G.Me;
 
@@ -61,6 +63,11 @@ equation
       thickness=0.5));
   connect(ASC_Regulator_1.out_pin, G.Mt_pin) annotation (Line(
       points={{-20.275,4},{-2.72,4}},
+      color={255,255,0},
+      thickness=0.5));
+  connect(G.Mu0_pin, ASC_Regulator_1.Mu0_pin) annotation (Line(
+      points={{49.12,40.72},{49.12,52},{26,52},{26,46},{-88,46},{-88,32},
+          {-90,32},{-90,13.12},{-86.275,13.12}},
       color={255,255,0},
       thickness=0.5));
   annotation (

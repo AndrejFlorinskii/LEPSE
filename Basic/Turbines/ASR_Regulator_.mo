@@ -1,11 +1,11 @@
-﻿within ;
-model ASR_Regulator
+﻿within Turbines;
+model ASR_Regulator_
 
   parameter Real Sigma=0.0475 "Slip deviation control coefficient";
   parameter Real Tauc=0.15 "Slip deviation time constant";
 
   LEPSE.Basic.Excitation_systems.Logic.Transfer_Function SlipDeviation(b={-1/
-        Sigma}, a={Tauc,1}) annotation (extent=[-74,57.3333; -27.3333,104],
+        Sigma}, a={1}) annotation (extent=[-74,57.3333; -27.3333,104],
       Placement(transformation(extent={{-64,-32},{-11.3333,16}}, rotation=0)));
   LEPSE.Interfaces.Signal_pin ds_pin annotation (
     extent=[-96,64; -86,76],
@@ -19,45 +19,37 @@ model ASR_Regulator
     Placement(transformation(extent={{134,-10},{144,10}},
                                                         rotation=0),
         iconTransformation(extent={{134,-10},{144,10}})));
-  LEPSE.Basic.Excitation_systems.Logic.Transfer_Function SlipI_Dif(b={1}, a={1,
-        0}) annotation (Placement(transformation(extent={{10,-28},{66,12}})));
-  LEPSE.Basic.Excitation_systems.Logic.Transfer_Function Slip_Prop(b={1}, a={1})
-    annotation (Placement(transformation(extent={{10,-68},{66,-28}})));
-  LEPSE.Basic.Excitation_systems.Logic.Transfer_Function Slip_Int(b={1,0}, a={1,
-        1}) annotation (Placement(transformation(extent={{10,12},{66,52}})));
-  LEPSE.Basic.Excitation_systems.Logic.Summator_3 summator_3_1
-    annotation (Placement(transformation(extent={{92,-18},{112,2}})));
 
+  LEPSE.Basic.Excitation_systems.Logic.Transfer_Function Time_constant(b={1}, a=
+        {Tauc,1})
+    annotation (Placement(transformation(extent={{64,-24},{118,22}})));
+  LEPSE.Interfaces.Signal_pin Mu0_pin annotation (
+    extent=[-96,64; -86,76],
+    layer="icon",
+    Placement(transformation(extent={{-106,34},{-96,46}}, rotation=0),
+        iconTransformation(extent={{-106,32},{-96,44}})));
+  LEPSE.Basic.Excitation_systems.Logic.Summator_2 summator_2_1
+    annotation (Placement(transformation(extent={{16,-10},{36,10}})));
 equation
 
   connect(SlipDeviation.inp,ds_pin)  annotation (points=[-69.8,80.6667; -91,70],
       Line(points={{-64,-8},{-101,-8}},                   thickness=0.5));
 
-  connect(SlipDeviation.out, SlipI_Dif.inp)
-    annotation (Line(points={{-11.3333,-8},{10,-8}}, color={0,0,0}));
-  connect(Slip_Prop.inp, SlipI_Dif.inp) annotation (Line(
-      points={{10,-48},{0,-48},{0,-8},{10,-8}},
-      color={0,0,0},
+  connect(Time_constant.out, out_pin) annotation (Line(
+      points={{118,-1},{118,-2},{130,-2},{130,0},{139,0}},
+      color={255,255,0},
       thickness=0.5));
-  connect(Slip_Int.inp, SlipI_Dif.inp) annotation (Line(
-      points={{10,32},{0,32},{0,-8},{10,-8}},
-      color={0,0,0},
+  connect(Mu0_pin, summator_2_1.inp1) annotation (Line(
+      points={{-101,40},{10,40},{10,4.2},{16,4.2}},
+      color={255,255,0},
       thickness=0.5));
-  connect(SlipI_Dif.out, summator_3_1.inp2) annotation (Line(
-      points={{66,-8},{68,-8.2},{92,-8.2}},
-      color={0,0,0},
+  connect(SlipDeviation.out, summator_2_1.inp2) annotation (Line(
+      points={{-11.3333,-8},{10,-8},{10,-4},{16,-4}},
+      color={255,255,0},
       thickness=0.5));
-  connect(Slip_Int.out, summator_3_1.inp1) annotation (Line(
-      points={{66,32},{86,32},{86,-2},{92,-2}},
-      color={0,0,0},
-      thickness=0.5));
-  connect(Slip_Prop.out, summator_3_1.inp3) annotation (Line(
-      points={{66,-48},{86,-48},{86,-14},{92,-14}},
-      color={0,0,0},
-      thickness=0.5));
-  connect(summator_3_1.out, out_pin) annotation (Line(
-      points={{112,-8},{128,-8},{128,0},{139,0}},
-      color={0,0,0},
+  connect(summator_2_1.out, Time_constant.inp) annotation (Line(
+      points={{36,0},{56,0},{56,-1},{64,-1}},
+      color={255,255,0},
       thickness=0.5));
   annotation (
     Coordsys(
@@ -96,6 +88,10 @@ equation
         Line(
           points={{-68,-8},{-100,-8}},
           color={0,0,255},
+          thickness=1),
+        Line(
+          points={{-68,38},{-100,38}},
+          color={0,0,255},
           thickness=1)},
       Rectangle(extent=[-68, 80; 66, -60], style(thickness=2)),
       Text(extent=[-42, 60; 40, -18], string="Excitation"),
@@ -111,9 +107,13 @@ equation
         Text(
           extent={{-90,10},{-80,0}},
           textColor={0,0,0},
-          textString="s")}),
+          textString="s"),
+        Text(
+          extent={{-94,66},{-82,54}},
+          textColor={0,0,0},
+          textString="Mu0")}),
     Documentation(info="<html>
 <p>Automatic Slip Regulator (ASR) model. </p>
 <p>Модель автоматического регулятора скольжения. </p>
 </html>"));
-end ASR_Regulator;
+end ASR_Regulator_;

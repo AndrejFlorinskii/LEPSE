@@ -1,4 +1,4 @@
-﻿within ;
+﻿within LEPSE.Compare_Rustab;
 model SMIB_exciter_and_ARV_SD
   Real delta_G1_G2(start=-1.0748690366744995)
                    "Mutual angle";

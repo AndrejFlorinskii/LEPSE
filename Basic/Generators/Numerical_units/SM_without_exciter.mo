@@ -1,4 +1,4 @@
-﻿within ;
+﻿within Numerical_units;
 model SM_without_exciter
   outer LEPSE.Basic.SysData sysData;
 
@@ -65,30 +65,12 @@ model SM_without_exciter
   annotation(Dialog(tab="Synchronous machine"));
   parameter Real T2q_p=0.05 "Q-axis subtransient time constant, s"
   annotation(Dialog(tab="Synchronous machine"));
-
-  parameter Real Sigma=0.0475 "Turbine statism coefficient, p.u."
-  annotation(Dialog(tab="Turbine"));
-  parameter Real TauC_up=0.8 "Time constant of servo motor while valving control, s"
-  annotation(Dialog(tab="Turbine"));
   parameter Real TregOff=50 "Turbine speed regulator off-time, s"
-  annotation(Dialog(tab="Turbine"));
-
-  parameter Real TregOn=1000 "Turbine speed regulator on-time, s"
   annotation(Dialog(tab="Turbine"));
   parameter Real Mtmax=1.1 "Turbine overloading coefficient, p.u."
   annotation(Dialog(tab="Turbine"));
   parameter Real Mtmin=0 "Turbine minimum-loading coefficient, p.u."
   annotation(Dialog(tab="Turbine"));
-
-  parameter Real Aimp=1 "Fast turbine valving control amplitude, p.u."
-  annotation(Dialog(tab="Turbine"));
-  parameter Real Timp=1000 "Fast turbine valving control on-time, s"
-  annotation(Dialog(tab="Turbine"));
-  parameter Real dTimp=0.2 "Fast turbine valving control duration, s"
-  annotation(Dialog(tab="Turbine"));
-  parameter Real TauC_down=5 "Time constant of servo motor after valving control end, s"
-  annotation(Dialog(tab="Turbine"));
-
   parameter Real TkzOn=1000 "Generators dropping on-time, s"
   annotation(Dialog(tab="General"));
   parameter Real Pg_new=100 "New power of power plant, MW"
@@ -137,8 +119,6 @@ model SM_without_exciter
   Real Ugen "generator full voltage actual value, kV";
   Real Igen "generator stator current value, kA";
   parameter Real Mu0(fixed=false) "Turbine rotation moment initial value";
-  Real Ro;
-  Real Mu "Turbine valve position / moment";
   Real Mt_pp "Turbine rotation moment actual value";
   Real Pgen "Generator active power actual value";
   Real Qgen "Generator reactive power actual value";
@@ -168,7 +148,6 @@ model SM_without_exciter
   Real uq "Q-axis generator voltage actual value";
   Real E11d "EMF, connected with d-axis damper winding";
   Real E11q "EMF, connected with q-axis damper winding";
-  Real TauC "Time constant of servo motor actual value";
   Real MT_MAX "Turbine overloading coefficient actual value";
   Real MT_MIN "Turbine minimum-loading coefficient actual value";
   Real Xd "D-axis synchronous reactance actual value";
@@ -228,6 +207,15 @@ model SM_without_exciter
   LEPSE.Interfaces.Signal_pin dIg_pin annotation (Placement(transformation(
           extent={{94,90},{114,110}}), iconTransformation(extent={{94,90},{114,
             110}})));
+  LEPSE.Interfaces.Signal_pin slip_pin annotation (Placement(transformation(
+          extent={{-110,30},{-90,50}}), iconTransformation(extent={{-110,30},{-90,
+            50}})));
+  LEPSE.Interfaces.Signal_pin Mu0_pin annotation (Placement(transformation(
+          extent={{-110,66},{-90,86}}), iconTransformation(extent={{-110,66},{-90,
+            86}})));
+  LEPSE.Interfaces.Signal_pin Mt_pin annotation (Placement(transformation(
+          extent={{-110,66},{-90,86}}), iconTransformation(extent={{-110,-48},{
+            -90,-28}})));
 initial equation
   // additional variables in p.u.
   Ut_pu = Ut/Ugnom;
@@ -250,7 +238,6 @@ initial equation
   Id = ((Uq - EQ)*(Xq + Xt) - (Ra + Rt)*Ud)/((Ra + Rt)^2 + (Xq + Xt)^2);
   Iq = (-Ud - (Ra + Rt)*Id)/(Xq + Xt);
   Mu0 = EQ*Iq;
-  Mu = Mu0;
 
   Eiq = Uq - Id*(Xs + Xt) + (Ra + Rt)*Iq;
   Ir = -Id + Eiq/Xad;
@@ -320,20 +307,12 @@ equation
   der(Yr) = Wc*(Uf_full - Rf*ir);
   der(Yrd) = -Wc*R1d*ird;
   der(Yrq) = -Wc*R1q*irq;
-  der(s) = (Mt_pp - Me - Kd*s)/Tj;
+  der(s) = (Mt_pp/(1+s) - Me/(1+s) - Kd/2*s)/Tj;
 
-  Ro = if time >= Timp and time < Timp + dTimp then -Aimp else -Mu + Mu0 - s
-    /Sigma;
-
-  TauC = if time < Timp + dTimp then TauC_up else TauC_down;
-
-  der(Mu) = if time >= TregOff and time < TregOn then Ro/10e6 else Ro/TauC;
   //--------------------------------------------------------------------------------
   MT_MIN = if time < TkzOn then Mtmin*Pg_pu else Pg_new/Sbaz - 0.01;
   MT_MAX = if time < TkzOn then Mtmax*Pg_pu else Pg_new/Sbaz + 0.01;
 
-  Mt_pp = if Mu >= MT_MIN and Mu <= MT_MAX then Mu else if Mu > MT_MAX then
-    MT_MAX else MT_MIN;
   //--------------------------------------------------------------------------------
 
   Me = Yad*iq - Yaq*id;
@@ -387,6 +366,11 @@ equation
   Er0_pin.Signal = Er0;
   Ugen_pin.Signal = sqrt(ud^2 + uq^2);
   dIg_pin.Signal = sqrt(IqG^2 + IdG^2) - sqrt(Id^2 + Iq^2);
+
+  Mt_pp = max(MT_MIN, min(MT_MAX,Mt_pin.Signal))  "таким хитрым образом выбирается сигнал с регулятора, если он не ограничен Mtmax, Mtmin";
+  slip_pin.Signal = if time >= TregOff then 0 else s;
+  Mu0 = Mu0_pin.Signal;
+
   connect(dUtr_pin, dUtr_pin) annotation (Line(
       points={{-54,100},{-54,100}},
       color={255,255,0},
@@ -464,6 +448,18 @@ equation
         Line(
           points={{70,12},{104,58},{104,92}},
           color={0,0,255},
+          thickness=1),
+        Line(
+          points={{-64,14},{-98,40}},
+          color={0,0,255},
+          thickness=1),
+        Line(
+          points={{-64,-14},{-100,-42}},
+          color={0,0,255},
+          thickness=1),
+        Line(
+          points={{-80,58},{-98,76}},
+          color={0,0,255},
           thickness=1)},
       Ellipse(extent=[-60, 62; 60, -58], style(thickness=2)),
       Text(extent=[-38, 38; 38, -36], string="SM"),
@@ -477,6 +473,5 @@ equation
         info="<html>
 <p>Synchronous generator without exciter model. </p>
 <p>Модель синхронного генератора с исключенным возбудителем. </p>
-</html>"),
-    uses(Modelica(version="4.0.0")));
+</html>"));
 end SM_without_exciter;

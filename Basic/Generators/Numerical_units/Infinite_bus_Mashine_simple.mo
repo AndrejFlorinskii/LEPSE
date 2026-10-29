@@ -1,4 +1,4 @@
-﻿within ;
+﻿within Numerical_units;
 model Infinite_bus_Mashine_simple
   outer LEPSE.Basic.SysData sysData;
 
@@ -35,6 +35,9 @@ model Infinite_bus_Mashine_simple
   parameter Real Ud(fixed=false) "Q-axis ARV voltage reference value";
   parameter Real Id(fixed=false) "D-axis stator current value";
   parameter Real Iq(fixed=false) "Q-axis stator current value";
+  parameter Real Mu0(fixed=false);
+ parameter Real TregOff=50 "Turbine speed regulator off-time, s"
+  annotation(Dialog(tab="Turbine"));
 
   Real Ugen "generator full voltage actual value";
   Real Igen "generator stator current value, kA";
@@ -75,6 +78,9 @@ model Infinite_bus_Mashine_simple
           extent={{-10,92},{10,112}}), iconTransformation(extent={{-10,92},{10,
             112}})));
 
+  LEPSE.Interfaces.Signal_pin Mu0_pin annotation (Placement(transformation(
+          extent={{32,92},{52,112}}), iconTransformation(extent={{32,92},{52,
+            112}})));
 initial equation
   // additional variables in p.u.
   Ut_pu = Ut/Ugnom;
@@ -84,11 +90,12 @@ initial equation
   // equations of currents, voltages, and flux densities
   s = 0;
   DGi = Dg;
+  Mu0 = EQ*Iq;
 
   Pg = Pgen;
   Qg=min(Qmax, max(Qmin, Qgen));
 
-  EQ = sqrt(((Ut_pu + X1d*Qg_pu)/Ut_pu)^2 + (X1d*Pg_pu/Ut_pu)^2);
+  EQ = sqrt((Ut_pu + X1d*Qg_pu/Ut_pu)^2 + (X1d*Pg_pu/Ut_pu)^2);
   Dg = atan(X1d*Pg_pu/(Ut_pu^2 + X1d*Qg_pu));
     //----------------------
   Uq = Ut_pu*cos(Dg);
@@ -104,11 +111,11 @@ equation
   X1d = X1d_p*Sbaz/Pnom*cosfi_nom;
   //--------------------------------------------------------------------------------
   der(DGi) = Wc*s;
-  der(s) = (Mt_pp - Me)/Tj;
+  der(s) = (Mt_pp/(1+s) - Me/(1+s))/Tj;
 
   //--------------------------------------------------------------------------------
 
-  Me = (uq*iq + ud*id)/(1 - s);
+  Me = (uq*iq + ud*id);
 
   id = (uq-EQ)/X1d;
   iq = -ud/X1d;
@@ -137,8 +144,8 @@ equation
 
   //---input-rotor--field--voltage---
   Mt_pp = max(Mtmin, min(Mtmax,Mt_pin.Signal))  "таким хитрым образом выбирается сигнал с регулятора, если он не ограничен Mtmax, Mtmin";
-
-  slip_pin.Signal = s;
+  Mu0 = Mu0_pin.Signal;
+  slip_pin.Signal = if time >= TregOff then 0 else s;
 
   annotation (
     Coordsys(
@@ -183,6 +190,10 @@ equation
           thickness=1),
         Line(
           points={{-66,0},{-102,0}},
+          color={0,0,255},
+          thickness=1),
+        Line(
+          points={{32,60},{42,96}},
           color={0,0,255},
           thickness=1)},
       Ellipse(extent=[-60, 62; 60, -58], style(thickness=2)),

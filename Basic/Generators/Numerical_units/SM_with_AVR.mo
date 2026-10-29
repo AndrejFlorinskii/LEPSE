@@ -1,4 +1,4 @@
-﻿within ;
+﻿within Numerical_units;
 model SM_with_AVR
 
   LEPSE.Interfaces.Pin_v2 inp annotation (
@@ -52,7 +52,7 @@ model SM_with_AVR
   parameter Real n_gen=1 "Number of generators";
 
   parameter Boolean displayPowerFlow=true "Display power flow";
-  LEPSE.Basic.Generators.Numerical_units.SM G(
+  SM G(
     pq_table=pq_table,
     TgenOff=TgenOff,
     dTgenOff=dTgenOff,
@@ -123,7 +123,8 @@ equation
       color={255,255,0},
       thickness=0.5));
   connect(G.dIf_pin, AVR.dif1_pin) annotation (Line(
-      points={{42.88,40},{42.88,68},{-136,68},{-136,-27.08},{-124.367,-27.08}},
+      points={{42.88,40},{42.88,68},{-136,68},{-136,-27.08},{-124.367,
+          -27.08}},
       color={255,255,0},
       thickness=0.5));
 
@@ -132,7 +133,8 @@ equation
       color={255,255,0},
       thickness=0.5));
   connect(G.dWu_pin, AVR.dfsys_pin) annotation (Line(
-      points={{18.04,40},{18.04,60},{-132,60},{-132,-1.7},{-124.367,-1.7}},
+      points={{18.04,40},{18.04,60},{-132,60},{-132,-1.7},{-124.367,
+          -1.7}},
       color={255,255,0},
       thickness=0.5));
   connect(G.dUtr_pin, AVR.dV_pin) annotation (Line(
@@ -140,8 +142,8 @@ equation
       color={255,255,0},
       thickness=0.5));
   connect(AVR.dV_pin, AVR.dV1_pin) annotation (Line(
-      points={{-124.367,26.5},{-124.367,24},{-124,24},{-124,20},{-124.367,20},{
-          -124.367,12.4}},
+      points={{-124.367,26.5},{-124.367,24},{-124,24},{-124,20},{
+          -124.367,20},{-124.367,12.4}},
       color={255,255,0},
       thickness=0.5));
   annotation (

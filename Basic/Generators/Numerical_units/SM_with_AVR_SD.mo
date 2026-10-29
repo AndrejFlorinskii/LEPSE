@@ -1,4 +1,4 @@
-﻿within ;
+﻿within Numerical_units;
 model SM_with_AVR_SD
 
   LEPSE.Interfaces.Pin_v2 inp annotation (
@@ -52,7 +52,7 @@ model SM_with_AVR_SD
   parameter Real n_gen=1 "Number of generators";
 
   parameter Boolean displayPowerFlow=true "Display power flow";
-  LEPSE.Basic.Generators.Numerical_units.SM G(
+  SM G(
     pq_table=pq_table,
     TgenOff=TgenOff,
     dTgenOff=dTgenOff,

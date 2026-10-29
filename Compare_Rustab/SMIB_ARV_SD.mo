@@ -1,4 +1,4 @@
-within ;
+within LEPSE.Compare_Rustab;
 model SMIB_ARV_SD
   Real delta_G1_G2(start=-1.1712130308151245)
                    "Mutual angle";
@@ -44,8 +44,7 @@ model SMIB_ARV_SD
     Tforcedelay=0,
     cosfi_nom=0.8,
     displayPowerFlow=globalDisplay_S,
-    G(
-      ud(start=-0.033826773074383566),
+    G(ud(start=-0.033826773074383566),
       uq(start=1.020381381777528),
       Qg(start=71.82930755615234)),
     fbaz=sysData.fbaz,
