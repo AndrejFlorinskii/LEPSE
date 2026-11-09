@@ -1,5 +1,5 @@
 within LEPSE;
-package Co_simulation
+package Co-simulation
   model three_maschine_scheme
     Real delta_G1_G2(start=-0.663044810295105), delta_G1_G3(start=0.36994481086730957), delta_G2_G3(start=1.0329896211624146) "Mutual angles";
 
@@ -706,4 +706,4 @@ package Co_simulation
   end AVR_G1;
   annotation (Icon(graphics={Bitmap(extent={{-134,-94},{138,86}}, fileName=
               "modelica://LEPSE/Images/Co-simulationjpg.jpg")}));
-end Co_simulation;
+end Co-simulation;
