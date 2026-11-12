@@ -1,6 +1,6 @@
-within ;
+within OMLET;
 package Interfaces
 
   annotation (Icon(graphics={Bitmap(extent={{-120,-104},{122,102}}, fileName=
-              "modelica://LEPSE/Images/Connector.png")}));
+              "modelica://OMLET/Images/Connector.png")}));
 end Interfaces;

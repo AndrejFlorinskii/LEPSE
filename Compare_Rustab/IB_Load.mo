@@ -1,9 +1,9 @@
-﻿within LEPSE.Compare_Rustab;
+﻿within OMLET.Compare_Rustab;
 model IB_Load
   parameter Boolean globalDisplay_U = true;
   parameter Boolean globalDisplay_S = true;
 
-  LEPSE.Basic.Generators.Numerical_units.Infinite_bus_simple G2(
+  OMLET.Basic.Generators.Numerical_units.Infinite_bus_simple IB(
     Mtmax=1.1,
     Mtmin=-1.1,
     Ut=330,
@@ -19,11 +19,12 @@ model IB_Load
     cosfi_nom=0.9,
     Ugnom=330,
     Tj_p=500,
-    G(Pg(start=-495.3849792480469),
+    G(
+      Pg(start=-495.3849792480469),
       Ut=340,
       Qgen(start=-0.7352029085159302)))
     annotation (Placement(transformation(extent={{98,-6},{68,26}})));
-  LEPSE.Basic.Branches.Branches_numerical_units.HVline Line_1(
+  OMLET.Basic.Branches.Branches_numerical_units.HVline Line_1(
     Rline=2.5,
     Xline=29,
     Bline1=170,
@@ -37,24 +38,24 @@ model IB_Load
     Idc2(start=1.8450302377459593E-05),
     Iqc2(start=-4.1219308855033887E-07))
     annotation (Placement(transformation(extent={{14,-10},{40,26}})));
-  LEPSE.Basic.Buses.Bus node_3(busNumber=3, displayVoltage=globalDisplay_U)
+  OMLET.Basic.Buses.Bus node_3(busNumber=2, displayVoltage=globalDisplay_U)
     annotation (Placement(transformation(extent={{40,-2},{60,22}})));
-  LEPSE.Basic.Buses.Bus node_2(busNumber=2, displayVoltage=globalDisplay_U)
+  OMLET.Basic.Buses.Bus node_2(busNumber=1, displayVoltage=globalDisplay_U)
     annotation (Placement(transformation(extent={{-6,-2},{14,22}})));
 
-  inner LEPSE.Basic.SysData sysData(
+  inner OMLET.Basic.SysData sysData(
     Sbaz=1000,
     Ubaz=330,
     fbaz=50)
-    annotation (Placement(transformation(extent={{-100,-64},{-80,-44}})));
-  LEPSE.Basic.Shunts.Shunts_numerical_units.ShortCircuitShunt shortCircuitShunt_NU(
+    annotation (Placement(transformation(origin={40,20},   extent = {{-100, -64}, {-80, -44}})));
+  OMLET.Basic.Shunts.Shunts_numerical_units.ShortCircuitShunt SCS(
     Bn=100000,
     Gn=100000,
     TkzOn=10,
     dTkzOn=0.2)
-    annotation (Placement(transformation(extent={{-12,-38},{6,-14}})));
+    annotation (Placement(transformation(extent={{-24,-38},{-6,-14}})));
 
-  LEPSE.Basic.Branches.Branches_numerical_units.HVline Line_2(
+  OMLET.Basic.Branches.Branches_numerical_units.HVline Line_2(
     Rline=2.5,
     Xline=29,
     Bline1=170,
@@ -65,30 +66,27 @@ model IB_Load
     Idc2(start=0.0184503011405468),
     Iqc2(start=-0.0004121930687688291))
     annotation (Placement(transformation(extent={{14,-46},{40,-10}})));
-  LEPSE.Basic.Shunts.Shunts_numerical_units.Constant_Conductivity_Load constant_Conductivity_Load(Pn=1100,
-      Qn=110)
-    annotation (Placement(transformation(extent={{-46,-24},{-26,-4}})));
+  OMLET.Basic.Shunts.Shunts_numerical_units.Constant_Conductivity_Load Load(Pn=1100,
+      Qn=110) annotation (Placement(transformation(extent={{-48,-12},{-28,8}})));
 equation
 
-  G2.G.DeltaIJ = 0;
-  G2.G.Ssys = G2.G.s;
+  IB.G.DeltaIJ = 0;
+  IB.G.Ssys = IB.G.s;
 
   connect(Line_1.out, node_3.bus_pin) annotation (Line(points={{40,10.7},{40,
           10},{48,10},{48,9.12},{49.875,9.12}}, color={28,108,200}));
-  connect(node_3.bus_pin, G2.inp) annotation (Line(points={{49.875,9.12},{
-          49.875,10},{68,10}},
-                        color={28,108,200}));
+  connect(node_3.bus_pin, IB.inp) annotation (Line(points={{49.875,9.12},{
+          49.875,10},{68,10}}, color={28,108,200}));
   connect(node_2.bus_pin, Line_1.inp) annotation (Line(points={{3.875,9.12},{
           3.875,10},{14.26,10},{14.26,10.7}}, color={28,108,200}));
   connect(Line_2.inp, Line_1.inp) annotation (Line(points={{14.26,-25.3},{
           14.26,10.7}}, color={28,108,200}));
   connect(Line_2.out, Line_1.out)
     annotation (Line(points={{40,-25.3},{40,10.7}}, color={28,108,200}));
-  connect(constant_Conductivity_Load.inp, node_2.bus_pin) annotation (Line(
-        points={{-36,-4.2},{-16,-4.2},{-16,9.12},{3.875,9.12}}, color={28,108,200}));
-  connect(shortCircuitShunt_NU.inp, node_2.bus_pin) annotation (Line(points={{-3,
-          -14.3},{-4,-14.3},{-4,-6},{-16,-6},{-16,9.12},{3.875,9.12}}, color={28,
-          108,200}));
+  connect(Load.inp, node_2.bus_pin) annotation (Line(points={{-38,7.8},{-38,10},
+          {-16,10},{-16,9.12},{3.875,9.12}}, color={28,108,200}));
+  connect(SCS.inp, node_2.bus_pin) annotation (Line(points={{-15,-14.3},{-16,-14.3},
+          {-16,9.12},{3.875,9.12}}, color={28,108,200}));
   annotation (Documentation(info="<html>
 <p>Calssical model of the simpliest power energy system, which is used to study the basics of transient processes. </p>
 <p><b>0 s</b>: start;</p>
@@ -106,7 +104,7 @@ equation
       __Dymola_NumberOfIntervals=1000,
       Tolerance=1e-05,
       __Dymola_Algorithm="Lsodar"),
-    Icon(coordinateSystem(extent={{-100,-60},{100,40}}),
+    Icon(coordinateSystem(extent={{-80,-60},{100,40}}),
          graphics={
         Ellipse(lineColor = {75,138,73},
                 fillColor={255,255,255},
@@ -117,5 +115,5 @@ equation
                 pattern = LinePattern.None,
                 fillPattern = FillPattern.Solid,
                 points={{-22,56},{60,0},{-22,-52},{-22,56}})}),
-    Diagram(coordinateSystem(extent={{-100,-60},{100,40}})));
+    Diagram(coordinateSystem(extent={{-80,-60},{100,40}})));
 end IB_Load;

@@ -1,4 +1,4 @@
-within UsersGuide;
+within OMLET.UsersGuide;
 partial class Contact "Icon for contact information"
 
   annotation (Icon(coordinateSystem(preserveAspectRatio=false, extent={{-100,
@@ -20,7 +20,7 @@ partial class Contact "Icon for contact information"
           fillColor={241,241,241},
           fillPattern=FillPattern.Solid)}),
                             Documentation(info="<html>
-<p>LEPSE is developed by many people, who works or studies in St. Petersburg Polytechnic university. This page shows the active members. </p>
+<p>OMLET is developed by many people, who works or studies in St. Petersburg Polytechnic university. This page shows the active members. </p>
 <p><br><b><a href=\"http://belyaev.spb.ru/\">Andrey Nikolaevich Belyaev</a></b></p>
 <p>Professor</p>
 <p>email: andreybelyaev@yandex.ru</p>

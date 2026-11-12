@@ -1,4 +1,4 @@
-﻿within LEPSE.Data;
+﻿within OMLET.Data;
 record PQ_CapabilityCurve "Паспортные ограничения P-Q диаграммы генератора"
   parameter Real Snom = 588 "Номинальная полная мощность, МВА";
   parameter Real Pnom = 500 "Номинальная активная мощность, МВт";

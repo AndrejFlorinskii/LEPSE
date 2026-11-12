@@ -1,4 +1,4 @@
-﻿within LEPSE;
+﻿within OMLET;
 package Data
   // Пример готовых пресетов типов генераторов:
 
@@ -18,5 +18,5 @@ package Data
     "Турбогенератор ТГВ-300-2УЗ";
 
   annotation (Icon(graphics={Bitmap(extent={{-154,-108},{164,100}}, fileName=
-              "modelica://LEPSE/Images/Data.png")}));
+              "modelica://OMLET/Images/Data.png")}));
 end Data;

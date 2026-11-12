@@ -1,4 +1,4 @@
-﻿within LEPSE.Data;
+﻿within OMLET.Data;
 record PQ_CapabilityTable "Таблица точек P-Q диаграммы произвольного размера"
   parameter Real Snom = 588 "Номинальная полная мощность, МВА";
 

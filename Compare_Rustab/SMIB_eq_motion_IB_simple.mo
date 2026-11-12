@@ -1,10 +1,10 @@
-﻿within LEPSE.Compare_Rustab;
+﻿within OMLET.Compare_Rustab;
 model SMIB_eq_motion_IB_simple
   Real delta_G1_G2 "Mutual angle";
   parameter Boolean globalDisplay_U = true;
   parameter Boolean globalDisplay_S = true;
 
-  LEPSE.Basic.Generators.Numerical_units.Infinite_bus_simple G2(
+  OMLET.Basic.Generators.Numerical_units.Infinite_bus_simple G2(
     Mtmax=1.1,
     Mtmin=-1.1,
     Ut=330,
@@ -20,9 +20,8 @@ model SMIB_eq_motion_IB_simple
     cosfi_nom=0.9,
     Ugnom=330,
     Tj_p=500,
-    TregOff=9)
-    annotation (Placement(transformation(extent={{98,-6},{68,26}})));
-  LEPSE.Basic.Transformers.Transformers_numerical_units.Transformer Transformer(
+    TregOff=9) annotation (Placement(transformation(extent={{98,-6},{68,26}})));
+  OMLET.Basic.Transformers.Transformers_numerical_units.Transformer Transformer(
     Sbaz=Transformer.sysData.Sbaz,
     n_step=0,
     Rtrans=0.8,
@@ -30,7 +29,7 @@ model SMIB_eq_motion_IB_simple
     Btrans=10,
     displayPowerFlow=globalDisplay_S)
     annotation (Placement(transformation(extent={{-36,-6},{-10,24}})));
-  LEPSE.Basic.Branches.Branches_numerical_units.HVline Line_1(
+  OMLET.Basic.Branches.Branches_numerical_units.HVline Line_1(
     Rline=2.5,
     Xline=29,
     Bline1=170,
@@ -40,26 +39,26 @@ model SMIB_eq_motion_IB_simple
     Koff=1000,
     displayPowerFlow=globalDisplay_S)
     annotation (Placement(transformation(extent={{14,-10},{40,26}})));
-  LEPSE.Basic.Buses.Bus node_1(Unom=20, displayVoltage=globalDisplay_U)
+  OMLET.Basic.Buses.Bus node_1(Unom=20, displayVoltage=globalDisplay_U)
     annotation (Placement(transformation(extent={{-56,-2},{-36,22}})));
-  LEPSE.Basic.Buses.Bus node_3(busNumber=3, displayVoltage=globalDisplay_U)
+  OMLET.Basic.Buses.Bus node_3(busNumber=3, displayVoltage=globalDisplay_U)
     annotation (Placement(transformation(extent={{40,-2},{60,22}})));
-  LEPSE.Basic.Buses.Bus node_2(busNumber=2, displayVoltage=globalDisplay_U)
+  OMLET.Basic.Buses.Bus node_2(busNumber=2, displayVoltage=globalDisplay_U)
     annotation (Placement(transformation(extent={{-6,-2},{14,22}})));
 
-  inner LEPSE.Basic.SysData sysData(
+  inner OMLET.Basic.SysData sysData(
     Sbaz=1000,
     Ubaz=330,
     fbaz=50)
     annotation (Placement(transformation(extent={{-100,-64},{-80,-44}})));
-  LEPSE.Basic.Shunts.Shunts_numerical_units.ShortCircuitShunt shortCircuitShunt_NU(
+  OMLET.Basic.Shunts.Shunts_numerical_units.ShortCircuitShunt shortCircuitShunt_NU(
     Bn=100000,
     Gn=100000,
     TkzOn=10,
     dTkzOn=0.2)
     annotation (Placement(transformation(extent={{-18,-42},{0,-18}})));
 
-  LEPSE.Basic.Branches.Branches_numerical_units.HVline Line_2(
+  OMLET.Basic.Branches.Branches_numerical_units.HVline Line_2(
     Rline=2.5,
     Xline=29,
     Bline1=170,

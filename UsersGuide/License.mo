@@ -1,9 +1,9 @@
-within UsersGuide;
+within OMLET.UsersGuide;
 model License
   annotation (
     Icon(coordinateSystem(preserveAspectRatio=false), graphics={Bitmap(
             extent={{-134,-98},{146,92}}, fileName=
-              "modelica://LEPSE/Images/Licensing.svg")}),
+              "modelica://OMLET/Images/Licensing.svg")}),
     Diagram(coordinateSystem(preserveAspectRatio=false)),
     Documentation(info="<html>
 <p>BSD 3-Clause License</p>

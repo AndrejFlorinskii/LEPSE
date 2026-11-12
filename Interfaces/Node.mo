@@ -1,4 +1,4 @@
-﻿within Interfaces;
+﻿within OMLET.Interfaces;
 connector Node
   Real Vd "Potential Vd";
   Real Vq "Potential Vq";

@@ -1,4 +1,4 @@
-﻿within Interfaces;
+﻿within OMLET.Interfaces;
 connector Signal_pin
   Real Signal "Connector's signal";
 

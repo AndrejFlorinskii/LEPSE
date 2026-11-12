@@ -1,11 +1,11 @@
-within LEPSE.Compare_Rustab;
+within OMLET.Compare_Rustab;
 model SMIB_ARV_SD
   Real delta_G1_G2(start=-1.1712130308151245)
                    "Mutual angle";
   parameter Boolean globalDisplay_U = true;
   parameter Boolean globalDisplay_S = true;
 
-  LEPSE.Basic.Generators.Numerical_units.SM_with_AVR_SD G1(
+  OMLET.Basic.Generators.Numerical_units.SM_with_AVR_SD G1(
     TregOff=0,
     Kemax=2.5,
     Kemin=-2,
@@ -21,7 +21,9 @@ model SMIB_ARV_SD
       FrequencyDeviation(x(start={5.822318755593914E-12})),
       SimpleExciter(x(start={-0.007040377240628004})),
       VoltageDerivative(x(start={0.0007400893955491483})),
-      FrequencyBlockU(x(start={0.37878143787384033}))),
+      FrequencyBlockU(x(start={0.37878143787384033})),
+      Umax=6,
+      Umin=-6),
     Pg=500,
     Ut=20.5,
     Pnom=500,
@@ -48,10 +50,10 @@ model SMIB_ARV_SD
       uq(start=1.020381381777528),
       Qg(start=71.82930755615234)),
     fbaz=sysData.fbaz,
-    pq_table=LEPSE.Data.TVV_500_2,
+    pq_table=OMLET.Data.TVV_500_2,
     inService=true)
     annotation (Placement(transformation(extent={{-102,-6},{-62,26}})));
-  LEPSE.Basic.Generators.Numerical_units.Infinite_bus G2(
+  OMLET.Basic.Generators.Numerical_units.Infinite_bus G2(
     ASC_Regulator_1(SlipDeviation(x(start={0.009356128051877022})), SlipI_Dif(x(
             start={-5997.04833984375}))),
     AVR(
@@ -81,7 +83,7 @@ model SMIB_ARV_SD
     G(Pg(start=-495.3849792480469), Qg(start=-70.48245239257812)),
     Qmax=9999,
     Qmin=-9999) annotation (Placement(transformation(extent={{96,-6},{66,26}})));
-  LEPSE.Basic.Transformers.Transformers_numerical_units.Transformer Transformer_NU1(
+  OMLET.Basic.Transformers.Transformers_numerical_units.Transformer Transformer_NU1(
     Sbaz=Transformer_NU1.sysData.Sbaz,
     n_step=0,
     Rtrans=0.8,
@@ -91,26 +93,26 @@ model SMIB_ARV_SD
     I2d(start=0.11196201294660568),
     I2q(start=0.4793854355812073))
     annotation (Placement(transformation(extent={{-36,-6},{-10,24}})));
-  LEPSE.Basic.Branches.Branches_numerical_units.HVline HVline_NU1(
+  OMLET.Basic.Branches.Branches_numerical_units.HVline HVline_NU1(
     Rline=2.5,
     Xline=29,
     Bline1=170,
     Bline2=170,
     displayPowerFlow=globalDisplay_S)
     annotation (Placement(transformation(extent={{14,-10},{40,26}})));
-  LEPSE.Basic.Buses.Bus node_1(Unom=20, displayVoltage=globalDisplay_U)
+  OMLET.Basic.Buses.Bus node_1(Unom=20, displayVoltage=globalDisplay_U)
     annotation (Placement(transformation(extent={{-56,-2},{-36,22}})));
-  LEPSE.Basic.Buses.Bus node_3(busNumber=3, displayVoltage=globalDisplay_U)
+  OMLET.Basic.Buses.Bus node_3(busNumber=3, displayVoltage=globalDisplay_U)
     annotation (Placement(transformation(extent={{38,-2},{58,22}})));
-  LEPSE.Basic.Buses.Bus node_2(busNumber=2, displayVoltage=globalDisplay_U)
+  OMLET.Basic.Buses.Bus node_2(busNumber=2, displayVoltage=globalDisplay_U)
     annotation (Placement(transformation(extent={{-6,-2},{14,22}})));
 
-  inner LEPSE.Basic.SysData sysData(
+  inner OMLET.Basic.SysData sysData(
     Sbaz=1000,
     Ubaz=330,
     fbaz=50)
     annotation (Placement(transformation(extent={{-100,-64},{-80,-44}})));
-  LEPSE.Basic.Shunts.Shunts_numerical_units.ShortCircuitShunt shortCircuitShunt_NU(
+  OMLET.Basic.Shunts.Shunts_numerical_units.ShortCircuitShunt shortCircuitShunt_NU(
     Umon=330,
     Bn=1000,
     Gn=1000,
@@ -118,7 +120,7 @@ model SMIB_ARV_SD
     dTkzOn=0.2)
     annotation (Placement(transformation(extent={{-18,-38},{0,-14}})));
 
-  LEPSE.Basic.Branches.Branches_numerical_units.HVline HVline_NU2(
+  OMLET.Basic.Branches.Branches_numerical_units.HVline HVline_NU2(
     Rline=2.5,
     Xline=29,
     Bline1=170,
